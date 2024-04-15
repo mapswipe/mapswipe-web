@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouterView } from 'vue-router'
+import { createRouter, createWebHashHistory, RouterView } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { getCurrentUser } from 'vuefire'
 import { default as Tr, i18nRoute } from '@/i18n/translation'
@@ -17,7 +17,7 @@ const denyUnauthorized = async (to, from, next) => {
 }
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.VITE_BASE_URL),
+  history: createWebHashHistory(import.meta.env.VITE_BASE_URL),
   routes: [
     {
       path: '/:locale?',
