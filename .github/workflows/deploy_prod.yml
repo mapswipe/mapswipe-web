@@ -1,11 +1,12 @@
 # Workflow for building and deploying to dev
 #
-name: Deploy Vite site to Pages (dev)
+name: Deploy Vite site to Pages (prod)
 
 on:
-  # Runs on pushes targeting the `main` branch.
+  # Runs on pushes targeting the `main` branch and are tagged.
   push:
-    branches: [main]
+    tags:
+      - '**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -44,18 +45,18 @@ jobs:
         run: yarn install # or pnpm install / yarn install / bun install
       - name: Build
         env:
-          VITE_FIREBASE_API_KEY: "${{ secrets.VITE_FIREBASE_API_KEY }}"
-          VITE_FIREBASE_AUTH_DOMAIN: "${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}"
-          VITE_FIREBASE_DATABASE_URL: "${{ secrets.VITE_FIREBASE_DATABASE_URL }}"
-          VITE_FIREBASE_PROJECT_ID: "${{ secrets.VITE_FIREBASE_PROJECT_ID }}"
-          VITE_FIREBASE_STORAGE_BUCKET: "${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}"
-          VITE_FIREBASE_MESSAGING_SENDER_ID: "${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}"
-          VITE_FIREBASE_APP_ID: "${{ secrets.VITE_FIREBASE_APP_ID }}"
+          VITE_FIREBASE_API_KEY: "${{ secrets.VITE_FIREBASE_API_KEY_prod }}"
+          VITE_FIREBASE_AUTH_DOMAIN: "${{ secrets.VITE_FIREBASE_AUTH_DOMAIN_prod }}"
+          VITE_FIREBASE_DATABASE_URL: "${{ secrets.VITE_FIREBASE_DATABASE_URL_prod }}"
+          VITE_FIREBASE_PROJECT_ID: "${{ secrets.VITE_FIREBASE_PROJECT_ID_prod }}"
+          VITE_FIREBASE_STORAGE_BUCKET: "${{ secrets.VITE_FIREBASE_STORAGE_BUCKET_prod }}"
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID_prod }}"
+          VITE_FIREBASE_APP_ID: "${{ secrets.VITE_FIREBASE_APP_ID_prod }}"
         run: yarn build-ghpages # or pnpm docs:build / yarn docs:build / bun run docs:build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/dist/dev
+          path: docs/dist
 
   # Deployment job
   deploy:
@@ -68,4 +69,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v4t
