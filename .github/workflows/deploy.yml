@@ -42,7 +42,7 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Install dependencies
         run: yarn install # or pnpm install / yarn install / bun install
-      - name: Build
+      - name: Run Dev Build
         env:
           VITE_FIREBASE_API_KEY: "${{ secrets.VITE_FIREBASE_API_KEY }}"
           VITE_FIREBASE_AUTH_DOMAIN: "${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}"
@@ -52,7 +52,13 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: "${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}"
           VITE_FIREBASE_APP_ID: "${{ secrets.VITE_FIREBASE_APP_ID }}"
         run: yarn build-ghpages-dev # or pnpm docs:build / yarn docs:build / bun run docs:build
-      - name: Run prod
+      - name: Checkout latest release tag
+        run: |
+          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          git checkout $LATEST_TAG
+      - name: Install dependencies
+        run: yarn install # or pnpm install / yarn install / bun install
+      - name: Run Prod Build
         env:
             VITE_FIREBASE_API_KEY: "${{ secrets.VITE_FIREBASE_API_KEY_PROD }}"
             VITE_FIREBASE_AUTH_DOMAIN: "${{ secrets.VITE_FIREBASE_AUTH_DOMAIN_PROD }}"
