@@ -52,7 +52,7 @@ jobs:
           VITE_FIREBASE_STORAGE_BUCKET: "${{ secrets.VITE_FIREBASE_STORAGE_BUCKET_prod }}"
           VITE_FIREBASE_MESSAGING_SENDER_ID: "${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID_prod }}"
           VITE_FIREBASE_APP_ID: "${{ secrets.VITE_FIREBASE_APP_ID_prod }}"
-        run: yarn build-ghpages # or pnpm docs:build / yarn docs:build / bun run docs:build
+        run: yarn build-ghpages-prod # or pnpm docs:build / yarn docs:build / bun run docs:build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
