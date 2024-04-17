@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "build-ghpages-dev":"vite build --base=/dev/ --outDir=docs/dist/dev",
+    "build-ghpages-dev":"vite build --base=/dev/ --mode development --outDir=docs/dist/dev",
     "build-ghpages-prod":"vite build --outDir=docs/dist/prod",
     "preview": "vite preview",
     "test:unit": "vitest",
