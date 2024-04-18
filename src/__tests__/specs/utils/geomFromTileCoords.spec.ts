@@ -1,4 +1,3 @@
-import { expect, test } from 'vitest'
 import geomFromTileCoords from '@/utils/geomFromTileCoords'
 
 const geom = [
