@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import { vuetify } from '@/main'
-import AppToaster from '../AppToaster.vue'
+import AppToaster from '@/components/AppToaster.vue'
 
 describe('AppToaster', () => {
   it('renders properly content slot', () => {
-    const wrapper = mount(AppToaster, {
+    console.log('test')
+    const wrapper = shallowMount(AppToaster, {
       global: { plugins: [vuetify] },
       slots: { content: 'test' },
     })
