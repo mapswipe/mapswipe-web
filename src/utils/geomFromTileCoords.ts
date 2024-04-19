@@ -1,6 +1,7 @@
 import { transform } from 'ol/proj'
+import type {Coordinate} from "ol/coordinate"
 
-const pixelCoordsZoomToLonLat = (pixelX, pixelY, zoom, size = 256) => {
+const pixelCoordsZoomToLonLat = (pixelX: number, pixelY: number, zoom: number, size: number = 256): Coordinate => {
   const mapSize = size * Math.pow(2, zoom)
   const x = pixelX / mapSize - 0.5
   const y = 0.5 - pixelY / mapSize
@@ -9,18 +10,18 @@ const pixelCoordsZoomToLonLat = (pixelX, pixelY, zoom, size = 256) => {
   return [lon, lat]
 }
 
-const geomFromTileCoords = (tileX, tileY, zoom, size = 256, epsg = 3857) => {
+const geomFromTileCoords = (tileX: number, tileY: number, zoom: number, size: number = 256, epsg: number = 3857): Coordinate[][] => {
   const leftPixelX = tileX * size
   const topPixelY = tileY * size
-  const lonLeftLatTop = pixelCoordsZoomToLonLat(leftPixelX, topPixelY, zoom, size)
-  const [left, top] = transform(lonLeftLatTop, 'EPSG:4326', `EPSG:${epsg}`)
+  const lonLeftLatTop: Coordinate = pixelCoordsZoomToLonLat(leftPixelX, topPixelY, zoom, size)
+  const [left, top]: Coordinate = transform(lonLeftLatTop, 'EPSG:4326', `EPSG:${epsg}`)
 
   const rightPixelX = (tileX + 1) * size
   const bottomPixelY = (tileY + 1) * size
-  const lonRightLatBottom = pixelCoordsZoomToLonLat(rightPixelX, bottomPixelY, zoom, size)
-  const [right, bottom] = transform(lonRightLatBottom, 'EPSG:4326', `EPSG:${epsg}`)
+  const lonRightLatBottom: Coordinate = pixelCoordsZoomToLonLat(rightPixelX, bottomPixelY, zoom, size)
+  const [right, bottom]: Coordinate = transform(lonRightLatBottom, 'EPSG:4326', `EPSG:${epsg}`)
 
-  const coordinates = [
+  const coordinates: Coordinate[][] = [
     [
       [left, top],
       [right, top],

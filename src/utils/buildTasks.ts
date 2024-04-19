@@ -1,32 +1,69 @@
-const arrayFromMinMax = (min, max) => {
-  min = parseInt(min)
-  max = parseInt(max)
-  return Array.from({ length: max - min + 1 }, (_, i) => i + min)
+type TileServer = {
+  url: string
+  apiKey: string
+  name: string
+  wmtsLayerName?: string
 }
 
-const formatXYZoomKey = (urlTemplate, x, y, zoom, apiKey, wmtsLayerName = '') => {
+type Group = {
+  xMin: string
+  xMax: string
+  yMin: string
+  yMax: string
+  groupId: string
+}
+
+type Project = {
+  projectId: string
+  zoomLevel: number
+  tileServer: TileServer
+  tileServerB?: TileServer
+}
+
+type Task = {
+  groupId: string
+  projectId: string
+  taskX: number
+  taskY: number
+  taskId: string
+  url: string
+  urlB?: string
+}
+
+const arrayFromMinMax = (min: string, max: string): number[] => {
+  const minNum = parseInt(min, 10)
+  const maxNum = parseInt(max, 10)
+  return Array.from({ length: maxNum - minNum + 1 }, (_, i) => i + minNum)
+}
+
+const formatXYZoomKey = (
+    urlTemplate: string,
+    x: number,
+    y: number,
+    zoom: number,
+    apiKey: string,
+    wmtsLayerName: string = ''
+): string => {
   const url = urlTemplate
-    .replace('{x}', x.toString())
-    .replace('{y}', y.toString())
-    .replace('{z}', zoom.toString())
-    .replace(/({apiKey})|({key})/, apiKey)
-    .replace(/({layer})|({name})/, wmtsLayerName)
+      .replace('{x}', x.toString())
+      .replace('{y}', y.toString())
+      .replace('{z}', zoom.toString())
+      .replace(/({apiKey})|({key})/, apiKey)
+      .replace(/({layer})|({name})/, wmtsLayerName)
   return url
 }
 
-const getBingURLFromQuadKey = (urlTemplate, quadKey, apiKey) => {
+const getBingURLFromQuadKey = (urlTemplate: string, quadKey: string, apiKey: string): string => {
   const bingUrl = urlTemplate
-    .replace(/({quadKey})|({quad_key})/, quadKey)
-    .replace(/({apiKey})|({key})/, apiKey)
+      .replace(/({quadKey})|({quad_key})/, quadKey)
+      .replace(/({apiKey})|({key})/, apiKey)
   return bingUrl
 }
 
-const getQuadKeyFromCoordsAndZoom = (x, y, zoom) => {
-  // Create a quadkey for use with certain tileservers that use them, e.g. Bing
+const getQuadKeyFromCoordsAndZoom = (x: number, y: number, zoom: number): string => {
   let quadKey = ''
   for (let i = zoom; i > 0; i -= 1) {
     let digit = 0
-    /* eslint-disable no-bitwise */
     const mask = 1 << (i - 1)
     if ((x & mask) !== 0) {
       digit += 1
@@ -34,18 +71,16 @@ const getQuadKeyFromCoordsAndZoom = (x, y, zoom) => {
     if ((y & mask) !== 0) {
       digit += 2
     }
-    /* eslint-enable no-bitwise */
     quadKey += digit.toString()
   }
   return quadKey
 }
 
-const getTileUrlFromCoordsAndTileserver = (x, y, zoom, tileServer) => {
-  // based on https://github.com/mapswipe/mapswipe/blob/master/src/shared/common/tile_functions.js
+const getTileUrlFromCoordsAndTileserver = (x: number, y: number, zoom: number, tileServer: TileServer): string => {
   const urlTemplate = tileServer.url
   const apiKey = tileServer.apiKey
   const tileServerName = tileServer.name
-  const wmtsLayerName = tileServer.wmtsLayerName
+  const wmtsLayerName = tileServer.wmtsLayerName || ''
   let url = ''
   if (tileServerName === 'bing') {
     const quadKey = getQuadKeyFromCoordsAndZoom(x, y, zoom)
@@ -63,13 +98,13 @@ const getTileUrlFromCoordsAndTileserver = (x, y, zoom, tileServer) => {
   return url
 }
 
-const buildTasks = (project, group) => {
+const buildTasks = (project: Project, group: Group): Task[] => {
   const xArray = arrayFromMinMax(group.xMin, group.xMax)
   const yArray = arrayFromMinMax(group.yMin, group.yMax)
-  const tasks = []
+  const tasks: Task[] = []
   for (const x of xArray) {
     for (const y of yArray) {
-      const task = {
+      const task: Task = {
         groupId: group.groupId,
         projectId: project.projectId,
         taskX: x,

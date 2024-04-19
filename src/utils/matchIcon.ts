@@ -1,4 +1,8 @@
-const iconLookup = {
+type IconLookup = {
+  [key: string]: string
+}
+
+const iconLookup: IconLookup = {
   'add-outline': 'mdi-plus',
   'alert-outline': 'mdi-exclamation',
   'ban-outline': 'mdi-cancel',
@@ -27,9 +31,8 @@ const iconLookup = {
   'warning-outline': 'mdi-alert-outline',
 }
 
-const matchIcon = (icon) => {
-  const mdiIcon = iconLookup[icon]
-  return mdiIcon
+const matchIcon = (icon: string): string | undefined => {
+  return iconLookup[icon]
 }
 
 export default matchIcon
