@@ -1,14 +1,42 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import hex2rgb from '@/utils/hex2rgb'
-import makeXyzUrl from '@/utils/makeXyzUrl'
 import { theme } from '@/plugins/vuetify'
 import OptionButtons from '@/components/OptionButtons.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import ValidateProjectInstructions from '@/components/ValidateProjectInstructions.vue'
 import { GeoJSON } from 'ol/format'
-import { Collection } from 'ol'
+import { Collection, View } from 'ol'
+import type VectorSource from "ol/source/Vector"
+import makeXyzUrl from "@/utils/makeXyzUrl"
+import hex2rgb from "@/utils/hex2rgb"
+
+interface Option {
+  mdiIcon: string
+  description: string
+  iconColor: string
+  shortkey: number
+  title: string
+  value: number
+}
+
+interface Task {
+  taskId: string
+  geojson: any // You should replace `any` with the actual type of your GeoJSON data
+}
+
+interface Project {
+  lookFor: string
+  tileServer: {
+    name: string
+    maxZoom?: number
+    apiKey?: string
+    imagerySet?: string
+    credits?: string
+  }
+  manualUrl?: string
+  projectTopic: string
+}
 
 export default defineComponent({
   components: {
@@ -19,7 +47,7 @@ export default defineComponent({
   },
   props: {
     group: {
-      type: Object,
+      type: Object as () => Record<string, unknown>,
       require: true,
     },
     first: {
@@ -27,7 +55,7 @@ export default defineComponent({
       default: false,
     },
     options: {
-      type: Array,
+      type: Array as () => Option[],
       default() {
         return [
           {
@@ -66,21 +94,21 @@ export default defineComponent({
       },
     },
     project: {
-      type: Object,
+      type: Object as () => Project,
       require: true,
     },
     tasks: {
-      type: Array,
+      type: Array as () => Task[],
       require: true,
     },
   },
   data() {
     return {
-      center: [0, 0],
-      results: {},
-      startTime: null,
-      taskFeatures: new Collection(),
-      taskId: undefined,
+      center: [0, 0] as [number, number],
+      results: {} as Record<string, number>,
+      startTime: null as string | null,
+      taskFeatures: new Collection() as Collection<any>, // You should replace `any` with the actual type of your GeoJSON data
+      taskId: undefined as string | undefined,
       taskIndex: 0,
       transparent: false,
       zoom: 3,
@@ -90,61 +118,65 @@ export default defineComponent({
     saveResults: 'saveResults',
   },
   computed: {
-    colors() {
-      const colors = theme
-      return colors
+    colors(): any {
+      return theme
     },
-    instructionMessage() {
+    instructionMessage(): string {
       const message = this.$t('validateProject.doesTheShapeOutline', {
         feature: this.project?.lookFor,
       })
-      return message
+      return message as string
     },
   },
   methods: {
-    addResult(value) {
-      this.results[this.taskId] = value
+    hex2rgb,
+    makeXyzUrl,
+    addResult(value: number): void {
+      this.results[this.taskId!] = value
     },
-    back() {
-      if (!this.taskIndex <= 0) {
+    back(): void {
+      if (this.tasks && !(this.taskIndex <= 0)) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
         this.updateTaskFeature()
       }
     },
-    fitView(duration = 600, delay = 100) {
-      const map = this.$refs.map.map
-      const mapView = this.$refs.mapView
-      const extent = this.$refs.taskSource.source.getExtent()
-      if (!extent.some((coordinate) => coordinate == Infinity)) {
-        setTimeout(() => {
-          mapView.fit(extent, {
-            size: map.getSize(),
-            padding: [20, 20, 20, 20],
-            maxZoom: this.project.tileServer.maxZoom | 19,
-            duration: duration,
-          })
-        }, delay)
+    fitView(duration: number = 600, delay: number = 100): void {
+      const map = (this.$refs.map as any)?.map // Casting to `any` to avoid TypeScript errors, consider a more precise type if possible
+      const mapView = this.$refs.mapView as View | undefined // Define the type of mapView
+      const taskSource = this.$refs.taskSource as { source: VectorSource } // Define the type of taskSource
+      if (mapView && taskSource.source) {
+        const extent = taskSource.source.getExtent()
+        if (!extent.some(coordinate => coordinate === Infinity)) {
+          setTimeout(() => {
+            mapView.fit(extent, {
+              size: map?.getSize(),
+              padding: [20, 20, 20, 20],
+              maxZoom: this.project?.tileServer?.maxZoom || 19,
+              duration: duration,
+            })
+          }, delay)
+        }
       }
     },
-    forward() {
-      if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
+    forward(): void {
+      if (this.tasks && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
         this.updateTaskFeature()
       }
     },
-    handleToggleOpacity() {
+    handleToggleOpacity(): void {
       this.transparent = !this.transparent
       this.updateTaskFeature()
     },
-    hex2rgb,
-    isAnswered() {
-      const result = this.results[this.taskId]
-      const defined = result !== undefined
-      return defined
+    isAnswered(): boolean {
+      const result = this.results[this.taskId!]
+      return result !== undefined
     },
-    updateTaskFeature() {
+    updateTaskFeature(): void {
+      if(! this.tasks)
+        return
       const geoJson = new GeoJSON()
       const geom = this.tasks[this.taskIndex].geojson
       const feature = { geometry: geom, type: 'Feature' }
@@ -156,9 +188,13 @@ export default defineComponent({
       this.taskFeatures.clear()
       this.taskFeatures.push(newFeature)
     },
-    makeXyzUrl,
   },
   created() {
+    if (! this.project) {
+      throw new Error('Project prop must be provided and cannot be null or undefined.')
+    }
+    if(! this.tasks)
+      throw new Error('Tasks must be provided and cannot be undefined or [].')
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId
     this.updateTaskFeature()
@@ -167,73 +203,73 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
+  <project-header :instructionMessage="instructionMessage" :title="project!.projectTopic">
     <v-btn
-      :title="$t('findProject.toggleOpacity')"
-      :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
-      @click="handleToggleOpacity()"
-      color="primary"
+        :title="$t('findProject.toggleOpacity')"
+        :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
+        @click="handleToggleOpacity()"
+        color="primary"
     />
     <v-btn
-      :title="$t('tileMap.resetView')"
-      icon="mdi-fit-to-screen-outline"
-      @click="fitView()"
-      color="primary"
+        :title="$t('tileMap.resetView')"
+        icon="mdi-fit-to-screen-outline"
+        @click="fitView()"
+        color="primary"
     />
     <validate-project-instructions
-      :attribution="attribution"
-      :first="first"
-      :instructionMessage="instructionMessage"
-      :manualUrl="project?.manualUrl"
-      :options="options"
+        :attribution="attribution"
+        :first="first"
+        :instructionMessage="instructionMessage"
+        :manualUrl="project?.manualUrl"
+        :options="options"
     />
   </project-header>
   <v-container class="ma-0 pa-0">
     <ol-map
-      ref="map"
-      :load-tiles-while-animating="true"
-      :load-tiles-while-interacting="true"
-      style="height: calc(100vh - 375px)"
-      @rendercomplete.once="fitView(1200, 300)"
+        ref="map"
+        :load-tiles-while-animating="true"
+        :load-tiles-while-interacting="true"
+        style="height: calc(100vh - 375px)"
+        @rendercomplete.once="fitView(1200, 300)"
     >
       <ol-view
-        ref="mapView"
-        :zoom="zoom"
-        :center="center"
-        :maxZoom="project?.tileServer?.maxZoom"
+          ref="mapView"
+          :zoom="zoom"
+          :center="center"
+          :maxZoom="project?.tileServer?.maxZoom"
       />
       <ol-tile-layer
-        v-if="project?.tileServer?.name != 'bing'"
-        id="osmLayer"
-        ref="osmLayer"
-        :zIndex="1"
+          v-if="project?.tileServer?.name != 'bing'"
+          id="osmLayer"
+          ref="osmLayer"
+          :zIndex="1"
       >
         <ol-source-osm />
       </ol-tile-layer>
       <ol-tile-layer id="basemapLayer" ref="basemapLayer" :zIndex="2">
         <ol-source-bingmaps
-          v-if="project?.tileServer?.name === 'bing'"
-          :api-key="project?.tileServer?.apiKey"
-          :imagery-set="project?.tileServer?.imagerySet || 'Aerial'"
+            v-if="project?.tileServer?.name === 'bing'"
+            :api-key="project?.tileServer?.apiKey"
+            :imagery-set="project?.tileServer?.imagerySet || 'Aerial'"
         />
         <ol-source-xyz
-          v-else
-          :url="makeXyzUrl(project.tileServer)"
-          :attributions="project.tileServer.credits"
+            v-else
+            :url="makeXyzUrl(project.tileServer)"
+            :attributions="project!.tileServer.credits"
         />
       </ol-tile-layer>
 
       <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3">
         <ol-source-vector
-          v-model:features="taskFeatures"
-          @change="fitView()"
-          ref="taskSource"
-          ident="taskSource"
+            v-model:features="taskFeatures"
+            @change="fitView()"
+            ref="taskSource"
+            ident="taskSource"
         />
         <ol-style>
           <ol-style-stroke
-            :color="hex2rgb(colors.light.accent, transparent ? 0.4 : 1)"
-            :width="5"
+              :color="hex2rgb(colors.light.accent, transparent ? 0.4 : 1)"
+              :width="5"
           />
           <ol-style-fill color="#0000" />
         </ol-style>
@@ -241,42 +277,42 @@ export default defineComponent({
     </ol-map>
   </v-container>
   <option-buttons
-    v-if="taskId"
-    :options="options"
-    :result="results[taskId]"
-    :taskId="taskId"
-    @addResult="addResult"
+      v-if="taskId"
+      :options="options"
+      :result="results[taskId]"
+      :taskId="taskId"
+      @addResult="addResult"
   />
   <v-toolbar color="white" density="compact" extension-height="20" extended>
     <v-spacer />
     <v-btn
-      :title="$t('validateProject.moveLeft')"
-      icon="mdi-chevron-left"
-      color="secondary"
-      :disabled="taskIndex <= 0"
-      @click="back"
-      v-shortkey.once="['arrowleft']"
-      @shortkey="back"
+        :title="$t('validateProject.moveLeft')"
+        icon="mdi-chevron-left"
+        color="secondary"
+        :disabled="taskIndex <= 0"
+        @click="back"
+        v-shortkey.once="['arrowleft']"
+        @shortkey="back"
     />
     <v-btn
-      :title="$t('projectView.saveResults')"
-      icon="mdi-content-save"
-      color="primary"
-      :disabled="Object.keys(results).length < tasks.length"
-      @click="saveResults(results, startTime)"
+        :title="$t('projectView.saveResults')"
+        icon="mdi-content-save"
+        color="primary"
+        :disabled="Object.keys(results).length < tasks!.length"
+        @click="saveResults(results, startTime)"
     />
     <v-btn
-      :title="$t('validateProject.moveRight')"
-      icon="mdi-chevron-right"
-      color="secondary"
-      :disabled="!isAnswered() || taskIndex + 1 === tasks.length"
-      @click="forward"
-      v-shortkey.once="['arrowright']"
-      @shortkey="forward"
+        :title="$t('validateProject.moveRight')"
+        icon="mdi-chevron-right"
+        color="secondary"
+        :disabled="!isAnswered() || taskIndex + 1 === tasks!.length"
+        @click="forward"
+        v-shortkey.once="['arrowright']"
+        @shortkey="forward"
     />
     <v-spacer />
     <template #extension>
-      <task-progress :progress="taskIndex + isAnswered()" :total="tasks.length" />
+      <task-progress :progress="taskIndex + isAnswered()" :total="tasks!.length" />
     </template>
   </v-toolbar>
 </template>
