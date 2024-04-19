@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue'
 import { i18nRoute } from '@/i18n/translation'
 import { mapStores } from 'pinia'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore, CurrentUserStore } from '@/stores/currentUser'
 
 export default defineComponent({
   methods: {
@@ -10,33 +10,15 @@ export default defineComponent({
   },
   computed: {
     ...mapStores(useCurrentUserStore),
-    user() {
-      return this.currentUserStore.currentUser
+    user: {
+      get(): CurrentUserStore | undefined { // Type annotation for user computed property
+        return this.currentUserStore.currentUser
+      },
+      cache: false, // Ensure reactivity
     },
-    isVerified() {
+    isVerified(): boolean | undefined { // Type annotation for isVerified computed property
       return this.currentUserStore.currentUser?.emailVerified
     },
   },
 })
 </script>
-
-<template>
-  <v-banner v-if="user && !isVerified" bg-color="accent" density="compact">
-    <v-banner-text>
-      <h4>{{ $t('appBanner.title') }}</h4>
-      <p>{{ $t('appBanner.message') }}</p>
-    </v-banner-text>
-    <template #actions>
-      <v-btn
-        v-if="$route.name != 'RequestPasswordReset'"
-        :to="i18nRoute({ name: 'authentication', params: { authTab: 'recover-account' } })"
-        color="secondary"
-        variant="text"
-      >
-        {{ $t('appBanner.recover') }}
-      </v-btn>
-    </template>
-  </v-banner>
-</template>
-
-<style scoped></style>

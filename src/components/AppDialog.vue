@@ -12,17 +12,26 @@ export default defineComponent({
       title: '',
     }
   },
+  methods: {
+    hideDialog() {
+      this.show = false
+    },
+    handleAction() {
+      this.action()
+      if (!this.persistent) {
+        this.show = false
+      }
+    },
+  },
   provide() {
     return {
-      hideDialog: () => {
-        this.show = false
-      },
+      hideDialog: this.hideDialog,
       showDialog: (
-        title: string,
-        message: string,
-        action = () => true,
-        persistent = false,
-        cancelButton = true,
+          title: string,
+          message: string,
+          action = () => true,
+          persistent = false,
+          cancelButton = true,
       ) => {
         this.title = title
         this.message = message
@@ -44,13 +53,10 @@ export default defineComponent({
       <v-card-text>{{ message }}</v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn v-if="cancelButton" color="primary" @click="show = false">{{
-          $t('appDialog.cancel')
-        }}</v-btn>
-        <v-btn color="primary" @click="action">{{ $t('appDialog.ok') }}</v-btn>
+        <v-btn v-if="cancelButton" color="primary" @click="hideDialog">{{ $t('appDialog.cancel') }}</v-btn>
+        <v-btn color="primary" @click="handleAction">{{ $t('appDialog.ok') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
-
 <style scoped></style>
