@@ -1,7 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { onValue, set } from 'firebase/database'
+import { logEvent } from 'firebase/analytics'
 import {
+  fbAnalytics,
   getGroupsQuery,
   getProjectRef,
   getProjectContributionsRef,
@@ -45,6 +47,9 @@ export default defineComponent({
   },
   provide() {
     return {
+      logMappingStarted: (projectType) => {
+        logEvent(fbAnalytics, 'mapping_started', { projectType: projectType })
+      },
       saveResults: (results, startTime) => {
         const entry = {
           endTime: new Date().toISOString(),
@@ -60,6 +65,7 @@ export default defineComponent({
               this.$t('projectView.resultsSaved', { user: this.user.displayName }),
               'success',
             )
+            logEvent(fbAnalytics, 'complete_group')
             this.mode = 'finished'
             this.nextDialog = true
           })
@@ -199,6 +205,7 @@ export default defineComponent({
     this.bindProject()
     this.bindProjectContributions()
     this.bindTaskGroup()
+    logEvent(fbAnalytics, 'project_view_opened')
   },
 })
 </script>

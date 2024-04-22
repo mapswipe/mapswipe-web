@@ -3,7 +3,8 @@ import { defineComponent } from 'vue'
 import BasicPage from '@/components/BasicPage.vue'
 import ProjectMoreInfo from '@/components/ProjectMoreInfo.vue'
 import { onValue } from 'firebase/database'
-import { activeProjectsQuery, getUserContributionsRef } from '@/firebase'
+import { logEvent } from 'firebase/analytics'
+import { activeProjectsQuery, fbAnalytics, getUserContributionsRef } from '@/firebase'
 import { i18nRoute } from '@/i18n/translation'
 import { mapStores } from 'pinia'
 import { useCurrentUserStore } from '@/stores/currentUser'
@@ -158,6 +159,7 @@ export default defineComponent({
   mounted() {
     this.bindProjects()
     this.bindUserContributions()
+    logEvent(fbAnalytics, 'app_home_seen')
   },
 })
 </script>

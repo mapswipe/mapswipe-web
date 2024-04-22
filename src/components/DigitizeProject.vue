@@ -54,6 +54,7 @@ export default defineComponent({
     }
   },
   inject: {
+    logMappingStarted: 'logMappingStarted',
     saveResults: 'saveResults',
   },
   computed: {
@@ -187,6 +188,7 @@ export default defineComponent({
   },
   created() {
     this.startTime = new Date().toISOString()
+    this.logMappingStarted(this.project.projectType)
     this.taskId = this.tasks[this.taskIndex].taskId
     this.updateTaskFeature()
     if (this.tasks.length === 1) this.endReached = true

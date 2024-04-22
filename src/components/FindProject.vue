@@ -61,6 +61,7 @@ export default defineComponent({
     }
   },
   inject: {
+    logMappingStarted: 'logMappingStarted',
     saveResults: 'saveResults',
     showSnackbar: 'showSnackbar',
   },
@@ -247,6 +248,7 @@ export default defineComponent({
   },
   created() {
     this.startTime = new Date().toISOString()
+    this.logMappingStarted(this.project.projectType)
     this.processedTasks.forEach((task) => (this.results[task.taskId] = this.options[0].value))
   },
 })
