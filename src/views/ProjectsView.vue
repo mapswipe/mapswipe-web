@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue'
 import BasicPage from '@/components/BasicPage.vue'
 import ProjectMoreInfo from '@/components/ProjectMoreInfo.vue'
-import { onValue } from 'firebase/database'
+import { ref, getDatabase, onValue, set } from 'firebase/database'
 import { logEvent } from 'firebase/analytics'
 import { activeProjectsQuery, fbAnalytics, getUserContributionsRef } from '@/firebase'
 import { i18nRoute } from '@/i18n/translation'
@@ -155,11 +155,16 @@ export default defineComponent({
       const translationName = 'projectsView.filterLabels.' + attribute
       return label || (this.$te(translationName) ? this.$t(translationName) : attribute)
     },
+    updateLastAppUse() {
+      const userId = this.user.uid
+      set(ref(getDatabase(), `/v2/users/${userId}/lastAppUse`), new Date().toISOString())
+    },
   },
   mounted() {
     this.bindProjects()
     this.bindUserContributions()
     logEvent(fbAnalytics, 'app_home_seen')
+    this.updateLastAppUse()
   },
 })
 </script>
