@@ -9,7 +9,7 @@ const denyUnauthorized = async (to, from, next) => {
   if (currentUser?.emailVerified) {
     next()
   } else if (currentUser) {
-    next(i18nRoute({ name: 'authentification', params: { authTab: 'recover-account' } }))
+    next(i18nRoute({ name: 'authentication', params: { authTab: 'recover-account' } }))
   } else {
     next(i18nRoute({ name: 'authentication', params: { authTab: 'sign-in' } }))
   }
