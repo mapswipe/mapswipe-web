@@ -24,7 +24,7 @@ export default defineComponent({
       default: 1,
     },
     maxSize: {
-      type: Number,
+      type: String,
       require: false,
     },
   },
