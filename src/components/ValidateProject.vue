@@ -183,7 +183,6 @@ export default defineComponent({
       color="primary"
     />
     <validate-project-instructions
-      :attribution="attribution"
       :first="first"
       :instructionMessage="instructionMessage"
       :manualUrl="project?.manualUrl"

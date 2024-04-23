@@ -90,6 +90,12 @@ export default defineComponent({
     saveResults: 'saveResults',
   },
   computed: {
+    attribution() {
+      const attribution = [this.project.tileServer.credits]
+      const tileServerB = this.project.tileServerB
+      if (tileServerB) attribution.push(tileServerB.credits)
+      return attribution.join('; ')
+    },
     instructionMessage() {
       const message = this.$t('compareProject.lookForChange', { lookFor: this.project?.lookFor })
       return message
@@ -129,7 +135,7 @@ export default defineComponent({
   <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
     <tile-map :page="[tasks[taskIndex]]" :zoomLevel="project.zoomLevel" />
     <compare-project-instructions
-      :attribution="project.attribution"
+      :attribution="attribution"
       :first="first"
       :instructionMessage="instructionMessage"
       :manualUrl="project?.manualUrl"
