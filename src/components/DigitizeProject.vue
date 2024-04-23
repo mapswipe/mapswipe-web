@@ -54,6 +54,7 @@ export default defineComponent({
     }
   },
   inject: {
+    logMappingStarted: 'logMappingStarted',
     saveResults: 'saveResults',
   },
   computed: {
@@ -190,6 +191,7 @@ export default defineComponent({
     this.taskId = this.tasks[this.taskIndex].taskId
     this.updateTaskFeature()
     if (this.tasks.length === 1) this.endReached = true
+    this.logMappingStarted(this.project.projectType)
   },
 })
 </script>

@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { initializeAnalytics } from 'firebase/analytics'
 import { equalTo, getDatabase, orderByChild, query, ref, startAfter } from 'firebase/database'
 
 const firebaseConfig = {
@@ -9,9 +10,11 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
 export const firebaseApp = initializeApp(firebaseConfig)
+export const fbAnalytics = initializeAnalytics(firebaseApp)
 
 // used for the database refs
 const db = getDatabase(firebaseApp)

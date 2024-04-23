@@ -87,6 +87,7 @@ export default defineComponent({
     }
   },
   inject: {
+    logMappingStarted: 'logMappingStarted',
     saveResults: 'saveResults',
   },
   computed: {
@@ -162,6 +163,7 @@ export default defineComponent({
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId
     this.updateTaskFeature()
+    this.logMappingStarted(this.project.projectType)
   },
 })
 </script>
