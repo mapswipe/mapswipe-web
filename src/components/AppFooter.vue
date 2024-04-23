@@ -18,6 +18,10 @@ export default defineComponent({
       const appAttributionUrl = import.meta.env.VITE_APP_ATTRIBUTION_URL
       return appAttributionUrl
     },
+    appWebsiteUrl() {
+      const appWebsiteUrl = import.meta.env.VITE_APP_WEBSITE_URL
+      return appWebsiteUrl
+    },
     imprintUrl() {
       const url = import.meta.env.VITE_IMPRINT_URL
       return url
@@ -36,16 +40,21 @@ export default defineComponent({
     <p class="text-center m-auto">
       <span>
         © {{ currentYear }}
-        <strong> &nbsp;{{ appName }} </strong>
+        <strong>
+          <a target="_blank" :title="appName" :href="appWebsiteUrl">
+            {{ appName }}
+          </a>
+        </strong>
       </span>
-      <span>
-        &nbsp;| {{ $t('appFooter.servicesDevelopedBy') }}
+      <span v-if="appAttributionTitle">
+        |
         <strong>
           <a target="_blank" :title="appAttributionTitle" :href="appAttributionUrl">
             {{ appAttributionTitle }}
           </a>
-        </strong> </span
-      ><br />
+        </strong>
+      </span>
+      &nbsp; &nbsp;
       <span>
         <strong>
           <a
@@ -59,7 +68,13 @@ export default defineComponent({
         </strong>
         &nbsp; &nbsp;
         <strong>
-          <a class="link" :title="$t('appFooter.imprint')" :href="imprintUrl" target="_blank">
+          <a
+            v-if="imprintUrl"
+            class="link"
+            :title="$t('appFooter.imprint')"
+            :href="imprintUrl"
+            target="_blank"
+          >
             {{ $t('appFooter.imprint') }}
           </a>
         </strong>
