@@ -20,6 +20,11 @@ export default defineComponent({
       require: true,
     },
   },
+  data() {
+    return {
+      projectImage: this.project?.image || this.fallbackImage,
+    }
+  },
 })
 </script>
 
@@ -30,7 +35,7 @@ export default defineComponent({
     </template>
     <template v-slot:default="{ isActive }">
       <v-card>
-        <v-img :src="project.image" @error="() => (project.image = fallbackImage)" />
+        <v-img :src="projectImage" @error="() => (projectImage = fallbackImage)" />
         <v-card-title>{{ project.projectTopic }}</v-card-title>
         <v-card-text>
           <v-icon>mdi-pound</v-icon>
