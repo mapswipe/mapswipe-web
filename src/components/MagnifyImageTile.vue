@@ -45,6 +45,7 @@ export default defineComponent({
         size="small"
       />
     </template>
+    <!-- eslint-disable-next-line vue/no-unused-vars -->
     <template v-slot:default="{ isActive }">
       <v-hover v-slot="{ isHovering, props }">
         <v-card v-bind="props" class="pa-2" color="white" @click="$emit('tileClicked')" rounded="0">

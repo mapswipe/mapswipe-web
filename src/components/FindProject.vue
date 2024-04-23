@@ -99,6 +99,7 @@ export default defineComponent({
       let lastPage = rightColumnIndex >= this.totalColumns
       return lastPage
     },
+    /* eslint-disable vue/no-side-effects-in-computed-properties */
     page() {
       this.columnIndex = Math.min(this.columnIndex, this.totalColumns - this.columnsPerPage)
       let begin = Math.max(this.columnIndex * this.rowsPerPage, 0)
@@ -116,10 +117,10 @@ export default defineComponent({
         this.endReached = true
         this.taskIndex = this.processedTasks.length
       }
-      // this.updateSelection()
       this.taskIndex = (this.columnIndex + this.columnsPerPage) * this.rowsPerPage
       return page
     },
+    /* eslint-enable vue/no-side-effects-in-computed-properties */
     processedTasks() {
       const tasks = this.tasks.length ? this.tasks : buildTasks(this.project, this.group)
       const sorted = tasks.sort((a, b) => (a.taskId > b.taskId ? 1 : -1))
