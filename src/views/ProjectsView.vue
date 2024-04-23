@@ -216,7 +216,7 @@ export default defineComponent({
                 :src="project.image"
                 @error="() => (project.image = fallbackImage)"
               />
-              <v-card-title>{{ project.projectTopic }}</v-card-title>
+              <v-card-title class="text-wrap">{{ project.projectTopic }}</v-card-title>
               <v-card-text>
                 <v-icon small>mdi-pound</v-icon>
                 {{ project.projectNumber || $t('projectsView.unknown') }}
