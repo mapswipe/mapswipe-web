@@ -36,6 +36,15 @@ yarn lint
 yarn format
 ```
 
+### Pre-commit hook
+
+Automate linting and formatting as pre-commit hook (from repo root):
+
+```sh
+ln -fs ../../pre-commit-hook .git/hooks/pre-commit
+chmod ug+x .git/hooks/*
+```
+
 ### Deployment
 
 On any push to the main branch of this repository, the most recent **tagged** version **and** the latest version are built and deployed to [web.mapswipe.org](https://web.mapswipe.org) and [web.mapswipe.org/dev](https://web.mapswipe.org/dev) respectively (see [deployment workflow](.github/workflows/deploy.yml)).
