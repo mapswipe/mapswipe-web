@@ -13,11 +13,6 @@ export default defineComponent({
     return {
       menuItems: [
         {
-          href: '/',
-          icon: 'mdi-home',
-          name: 'home',
-        },
-        {
           href: '/projects',
           icon: 'mdi-link',
           name: 'projects',
