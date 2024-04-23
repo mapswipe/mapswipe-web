@@ -25,13 +25,9 @@ const router = createRouter({
       meta: { title: appName },
       children: [
         {
-          path: '',
-          name: 'home',
-          redirect: i18nRoute({ name: 'projects' }),
-        },
-        {
           path: 'projects',
           name: 'projects',
+          alias: '',
           // lazy-load component when the route is visited
           component: () => import('../views/ProjectsView.vue'),
           beforeEnter: denyUnauthorized,
