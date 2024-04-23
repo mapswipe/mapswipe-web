@@ -108,8 +108,8 @@ export default defineComponent({
   },
   created() {
     this.startTime = new Date().toISOString()
-    this.logMappingStarted(this.project.projectType)
     this.taskId = this.tasks[this.taskIndex].taskId
+    this.logMappingStarted(this.project.projectType)
   },
 })
 </script>
