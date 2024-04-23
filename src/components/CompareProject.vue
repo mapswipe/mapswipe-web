@@ -132,6 +132,7 @@ export default defineComponent({
       :attribution="project.attribution"
       :first="first"
       :instructionMessage="instructionMessage"
+      :manualUrl="project?.manualUrl"
       :options="options"
     />
   </project-header>

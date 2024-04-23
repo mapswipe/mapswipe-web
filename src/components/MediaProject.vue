@@ -123,7 +123,7 @@ export default defineComponent({
       :question="questions"
       :mediaType="isImageTask ? 'image' : 'video'"
       :textColor="contrastingTextColor"
-      :manualUrl="project.manualUrl"
+      :manualUrl="project?.manualUrl"
       :options="options"
     />
   </project-header>

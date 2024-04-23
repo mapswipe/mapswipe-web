@@ -11,6 +11,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    manualUrl: {
+      type: String,
+      require: false,
+    },
     options: {
       type: Array,
       required: true,
