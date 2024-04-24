@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { initializeAnalytics } from 'firebase/analytics'
+import { initializeAnalytics, logEvent } from 'firebase/analytics'
 import { equalTo, getDatabase, orderByChild, query, ref, startAfter } from 'firebase/database'
 
 const firebaseConfig = {
@@ -14,7 +14,14 @@ const firebaseConfig = {
 }
 
 export const firebaseApp = initializeApp(firebaseConfig)
-export const fbAnalytics = initializeAnalytics(firebaseApp)
+
+export const logAnalyticsEvent = (eventName, eventParams = {}) => {
+  if(firebaseConfig.measurementId) {
+    const fbAnalytics = initializeAnalytics(firebaseApp)
+    logEvent(fbAnalytics, eventName, eventParams)
+    console.log("event logged")
+  }
+}
 
 // used for the database refs
 const db = getDatabase(firebaseApp)

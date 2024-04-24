@@ -2,8 +2,7 @@
 import { defineComponent } from 'vue'
 import { i18nRoute } from '@/i18n/translation'
 import { signInWithEmailAndPassword, getAuth } from 'firebase/auth'
-import { logEvent } from 'firebase/analytics'
-import { fbAnalytics } from '@/firebase'
+import { logAnalyticsEvent } from '@/firebase'
 
 export default defineComponent({
   data() {
@@ -56,7 +55,7 @@ export default defineComponent({
                 }),
               )
             }
-            logEvent(fbAnalytics, 'account_login')
+            logAnalyticsEvent('account_login')
           })
           .catch((error) => {
             const errorMsg = this.$te(`authView.authErrors.${error.code}`)

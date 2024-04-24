@@ -7,8 +7,7 @@ import {
   updateProfile,
 } from 'firebase/auth'
 import { getDatabase, ref, set } from 'firebase/database'
-import { logEvent } from 'firebase/analytics'
-import { fbAnalytics } from '@/firebase'
+import { logAnalyticsEvent } from '@/firebase'
 import { i18nRoute } from '@/i18n/translation'
 
 export default defineComponent({
@@ -80,7 +79,7 @@ export default defineComponent({
             ])
           })
           .then(() => {
-            logEvent(fbAnalytics, 'account_created')
+            logAnalyticsEvent('account_created')
             this.$router.push(
               i18nRoute({ name: 'authentication', params: { authTab: 'recover-account' } }),
             )

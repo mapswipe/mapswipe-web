@@ -4,8 +4,7 @@ import { defineComponent } from 'vue'
 import { mapStores } from 'pinia'
 import { getAuth, signOut, updateProfile } from 'firebase/auth'
 import { getDatabase, ref, push, set, update, onValue } from 'firebase/database'
-import { logEvent } from 'firebase/analytics'
-import { fbAnalytics } from '@/firebase'
+import { logAnalyticsEvent } from '@/firebase'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import {
   dbRef,
@@ -78,7 +77,7 @@ export default defineComponent({
       this.user
         .delete()
         .then(() => {
-          logEvent(fbAnalytics, 'delete_account')
+          logAnalyticsEvent('delete_account')
           this.$router.push(i18nRoute({ name: 'authentication', params: { authTab: 'sign-in' } }))
           this.showSnackbar(this.$t(`profileView.accountDeleted`), 'success')
         })
@@ -203,7 +202,7 @@ export default defineComponent({
       const auth = getAuth()
       signOut(auth)
         .then(() => {
-          logEvent(fbAnalytics, 'sign_out')
+          logAnalyticsEvent('sign_out')
           this.$router.push(i18nRoute({ name: 'authentication', params: { authTab: 'sign-in' } }))
         })
         .catch(() => this.showSnackbar(this.$t(`profileView.signOutFailed`), 'error'))
