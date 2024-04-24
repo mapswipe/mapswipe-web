@@ -1,25 +1,16 @@
-# crowdmap-webapp
+# MapSwipe Web App
 
-This template should help get you started developing with Vue 3 in Vite.
+Welcome to [MapSwipe4Web](https://web.mapswipe.org). This web application complements the existing [mobile app](https://github.com/mapswipe/mapswipe) and allows users to contribute to [MapSwipe](https://mapswipe.org) from their browser. It was initially developed by [HeiGIT](https://www.heigit.org) with the support of the [Humanitarian OpenStreetMap Team](https://www.hotosm.org/).
 
-## Recommended IDE Setup
+## Developing, Building, and Contributing to MapSwipe
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+If you'd like to modify and improve the MapSwipe web app, read through the following to get familiar with the project. Please also read [CONTRIBUTING](CONTRIBUTING.md).
 
-## Type Support for `.vue` Imports in TS
+## Technology Used
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+The app is written in [Vue](https://vuejs.org). It uses the same backend as the mobile app:
+1. Firebase provides the backend database. It is protected with security rules so that users and contributors to this open source project can not cause damage.
+1. The [workers](https://github.com/mapswipe/python-mapswipe-workers) on the backend are running on Google Cloud and handle pre-processing and post-processing the data.
 
 ## Project Setup
 
@@ -33,39 +24,27 @@ yarn
 yarn dev
 ```
 
-### Type-Check, Compile and Minify for Production
-
-```sh
-yarn build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-yarn test:unit
-```
-
-### Run End-to-End Tests with [Playwright](https://playwright.dev)
-
-```sh
-# Install browsers for the first run
-npx playwright install
-
-# When testing on CI, must build the project first
-yarn build
-
-# Runs the end-to-end tests
-yarn test:e2e
-# Runs the tests only on Chromium
-yarn test:e2e --project=chromium
-# Runs the tests of a specific file
-yarn test:e2e tests/example.spec.ts
-# Runs the tests in debug mode
-yarn test:e2e --debug
-```
-
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
 yarn lint
 ```
+
+### Format with [prettier](https://prettier.io)
+
+```sh
+yarn format
+```
+
+### Pre-commit hook
+
+Automate linting and formatting as pre-commit hook (from repo root):
+
+```sh
+ln -fs ../../pre-commit-hook .git/hooks/pre-commit
+chmod ug+x .git/hooks/*
+```
+
+### Deployment
+
+On any push to the main branch of this repository, the most recent **tagged** version **and** the latest version are built and deployed to [web.mapswipe.org](https://web.mapswipe.org) and [web.mapswipe.org/dev](https://web.mapswipe.org/dev) respectively (see [deployment workflow](.github/workflows/deploy.yml)).
