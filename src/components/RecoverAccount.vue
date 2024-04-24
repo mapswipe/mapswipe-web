@@ -36,7 +36,7 @@ export default defineComponent({
   methods: {
     requestReset() {
       if (this.isFormValid) {
-        const url = `${location.protocol}//${location.host}//${this.currentLocale}/auth`
+        const url = `${location.protocol}//${location.host}/#/${this.currentLocale}/auth/sign-in`
         const auth = getAuth()
         sendPasswordResetEmail(auth, this.email, { url })
           .then(() => this.showSnackbar(this.$t('authView.passwordResetEmailSent'), 'success'))
