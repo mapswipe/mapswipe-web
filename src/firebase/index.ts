@@ -16,10 +16,9 @@ const firebaseConfig = {
 export const firebaseApp = initializeApp(firebaseConfig)
 
 export const logAnalyticsEvent = (eventName, eventParams = {}) => {
-  if(firebaseConfig.measurementId) {
+  if (firebaseConfig.measurementId) {
     const fbAnalytics = initializeAnalytics(firebaseApp)
     logEvent(fbAnalytics, eventName, eventParams)
-    console.log("event logged")
   }
 }
 
