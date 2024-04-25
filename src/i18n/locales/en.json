@@ -51,9 +51,9 @@
   },
   "homeView": {
     "title": "Welcome to the MapSwipe web app!",
-    "text": "As part of the Missing Map project, {mapswipeLink} was created to crowdsource map data from a network of global volunteers - just one swipe at a time. Individuals, volunteers from communities all over the world, can find crucial infrastructure such as buildings and roads, identify changes in areas. In addition to the {mobileAppLink}, volunteers can use the MapSwipe web app (beta) and start contributing right away through a web browser on multiple platforms like laptops, desktops, or mobiles.{newline}{newline}If you need more information or if you have requests related to the MapSwipe web app get in contact with the team at the {heigitLink}.",
-    "betaText": "The beta version of the MapSwipe web app is for submitting bugs, feature requests and other feedback. Currently, the collected mapping data won’t be used for supporting humanitarian response.",
-    "mobileApp": "mobile app"
+    "text": "As part of the Missing Map project, {mapswipeLink} was created to crowdsource map data from a network of global volunteers - just one swipe at a time. Individuals, volunteers from communities all over the world, can find crucial infrastructure such as buildings and roads, identify changes in areas. In addition to the {mobileAppLink}, volunteers can now use the new MapSwipe web app and start contributing right away through a web browser on various devices.{newline}{newline}If you find a bug or want to request a feature, please {issueLink} on GitHub.",
+    "mobileApp": "mobile app",
+    "openAnIssue": "open an issue"
   },
   "languageSwitcher": {
     "switchLanguage": "Switch Language"

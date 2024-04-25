@@ -51,9 +51,9 @@
   },
   "homeView": {
     "title": "Willkommen bei der MapSwipe Web App!",
-    "text": "Als Teil des Missing Maps-Projekts ist {mapswipeLink} eine mobile App, die entwickelt wurde, um Kartendaten von einem Netzwerk globaler Freiwilliger zu sammeln. Es geht darum wichtige Infrastrukturen wie Gebäude und Straßen auf Satellitendaten und Luftbildern zu finden, Schäden zu kartieren oder Veränderungen zu erkennen. Neben der {mobileAppLink} steht nun auch eine Webanwendung (Beta-Version) zur Verfügung. Diese kann über einen Webbrowser auf dem Laptop, PC, Tablet oder Smartphone genutzen werden.{newline}{newline}Wenn Sie weitere Informationen benötigen oder Fragen zur MapSwipe Web-App haben, kontaktieren Sie gern das Team des {heigitLink}.",
-    "betaText": "Die Beta-Version der MapSwipe-Web-App dient dazu, Feedback von Nutzer*innen zu bekommen und Probleme zu medlen. Derzeit werden die gesammelten Kartierungsdaten nicht zur Unterstützung humanitärer Maßnahmen verwendet.",
-    "mobileApp": "mobilen App"
+    "text": "Als Teil des Missing Maps-Projekts ist {mapswipeLink} eine mobile App, die entwickelt wurde, um Kartendaten von einem Netzwerk globaler Freiwilliger zu sammeln. Es geht darum, wichtige Infrastrukturen wie Gebäude und Straßen auf Satelliten- und Luftbildern zu finden, Schäden zu kartieren oder Veränderungen zu erkennen. Neben der {mobileAppLink} steht nun die neue Webanwendung zur Verfügung, die über einen Browser auf unterschiedlichen Geräten genutzen werden kann.{newline}{newline}Wenn du einen Bug findest oder ein Feature vorschlagen möchtest, {issueLink} auf GitHub.",
+    "mobileApp": "mobilen App",
+    "openAnIssue": "erstelle bitte ein Issue"
   },
   "languageSwitcher": {
     "switchLanguage": "Sprache wählen"

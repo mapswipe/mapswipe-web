@@ -15,6 +15,11 @@ import BasicPage from '@/components/BasicPage.vue'
           $t('homeView.mobileApp')
         }}</a>
       </template>
+      <template v-slot:issueLink>
+        <a href="https://github.com/mapswipe/mapswipe-web/issues" target="_blank">{{
+          $t('homeView.openAnIssue')
+        }}</a>
+      </template>
       <template v-slot:heigitLink>
         <a href="https://heigit.org/geoinformation-for-humanitarian-aid/" target="_blank"
           >Heidelberg Institute for Geoinformation Technology</a
@@ -22,10 +27,5 @@ import BasicPage from '@/components/BasicPage.vue'
       </template>
       <template v-slot:newline><br /></template>
     </i18n-t>
-    <br />
-    <p>
-      <i>{{ $t('homeView.betaText') }}</i>
-    </p>
-    <br />
   </basic-page>
 </template>
