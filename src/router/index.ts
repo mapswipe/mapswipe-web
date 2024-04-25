@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory, RouterView } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import { getCurrentUser } from 'vuefire'
 import { default as Tr, i18nRoute } from '@/i18n/translation'
 
@@ -10,7 +9,7 @@ const denyUnauthorized = async (to, from, next) => {
   if (currentUser?.emailVerified) {
     next()
   } else if (currentUser) {
-    next(i18nRoute({ name: 'home', params: { authTab: 'recover-account' } }))
+    next(i18nRoute({ name: 'authentication', params: { authTab: 'recover-account' } }))
   } else {
     next(i18nRoute({ name: 'authentication', params: { authTab: 'sign-in' } }))
   }
@@ -26,13 +25,9 @@ const router = createRouter({
       meta: { title: appName },
       children: [
         {
-          path: '',
-          name: 'home',
-          component: HomeView,
-        },
-        {
           path: 'projects',
           name: 'projects',
+          alias: '',
           // lazy-load component when the route is visited
           component: () => import('../views/ProjectsView.vue'),
           beforeEnter: denyUnauthorized,

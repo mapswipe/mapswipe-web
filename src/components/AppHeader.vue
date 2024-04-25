@@ -13,11 +13,6 @@ export default defineComponent({
     return {
       menuItems: [
         {
-          href: '/',
-          icon: 'mdi-home',
-          name: 'home',
-        },
-        {
           href: '/projects',
           icon: 'mdi-link',
           name: 'projects',
@@ -49,7 +44,7 @@ export default defineComponent({
       @click.stop="drawer = !drawer"
     ></v-app-bar-nav-icon>
     <v-app-bar-title>
-      <router-link to="/">
+      <router-link :to="i18nRoute({ name: 'projects' })">
         <v-img height="50" position="left center" :src="logoSrc" :alt="logoAlt" />
       </router-link>
     </v-app-bar-title>
