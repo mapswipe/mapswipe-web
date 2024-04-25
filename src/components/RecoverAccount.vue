@@ -43,7 +43,7 @@ export default defineComponent({
           .catch((error) => {
             const errorMsg = this.$te(`authView.authErrors.${error.code}`)
               ? this.$t(`authView.authErrors.${error.code}`)
-              : this.$t(`authView.genericError`)
+              : this.$t(`authView.authErrors.genericError`)
             this.showSnackbar(errorMsg, 'error')
           })
       }
