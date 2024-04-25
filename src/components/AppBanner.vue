@@ -16,12 +16,16 @@ export default defineComponent({
     isVerified() {
       return this.currentUserStore.currentUser?.emailVerified
     },
+    allowUnverifiedUsers() {
+      const allow = import.meta.env.VITE_ALLOW_UNVERIFIED_USERS
+      return allow
+    },
   },
 })
 </script>
 
 <template>
-  <v-banner v-if="user && !isVerified" bg-color="accent" density="compact">
+  <v-banner v-if="user && !isVerified && !allowUnverifiedUsers" bg-color="accent" density="compact">
     <v-banner-text>
       <h4>{{ $t('appBanner.title') }}</h4>
       <p>{{ $t('appBanner.message') }}</p>

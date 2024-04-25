@@ -56,12 +56,17 @@ export default defineComponent({
       const locale = this.$i18n.locale
       return url.replace('{locale}', locale)
     },
+    allowUnverifiedUsers() {
+      const allow = import.meta.env.VITE_ALLOW_UNVERIFIED_USERS
+      return allow
+    },
   },
   methods: {
     signup() {
       if (this.isFormValid && this.consent) {
         const auth = getAuth()
         const db = getDatabase()
+        const routerPush = this.$router.push
 
         createUserWithEmailAndPassword(auth, this.email, this.password)
           .then((userCredential) => {
@@ -89,9 +94,16 @@ export default defineComponent({
           })
           .then(() => {
             logAnalyticsEvent('account_created')
-            this.$router.push(
-              i18nRoute({ name: 'authentication', params: { authTab: 'recover-account' } }),
-            )
+            if (this.allowUnverifiedUsers) {
+              routerPush(i18nRoute({ name: 'projects' }))
+            } else {
+              routerPush(
+                i18nRoute({
+                  name: 'authentication',
+                  params: { authTab: 'recover-account' },
+                }),
+              )
+            }
             this.showSnackbar(this.$t('authView.followInstructionOnYourEmail'), 'info')
           })
           .catch((error) => {

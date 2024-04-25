@@ -4,10 +4,11 @@ import { getCurrentUser } from 'vuefire'
 import { default as Tr, i18nRoute } from '@/i18n/translation'
 
 const appName = import.meta.env.VITE_APP_NAME
+const allowUnverifiedUsers = import.meta.env.VITE_ALLOW_UNVERIFIED_USERS
 
 const denyUnauthorized = async (to, from, next) => {
   const currentUser = await getCurrentUser()
-  if (currentUser?.emailVerified) {
+  if (currentUser?.emailVerified || (currentUser && allowUnverifiedUsers)) {
     next()
   } else if (currentUser) {
     next(i18nRoute({ name: 'home', params: { authTab: 'recover-account' } }))

@@ -35,6 +35,10 @@ export default defineComponent({
     currentLocale() {
       return this.$i18n.locale
     },
+    allowUnverifiedUsers() {
+      const allow = import.meta.env.VITE_ALLOW_UNVERIFIED_USERS
+      return allow
+    },
   },
   methods: {
     i18nRoute,
@@ -45,7 +49,7 @@ export default defineComponent({
         signInWithEmailAndPassword(auth, this.email, this.password)
           .then((userCredential) => {
             const user = userCredential.user
-            if (user.emailVerified) {
+            if (user.emailVerified || this.allowUnverifiedUsers) {
               routerPush(i18nRoute({ name: 'projects' }))
             } else {
               routerPush(
