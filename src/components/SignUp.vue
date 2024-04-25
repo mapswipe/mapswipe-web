@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import {
+  type ActionCodeSettings,
   getAuth,
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -66,10 +67,18 @@ export default defineComponent({
           .then((userCredential) => {
             const user = userCredential.user
             const userId = user.uid
-            const url = `${location.protocol}//${location.host}//${this.currentLocale}/auth`
+
+            // workaround: dev instance does not accept continueUrl argument at the moment
+            var actionCodeSettings = undefined
+            const mode = import.meta.env.MODE
+            if (mode === 'production') {
+              actionCodeSettings = {
+                url: `${location.protocol}//${location.host}/#/${this.currentLocale}/auth/sign-in`,
+              } as ActionCodeSettings
+            }
 
             return Promise.all([
-              sendEmailVerification(user, { url }),
+              sendEmailVerification(user, actionCodeSettings),
               updateProfile(user, { displayName: this.displayName }),
               set(ref(db, `/v2/users/${userId}/created`), new Date().toISOString()),
               set(ref(db, `/v2/users/${userId}/groupContributionCount`), 0),

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
+import { getAuth, sendPasswordResetEmail, type ActionCodeSettings } from 'firebase/auth'
 
 export default defineComponent({
   data() {
@@ -36,9 +36,16 @@ export default defineComponent({
   methods: {
     requestReset() {
       if (this.isFormValid) {
-        const url = `${location.protocol}//${location.host}/#/${this.currentLocale}/auth/sign-in`
         const auth = getAuth()
-        sendPasswordResetEmail(auth, this.email, { url })
+        // workaround: dev instance does not accept continueUrl argument at the moment
+        var actionCodeSettings = undefined
+        const mode = import.meta.env.MODE
+        if (mode === 'production') {
+          actionCodeSettings = {
+            url: `${location.protocol}//${location.host}/#/${this.currentLocale}/auth/sign-in`,
+          } as ActionCodeSettings
+        }
+        sendPasswordResetEmail(auth, this.email, actionCodeSettings)
           .then(() => this.showSnackbar(this.$t('authView.passwordResetEmailSent'), 'success'))
           .catch((error) => {
             const errorMsg = this.$te(`authView.authErrors.${error.code}`)
