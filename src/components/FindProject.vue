@@ -293,7 +293,12 @@ export default defineComponent({
     class="pa-0"
   >
     <v-row v-for="(row, index) in page" :key="index" justify="center" no-gutters>
-      <v-col v-for="task in row" :key="task.taskId" :cols="12 / columnsPerPage" style="max-width: 23vh">
+      <v-col
+        v-for="task in row"
+        :key="task.taskId"
+        :cols="12 / columnsPerPage"
+        style="max-width: 23vh"
+      >
         <v-hover v-slot="{ isHovering, props }">
           <v-card
             v-bind="props"
@@ -303,7 +308,7 @@ export default defineComponent({
             @contextmenu="($event) => handleTileSelected($event, task.taskId)"
             variant="outlined"
             rounded="0"
-            style="max-height: 23vh; aspect-ratio: 1 "
+            style="max-height: 23vh; aspect-ratio: 1"
           >
             <v-overlay
               v-model="overlay"
