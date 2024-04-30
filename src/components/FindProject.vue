@@ -80,7 +80,7 @@ export default defineComponent({
     },
     columnsPerPage() {
       // set columns of tiles per page based on window aspect ratio
-      let possibleColumnsPerPage = [1, 2, 3, 4, 6, 12]
+      let possibleColumnsPerPage = [1, 2, 3, 4, 6, 8, 10, 12]
       let columnsRatio = this.rowsPerPage * this.aspectRatio * 1.33
       const columnsPerPage = possibleColumnsPerPage.reduce((a, b) => {
         return Math.abs(b - columnsRatio) < Math.abs(a - columnsRatio) ? b : a
@@ -292,9 +292,8 @@ export default defineComponent({
     v-touch="{ left: () => fastForward(), right: () => fastBack() }"
     class="pa-0"
   >
-    <v-row v-for="(row, index) in page" :key="index" no-gutters>
-      <v-spacer />
-      <v-col v-for="task in row" :key="task.taskId" :cols="12 / columnsPerPage">
+    <v-row v-for="(row, index) in page" :key="index" justify="center" no-gutters>
+      <v-col v-for="task in row" :key="task.taskId" :cols="12 / columnsPerPage" style="max-width: 23vh">
         <v-hover v-slot="{ isHovering, props }">
           <v-card
             v-bind="props"
@@ -304,6 +303,7 @@ export default defineComponent({
             @contextmenu="($event) => handleTileSelected($event, task.taskId)"
             variant="outlined"
             rounded="0"
+            style="max-height: 23vh; aspect-ratio: 1 "
           >
             <v-overlay
               v-model="overlay"
@@ -348,7 +348,6 @@ export default defineComponent({
           </v-card>
         </v-hover>
       </v-col>
-      <v-spacer />
     </v-row>
   </v-container>
   <v-toolbar color="white" extension-height="20" density="compact" extended>
