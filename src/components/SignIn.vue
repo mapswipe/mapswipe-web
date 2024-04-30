@@ -82,12 +82,17 @@ export default defineComponent({
           :label="$t('authView.email') + '*'"
           ref="email"
           :rules="[rules.required, rules.email]"
+          type="email"
+          placeholder="email"
+          autocomplete="email"
         />
         <v-text-field
           v-model="password"
           :label="$t('authView.password') + '*'"
           :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
+          placeholder="password"
+          autocomplete="password"
           ref="password"
           :rules="[rules.required]"
           @click:append-inner="showPassword = !showPassword"
