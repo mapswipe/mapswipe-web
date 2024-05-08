@@ -110,6 +110,7 @@ export default defineComponent({
               class="mt-5 mr-5"
               variant="flat"
             />
+            <ol-scaleline-control />
           </ol-map>
         </v-card-text>
 

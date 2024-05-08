@@ -363,6 +363,7 @@ export default defineComponent({
           </ol-style-circle>
         </ol-style>
       </ol-vector-layer>
+      <ol-scaleline-control />
     </ol-map>
   </v-container>
   <v-toolbar color="white" density="compact" extension-height="20" extended>

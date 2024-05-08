@@ -239,6 +239,7 @@ export default defineComponent({
           <ol-style-fill color="#0000" />
         </ol-style>
       </ol-vector-layer>
+      <ol-scaleline-control />
     </ol-map>
   </v-container>
   <option-buttons
