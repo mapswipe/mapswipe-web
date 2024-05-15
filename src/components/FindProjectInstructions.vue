@@ -39,6 +39,11 @@ export default defineComponent({
     overlay: true,
     selected: false,
   }),
+  methods: {
+    closeDialog() {
+      this.dialog = false
+    },
+  },
   created() {
     this.dialog = this.first
   },
@@ -52,8 +57,8 @@ export default defineComponent({
     color="primary"
     @click="dialog = true"
   />
-  <v-dialog v-model="dialog" max-width="800" eager scrollable>
-    <v-card>
+  <v-dialog v-model="dialog" max-width="800" scrollable>
+    <v-card v-click-outside="closeDialog">
       <v-card-title class="text-h5">{{
         $t('findProjectInstructions.howToContribute')
       }}</v-card-title>
