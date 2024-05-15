@@ -48,9 +48,10 @@ export default defineComponent({
   },
   data() {
     return {
-      aspectRatio: 1,
       columnIndex: 0,
+      containerWidth: 1,
       endReached: false,
+      maxTileSize: 1,
       overlay: true,
       results: {},
       selectedTaskIds: [],
@@ -79,12 +80,10 @@ export default defineComponent({
       return this.columnIndex <= 0
     },
     columnsPerPage() {
-      // set columns of tiles per page based on window aspect ratio
-      let possibleColumnsPerPage = [1, 2, 3, 4, 6, 8, 10, 12]
-      let columnsRatio = this.rowsPerPage * this.aspectRatio * 1.33
-      const columnsPerPage = possibleColumnsPerPage.reduce((a, b) => {
-        return Math.abs(b - columnsRatio) < Math.abs(a - columnsRatio) ? b : a
-      })
+      const remainder = this.containerWidth % this.maxTileSize
+      const ratio = this.containerWidth / this.maxTileSize
+      const rounded = remainder < 100 ? Math.floor(ratio) : Math.ceil(ratio)
+      const columnsPerPage = this.clamp(rounded, 1, this.totalColumns)
       return columnsPerPage
     },
     instructionMessage() {
@@ -138,6 +137,10 @@ export default defineComponent({
     tilesInSelection() {
       return this.selectedTaskIds.length > 0
     },
+    tileSize() {
+      const tileSize = Math.min(this.maxTileSize, this.containerWidth / this.columnsPerPage)
+      return tileSize
+    },
     totalColumns() {
       let totalColumns = Math.ceil(this.processedTasks.length / this.rowsPerPage)
       return totalColumns
@@ -165,6 +168,10 @@ export default defineComponent({
       } else {
         this.results[taskId] = this.options[0].value
       }
+    },
+    clamp(value: number, min: number, max: number) { 
+      const clamp = Math.min(Math.max(value, min), max)
+      return clamp
     },
     getCheckboxIcon(taskId) {
       const selected = this.isTaskSelected(taskId)
@@ -232,7 +239,11 @@ export default defineComponent({
       return selected
     },
     onResize() {
-      this.aspectRatio = window.innerWidth / window.innerHeight
+      const container = this.$refs.container.$el as HTMLElement
+      this.containerWidth = container.clientWidth
+      const windowHeight = window.innerHeight
+      const maxTileHeight = this.clamp((windowHeight - 300) / this.rowsPerPage, 128, 512)
+      this.maxTileSize = maxTileHeight
     },
     removeFromSelection(taskIds: Array<string>) {
       const newSelection = this.selectedTaskIds.filter((t) => !taskIds.includes(t))
@@ -291,13 +302,15 @@ export default defineComponent({
     v-resize="onResize"
     v-touch="{ left: () => fastForward(), right: () => fastBack() }"
     class="pa-0"
+    ref="container"
   >
     <v-row v-for="(row, index) in page" :key="index" justify="center" no-gutters>
+      <v-spacer/>
       <v-col
         v-for="task in row"
         :key="task.taskId"
-        :cols="12 / columnsPerPage"
-        style="max-width: 23vh"
+        :style="'max-width: ' + tileSize"
+        class="mx-0 px-0"
       >
         <v-hover v-slot="{ isHovering, props }">
           <v-card
@@ -308,7 +321,8 @@ export default defineComponent({
             @contextmenu="($event) => handleTileSelected($event, task.taskId)"
             variant="outlined"
             rounded="0"
-            style="max-height: 23vh; aspect-ratio: 1"
+            :height="tileSize"
+            :width="tileSize"
           >
             <v-overlay
               v-model="overlay"
@@ -353,9 +367,10 @@ export default defineComponent({
           </v-card>
         </v-hover>
       </v-col>
+      <v-spacer/>
     </v-row>
   </v-container>
-  <v-toolbar color="white" extension-height="20" density="compact" extended>
+  <v-toolbar color="white" extension-height="20" density="compact" tag="div" extended>
     <v-spacer />
     <v-btn
       :title="$t('findProject.moveLeft', { n: fastBackColumns() })"

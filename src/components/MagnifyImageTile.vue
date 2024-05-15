@@ -33,7 +33,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-dialog max-width="800" eager>
+  <v-dialog max-width="80vh" eager>
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-show="isHovering"
