@@ -124,6 +124,10 @@ export default defineComponent({
       let totalColumns = Math.ceil(this.processedTasks.length / this.rowsPerPage)
       return totalColumns
     },
+    iconSize() {
+      const size = this.tileSize < 256 ? 'x-small' : 'small'
+      return size
+    },
   },
   methods: {
     appendColorAndLabel(task) {
@@ -346,6 +350,7 @@ export default defineComponent({
               contained
             >
               <magnify-image-tile
+                :iconSize="iconSize"
                 :isHovering="isHovering"
                 :task="task"
                 :transparent="transparent"
@@ -356,9 +361,9 @@ export default defineComponent({
                 color="neutral"
                 style="opacity: 0.6"
                 @click.stop="handleTileSelected($event, task.taskId)"
-                class="mr-6 mt-6"
+                class="mr-2 mt-2"
                 :icon="getCheckboxIcon(task.taskId)"
-                size="small"
+                :size="iconSize"
               />
             </v-overlay>
             <image-tile
