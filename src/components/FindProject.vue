@@ -53,6 +53,7 @@ export default defineComponent({
       endReached: false,
       maxTileSize: 1,
       overlay: true,
+      page: [],
       results: {},
       selectedTaskIds: [],
       selectOverlay: true,
@@ -99,28 +100,6 @@ export default defineComponent({
       let lastPage = rightColumnIndex >= this.totalColumns
       return lastPage
     },
-    /* eslint-disable vue/no-side-effects-in-computed-properties */
-    page() {
-      this.columnIndex = Math.min(this.columnIndex, this.totalColumns - this.columnsPerPage)
-      let begin = Math.max(this.columnIndex * this.rowsPerPage, 0)
-      let end = begin + this.tasksPerPage
-      let pageTasks = this.processedTasks.slice(begin, end).map(this.appendColorAndLabel)
-      let uniqueY = [...new Set(pageTasks.map((task) => parseInt(task.taskY)))].sort()
-      let page = []
-      for (let y of uniqueY) {
-        let row = pageTasks
-          .filter((task) => parseInt(task.taskY) === y)
-          .sort((a, b) => parseInt(a.taskX) > parseInt(b.taskX))
-        page.push(row)
-      }
-      if (this.processedTasks.length <= this.tasksPerPage) {
-        this.endReached = true
-        this.taskIndex = this.processedTasks.length
-      }
-      this.taskIndex = (this.columnIndex + this.columnsPerPage) * this.rowsPerPage
-      return page
-    },
-    /* eslint-enable vue/no-side-effects-in-computed-properties */
     processedTasks() {
       const tasks = this.tasks.length ? this.tasks : buildTasks(this.project, this.group)
       const sorted = tasks.sort((a, b) => (a.taskId > b.taskId ? 1 : -1))
@@ -160,6 +139,7 @@ export default defineComponent({
       if (!this.backDisabled) {
         this.removeFromSelection(this.page.map((row) => row.pop()).map((t) => t.taskId))
         this.columnIndex--
+        this.updatePage()
       }
     },
     bumpResult(taskId, currentOptionIndex) {
@@ -169,7 +149,7 @@ export default defineComponent({
         this.results[taskId] = this.options[0].value
       }
     },
-    clamp(value: number, min: number, max: number) { 
+    clamp(value: number, min: number, max: number) {
       const clamp = Math.min(Math.max(value, min), max)
       return clamp
     },
@@ -195,6 +175,7 @@ export default defineComponent({
       } else if (this.selectedTaskIds.includes(taskId)) {
         this.selectedTaskIds.map((t) => this.bumpResult(t, currentOptionIndex))
       }
+      this.updatePage()
     },
     handleTileSelected(e, taskId) {
       e.preventDefault()
@@ -209,6 +190,7 @@ export default defineComponent({
         this.removeFromSelection(this.page.flat().map((t) => t.taskId))
         let target = this.columnIndex - this.columnsPerPage
         this.columnIndex = Math.max(target, 0)
+        this.updatePage()
       }
     },
     fastBackColumns() {
@@ -220,6 +202,7 @@ export default defineComponent({
         let target = this.columnIndex + this.columnsPerPage
         let max = this.totalColumns - this.columnsPerPage
         this.columnIndex = Math.min(target, max)
+        this.updatePage()
         if (this.isLastPage) this.endReached = true
       }
     },
@@ -231,6 +214,7 @@ export default defineComponent({
       if (!this.forwardDisabled) {
         this.removeFromSelection(this.page.map((row) => row[0]).map((t) => t.taskId))
         this.columnIndex++
+        this.updatePage()
         if (this.isLastPage) this.endReached = true
       }
     },
@@ -241,9 +225,9 @@ export default defineComponent({
     onResize() {
       const container = this.$refs.container.$el as HTMLElement
       this.containerWidth = container.clientWidth
-      const windowHeight = window.innerHeight
-      const maxTileHeight = this.clamp((windowHeight - 300) / this.rowsPerPage, 128, 512)
+      const maxTileHeight = this.clamp((window.innerHeight - 300) / this.rowsPerPage, 128, 512)
       this.maxTileSize = maxTileHeight
+      this.updatePage()
     },
     removeFromSelection(taskIds: Array<string>) {
       const newSelection = this.selectedTaskIds.filter((t) => !taskIds.includes(t))
@@ -253,6 +237,25 @@ export default defineComponent({
         this.showSnackbar(this.$t('findProject.removedFromSelection', { n: difference }), 'info')
       }
       this.selectedTaskIds = newSelection
+    },
+    updatePage() {
+      this.columnIndex = Math.min(this.columnIndex, this.totalColumns - this.columnsPerPage)
+      let begin = Math.max(this.columnIndex * this.rowsPerPage, 0)
+      let end = begin + this.tasksPerPage
+      let pageTasks = this.processedTasks.slice(begin, end).map(this.appendColorAndLabel)
+      let uniqueY = [...new Set(pageTasks.map((task) => parseInt(task.taskY)))].sort()
+      this.page = []
+      for (let y of uniqueY) {
+        let row = pageTasks
+          .filter((task) => parseInt(task.taskY) === y)
+          .sort((a, b) => parseInt(a.taskX) > parseInt(b.taskX))
+        this.page.push(row)
+      }
+      if (this.processedTasks.length <= this.tasksPerPage) {
+        this.endReached = true
+        this.taskIndex = this.processedTasks.length
+      }
+      this.taskIndex = (this.columnIndex + this.columnsPerPage) * this.rowsPerPage
     },
   },
   mounted() {
@@ -280,7 +283,7 @@ export default defineComponent({
       color="primary"
     />
     <v-btn
-      v-if="page[0][0].urlB"
+      v-if="page.flat()[0]?.urlB"
       :title="$t('findProject.toggleOpacity')"
       :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
       @click="transparent = !transparent"
@@ -289,7 +292,7 @@ export default defineComponent({
     <tile-map :page="page" :zoomLevel="project.zoomLevel" :key="columnsPerPage" />
     <find-project-instructions
       :attribution="attribution"
-      :exampleTileUrls="[page[0][0].url, page[0][0].urlB]"
+      :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
       :first="first"
       :instructionMessage="instructionMessage"
       :manualUrl="project?.manualUrl"
@@ -305,7 +308,7 @@ export default defineComponent({
     ref="container"
   >
     <v-row v-for="(row, index) in page" :key="index" justify="center" no-gutters>
-      <v-spacer/>
+      <v-spacer />
       <v-col
         v-for="task in row"
         :key="task.taskId"
@@ -367,7 +370,7 @@ export default defineComponent({
           </v-card>
         </v-hover>
       </v-col>
-      <v-spacer/>
+      <v-spacer />
     </v-row>
   </v-container>
   <v-toolbar color="white" extension-height="20" density="compact" tag="div" extended>
