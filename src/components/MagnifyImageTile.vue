@@ -26,48 +26,57 @@ export default defineComponent({
   },
   data() {
     return {
+      dialog: false,
       overlay: true,
     }
+  },
+  methods: {
+    closeDialog() {
+      this.dialog = false
+    },
   },
 })
 </script>
 
 <template>
-  <v-dialog max-width="800" eager>
-    <template v-slot:activator="{ props: activatorProps }">
-      <v-btn
-        v-show="isHovering"
-        v-bind="activatorProps"
-        color="neutral"
-        style="opacity: 0.6"
-        class="mr-2 mt-6"
-        icon="mdi-magnify"
-        size="small"
-      />
-    </template>
-    <!-- eslint-disable-next-line vue/no-unused-vars -->
-    <template v-slot:default="{ isActive }">
-      <v-hover v-slot="{ isHovering, props }">
-        <v-card v-bind="props" class="pa-2" color="white" @click="$emit('tileClicked')" rounded="0">
-          <v-overlay
-            v-model="overlay"
-            @update:modelValue="overlay = true"
-            :opacity="task.index == 0 ? 0 : 0.5"
-            :scrim="task.color"
-            class="justify-center align-center"
-            contained
-          >
-            <h1 v-show="isHovering" style="color: white">{{ task.label }}</h1>
-          </v-overlay>
-          <image-tile
-            :url="task.url"
-            :urlB="task.urlB"
-            :spinner="true"
-            :opacityB="transparent ? 0.3 : 1"
-          />
-        </v-card>
-      </v-hover>
-    </template>
+  <v-btn
+    v-show="isHovering"
+    @click.stop="dialog = true"
+    color="neutral"
+    style="opacity: 0.6"
+    class="mr-2 mt-6"
+    icon="mdi-magnify"
+    size="small"
+  />
+  <v-dialog v-model="dialog" max-width="80vh">
+    <v-hover v-slot="{ isHovering, props }">
+      <v-card
+        v-bind="props"
+        v-click-outside="closeDialog"
+        v-touch="{ left: closeDialog, right: closeDialog }"
+        @click="$emit('tileClicked')"
+        class="pa-2"
+        color="white"
+        rounded="0"
+      >
+        <v-overlay
+          v-model="overlay"
+          @update:modelValue="overlay = true"
+          :opacity="task.index == 0 ? 0 : 0.5"
+          :scrim="task.color"
+          class="justify-center align-center"
+          contained
+        >
+          <h1 v-show="isHovering" style="color: white">{{ task.label }}</h1>
+        </v-overlay>
+        <image-tile
+          :url="task.url"
+          :urlB="task.urlB"
+          :spinner="true"
+          :opacityB="transparent ? 0.3 : 1"
+        />
+      </v-card>
+    </v-hover>
   </v-dialog>
 </template>
 
