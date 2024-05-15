@@ -128,12 +128,18 @@ export default defineComponent({
           :label="$t('authView.email') + '*'"
           ref="email"
           :rules="[rules.required, rules.email]"
+          type="email"
+          placeholder="email"
+          autocomplete="email"
         />
         <v-text-field
           v-model="displayName"
           :label="$t('authView.displayName') + '*'"
           ref="displayName"
           :rules="[rules.required, rules.min4]"
+          type="name"
+          placeholder="name"
+          autocomplete="name"
         />
         <v-text-field
           v-model="password"
@@ -142,6 +148,8 @@ export default defineComponent({
           :type="showPassword ? 'text' : 'password'"
           :rules="[rules.required, rules.min6]"
           ref="password"
+          placeholder="password"
+          autocomplete="password"
           @click:append-inner="showPassword = !showPassword"
         />
         <v-text-field
@@ -151,6 +159,8 @@ export default defineComponent({
           :type="showPassword ? 'text' : 'password'"
           :rules="[rules.required, rules.min6, rules.passwordMatch]"
           ref="confirmPassword"
+          placeholder="password"
+          autocomplete="password"
           @click:append-inner="showPassword = !showPassword"
         />
         <v-switch v-model="consent" color="primary" inset>

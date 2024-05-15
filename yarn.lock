@@ -2339,9 +2339,9 @@ editorconfig@^1.0.4:
     semver "^7.5.3"
 
 electron-to-chromium@^1.4.668:
-  version "1.4.767"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.767.tgz#b885cfefda5a2e7a7ee356c567602012294ed260"
-  integrity sha512-nzzHfmQqBss7CE3apQHkHjXW77+8w3ubGCIoEijKCJebPufREaFETgGXWTkh32t259F3Kcq+R8MZdFdOJROgYw==
+  version "1.4.769"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.769.tgz#c2e82091525e2d9dbcc2b8f66cdb0466ec8ebdf4"
+  integrity sha512-bZu7p623NEA2rHTc9K1vykl57ektSPQYFFqQir8BOYf6EKOB+yIsbFB9Kpm7Cgt6tsLr9sRkqfqSZUw7LP1XxQ==
 
 element-matches@^0.1.2:
   version "0.1.2"
@@ -4809,9 +4809,9 @@ vitest@^0.34.4:
     why-is-node-running "^2.2.2"
 
 vue-component-type-helpers@^2.0.0:
-  version "2.0.17"
-  resolved "https://registry.yarnpkg.com/vue-component-type-helpers/-/vue-component-type-helpers-2.0.17.tgz#4d143094717734cecc5fd88d1209f12c7ae33009"
-  integrity sha512-2car49m8ciqg/JjgMBkx7o/Fd2A7fHESxNqL/2vJYFLXm4VwYO4yH0rexOi4a35vwNgDyvt17B07Vj126l9rAQ==
+  version "2.0.18"
+  resolved "https://registry.yarnpkg.com/vue-component-type-helpers/-/vue-component-type-helpers-2.0.18.tgz#92568185cd951f30bab3c455d1a62f507e47febf"
+  integrity sha512-zi1QaDBhSb3oeHJh55aTCrosFNKEQsOL9j3XCAjpF9dwxDUUtd85RkJVzO+YpJqy1LNoCWLU8gwuZ7HW2iDN/A==
 
 vue-demi@>=0.14.5, vue-demi@latest:
   version "0.14.7"
@@ -4913,9 +4913,9 @@ vuefire@^3.1.23:
     vue-demi latest
 
 vuetify@^3.3.16:
-  version "3.6.5"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.6.5.tgz#d190d0d64592f858582f4cb6310bac69f74627b5"
-  integrity sha512-YrHTM1vb7UllAtfH9tWfTo1wYMjyCSybu4WtXrfMRpMwAaZWgfrMmqD/4Tc+0KqDsDsYMXaYs0nJ6HtdMJZbyA==
+  version "3.6.6"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.6.6.tgz#05954117664f3a2a1188bc8bb9a1f47f899e29f1"
+  integrity sha512-7RkL0kuLsVUbc0YCwhPhVq54gSFKt5xv+SOrF01dxwJz7Ke3tAbvO616WhhQIfS78h1q/Ev952WJj5jpsdK58g==
 
 w3c-xmlserializer@^4.0.0:
   version "4.0.0"

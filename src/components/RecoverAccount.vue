@@ -67,6 +67,9 @@ export default defineComponent({
           v-model="email"
           :label="$t('authView.email') + '*'"
           ref="email"
+          type="email"
+          placeholder="email"
+          autocomplete="email"
           :rules="[rules.required, rules.email]"
         />
       </v-col>
