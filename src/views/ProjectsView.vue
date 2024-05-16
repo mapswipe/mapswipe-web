@@ -251,7 +251,7 @@ export default defineComponent({
                   :disabled="projectUnavailable(project)"
                   @click="selectProject(project)"
                 >
-                  {{ $t('projectsView.select') }}
+                  {{ $t('projectsView.contribute') }}
                 </v-btn>
               </v-card-actions>
             </v-card>

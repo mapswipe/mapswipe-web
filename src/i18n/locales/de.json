@@ -96,11 +96,11 @@
   "projectsView": {
     "unknown": "Unbekannt",
     "by": "durch",
+    "contribute": "Beitragen",
     "contributor": "Mitwirkende*n | Mitwirkende",
     "completed": "abgeschlossen",
     "byYou": "durch dich",
     "noProjectsAvailable": "Keine Projekte verfügbar",
-    "select": "Auswählen",
     "moreInfo": "Mehr Info",
     "filter": "Filter",
     "filterLabels": {
