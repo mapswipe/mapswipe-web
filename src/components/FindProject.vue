@@ -67,6 +67,15 @@ export default defineComponent({
     saveResults: 'saveResults',
     showSnackbar: 'showSnackbar',
   },
+  watch: {
+    processedTasks: {
+      handler(newTasks) {
+        newTasks.forEach((task) => (this.results[task.taskId] = this.options[0].value))
+        this.startTime = new Date().toISOString()
+      },
+      immediate: true,
+    },
+  },
   computed: {
     allTilesSelected() {
       return this.selectedTaskIds.length === this.page.flat().length
@@ -133,7 +142,7 @@ export default defineComponent({
     appendColorAndLabel(task) {
       const value = this.results[task.taskId]
       const index = this.options.findIndex((option) => option.value == value)
-      task.index = index
+      task.index = index || 0
       task.value = this.options[index].value
       task.color = this.options[index].color
       task.label = this.options[index].label
@@ -266,8 +275,6 @@ export default defineComponent({
     this.onResize()
   },
   created() {
-    this.startTime = new Date().toISOString()
-    this.processedTasks.forEach((task) => (this.results[task.taskId] = this.options[0].value))
     this.logMappingStarted(this.project.projectType)
   },
 })

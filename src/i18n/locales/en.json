@@ -96,11 +96,11 @@
   "projectsView": {
     "unknown": "Unknown",
     "by": "by",
+    "contribute": "Contribute",
     "contributor": "contributor | contributors",
     "completed": "completed",
     "byYou": "by you",
     "noProjectsAvailable": "No projects available",
-    "select": "Select",
     "moreInfo": "More info",
     "filter": "Filter",
     "filterLabels": {

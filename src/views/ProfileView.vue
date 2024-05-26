@@ -286,7 +286,7 @@ export default defineComponent({
       </v-row>
 
       <br />
-      <v-divider> /</v-divider>
+      <v-divider />
       <br />
 
       <h3>{{ $t('profileView.memberships') }}</h3>

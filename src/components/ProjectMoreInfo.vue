@@ -64,7 +64,7 @@ export default defineComponent({
             {{ $t('appDialog.cancel') }}
           </v-btn>
           <v-btn color="primary" @click="selectFun(project)">
-            {{ $t('projectsView.select') }}
+            {{ $t('projectsView.contribute') }}
           </v-btn>
         </v-card-actions>
       </v-card>
