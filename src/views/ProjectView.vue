@@ -210,6 +210,7 @@ export default defineComponent({
       off(getProjectRef(this.projectId))
       off(getGroupsQuery(this.projectId))
       off(getProjectContributionsRef(this.user.uid, this.projectId))
+      goOnline(db)
       next()
     }
   },
