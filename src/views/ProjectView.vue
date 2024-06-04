@@ -1,7 +1,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { onValue, set } from 'firebase/database'
+import { goOffline, goOnline, off, onValue, set } from 'firebase/database'
 import {
+  db,
   getGroupsQuery,
   getProjectRef,
   getProjectContributionsRef,
@@ -58,6 +59,7 @@ export default defineComponent({
 
         this.completedGroupId = this.group.groupId
 
+        goOnline(db)
         set(getResultsRef(this.project.projectId, this.group.groupId, this.user.uid), entry)
           .then(() => {
             this.showSnackbar(
@@ -126,6 +128,7 @@ export default defineComponent({
           (g) => g.requiredCount > 0 && !completed.includes(g.groupId),
         )
         if (!available.length) {
+          this.nextDialog = false
           this.to = this.i18nRoute({ name: 'projects' })
           this.showDialog(
             this.$t('projectView.noTasksAvailable'),
@@ -134,6 +137,8 @@ export default defineComponent({
             true,
             false,
           )
+        } else {
+          this.hideDialog()
         }
         const random = available[Math.floor(Math.random() * available.length)]
         this.group = random
@@ -182,9 +187,14 @@ export default defineComponent({
       if (!this.completedGroupId) {
         return true
       } else {
-        const updated = this.projectContributions[this.completedGroupId]
+        const updated =
+          this.projectContributions[this.completedGroupId] &&
+          this.completedGroupId !== this.group?.groupId
         return updated
       }
+    },
+    handleTaskComponentCreated() {
+      goOffline(db)
     },
   },
   beforeRouteLeave(to, from, next) {
@@ -197,6 +207,9 @@ export default defineComponent({
         true,
       )
     } else {
+      off(getProjectRef(this.projectId))
+      off(getGroupsQuery(this.projectId))
+      off(getProjectContributionsRef(this.user.uid, this.projectId))
       next()
     }
   },
@@ -219,6 +232,7 @@ export default defineComponent({
       :options="options"
       :project="project"
       :tasks="tasks"
+      @created="handleTaskComponentCreated"
     />
 
     <v-dialog v-model="nextDialog" max-width="600" persistent>

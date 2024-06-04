@@ -109,6 +109,7 @@ export default defineComponent({
   created() {
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId
+    this.$emit('created')
     this.logMappingStarted(this.project.projectType)
   },
 })
