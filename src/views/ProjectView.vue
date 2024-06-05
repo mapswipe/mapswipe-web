@@ -38,6 +38,7 @@ export default defineComponent({
       completedGroupId: null,
       group: null,
       mode: 'contribute',
+      mappingSpeed: 1,
       nextDialog: false,
       project: null,
       projectContributions: [],
@@ -51,8 +52,12 @@ export default defineComponent({
         logAnalyticsEvent('mapping_started', { projectType: projectType })
       },
       saveResults: (results, startTime) => {
+        const numberOfTasks = Object.keys(results).length
+        const endTime = new Date().toISOString()
+        this.mappingSpeed = (Date.parse(endTime) - Date.parse(startTime)) / numberOfTasks
+
         const entry = {
-          endTime: new Date().toISOString(),
+          endTime,
           results,
           startTime,
         }
@@ -190,7 +195,12 @@ export default defineComponent({
         const updated =
           this.projectContributions[this.completedGroupId] &&
           this.completedGroupId !== this.group?.groupId
-        return updated
+        /*
+          Firebase rejects results that are produced at a speed of less than 125 ms per task. Therefore, we do not wait for
+          updated projectContributions for speedy results.
+        */
+        const tooSpeedy = this.mappingSpeed < 125
+        return updated || tooSpeedy
       }
     },
     handleTaskComponentCreated() {
