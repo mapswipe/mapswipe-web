@@ -57,6 +57,7 @@ export default defineComponent({
         this.mappingSpeed = (Date.parse(endTime) - Date.parse(startTime)) / numberOfTasks
 
         const entry = {
+          appVersion: this.appVersion,
           endTime,
           results,
           startTime,
@@ -88,6 +89,10 @@ export default defineComponent({
   },
   computed: {
     ...mapStores(useCurrentUserStore),
+    appVersion() {
+      const version = import.meta.env.VITE_APP_VERSION + '-web'
+      return version
+    },
     options() {
       var options = this.project?.customOptions
       options ??= this.project?.answerLabels
