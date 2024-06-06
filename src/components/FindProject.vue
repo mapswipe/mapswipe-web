@@ -319,13 +319,7 @@ export default defineComponent({
     ref="container"
   >
     <v-row v-for="(row, index) in page" :key="index" justify="center" no-gutters>
-      <v-spacer />
-      <v-col
-        v-for="task in row"
-        :key="task.taskId"
-        :style="'max-width: ' + tileSize"
-        class="mx-0 px-0"
-      >
+      <div v-for="task in row" :key="task.taskId" :width="tileSize" class="mx-0 px-0">
         <v-hover v-slot="{ isHovering, props }">
           <v-card
             v-bind="props"
@@ -381,8 +375,7 @@ export default defineComponent({
             />
           </v-card>
         </v-hover>
-      </v-col>
-      <v-spacer />
+      </div>
     </v-row>
   </v-container>
   <v-toolbar color="white" extension-height="20" density="compact" tag="div" extended>
