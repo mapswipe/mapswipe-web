@@ -229,7 +229,7 @@ export default defineComponent({
               <v-card-text>
                 {{ project.progress }} % {{ $t('projectsView.by') }} {{ project.contributorCount }}
                 {{ $t('projectsView.contributor', project.contributorCount) }}
-                <v-progress-linear :value="project.progress" color="primary" />
+                <v-progress-linear :model-value="project.progress" color="primary" />
               </v-card-text>
               <v-divider class="mx-4" />
               <v-card-actions>
