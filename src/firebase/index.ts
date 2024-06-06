@@ -23,7 +23,7 @@ export const logAnalyticsEvent = (eventName, eventParams = {}) => {
 }
 
 // used for the database refs
-const db = getDatabase(firebaseApp)
+export const db = getDatabase(firebaseApp)
 
 // export reusable database references
 export const dbRef = ref(db)

@@ -275,6 +275,7 @@ export default defineComponent({
     this.onResize()
   },
   created() {
+    this.$emit('created')
     this.logMappingStarted(this.project.projectType)
   },
 })
