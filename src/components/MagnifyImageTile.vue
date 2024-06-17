@@ -11,6 +11,10 @@ export default defineComponent({
       type: String,
       require: true,
     },
+    iconSize: {
+      type: String,
+      default: 'small',
+    },
     isHovering: {
       type: Boolean,
       default: false,
@@ -44,9 +48,9 @@ export default defineComponent({
     @click.stop="dialog = true"
     color="neutral"
     style="opacity: 0.6"
-    class="mr-2 mt-6"
+    class="mr-1 mt-2"
     icon="mdi-magnify"
-    size="small"
+    :size="iconSize"
   />
   <v-dialog v-model="dialog" max-width="80vh">
     <v-hover v-slot="{ isHovering, props }">

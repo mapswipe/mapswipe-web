@@ -16,7 +16,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-toolbar color="white" density="compact">
+  <v-toolbar color="white" density="compact" tag="div">
     <v-toolbar-title>
       <div class="text-caption">{{ title }}</div>
       <div style="font-size: 1rem">

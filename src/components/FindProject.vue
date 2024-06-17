@@ -48,10 +48,12 @@ export default defineComponent({
   },
   data() {
     return {
-      aspectRatio: 1,
       columnIndex: 0,
+      containerWidth: 1,
       endReached: false,
+      maxTileSize: 1,
       overlay: true,
+      page: [],
       results: {},
       selectedTaskIds: [],
       selectOverlay: true,
@@ -88,12 +90,10 @@ export default defineComponent({
       return this.columnIndex <= 0
     },
     columnsPerPage() {
-      // set columns of tiles per page based on window aspect ratio
-      let possibleColumnsPerPage = [1, 2, 3, 4, 6, 12]
-      let columnsRatio = this.rowsPerPage * this.aspectRatio * 1.33
-      const columnsPerPage = possibleColumnsPerPage.reduce((a, b) => {
-        return Math.abs(b - columnsRatio) < Math.abs(a - columnsRatio) ? b : a
-      })
+      const remainder = this.containerWidth % this.maxTileSize
+      const ratio = this.containerWidth / this.maxTileSize
+      const rounded = remainder < 100 ? Math.floor(ratio) : Math.ceil(ratio)
+      const columnsPerPage = this.clamp(rounded, 1, this.totalColumns)
       return columnsPerPage
     },
     instructionMessage() {
@@ -109,28 +109,6 @@ export default defineComponent({
       let lastPage = rightColumnIndex >= this.totalColumns
       return lastPage
     },
-    /* eslint-disable vue/no-side-effects-in-computed-properties */
-    page() {
-      this.columnIndex = Math.min(this.columnIndex, this.totalColumns - this.columnsPerPage)
-      let begin = Math.max(this.columnIndex * this.rowsPerPage, 0)
-      let end = begin + this.tasksPerPage
-      let pageTasks = this.processedTasks.slice(begin, end).map(this.appendColorAndLabel)
-      let uniqueY = [...new Set(pageTasks.map((task) => parseInt(task.taskY)))].sort()
-      let page = []
-      for (let y of uniqueY) {
-        let row = pageTasks
-          .filter((task) => parseInt(task.taskY) === y)
-          .sort((a, b) => parseInt(a.taskX) > parseInt(b.taskX))
-        page.push(row)
-      }
-      if (this.processedTasks.length <= this.tasksPerPage) {
-        this.endReached = true
-        this.taskIndex = this.processedTasks.length
-      }
-      this.taskIndex = (this.columnIndex + this.columnsPerPage) * this.rowsPerPage
-      return page
-    },
-    /* eslint-enable vue/no-side-effects-in-computed-properties */
     processedTasks() {
       const tasks = this.tasks.length ? this.tasks : buildTasks(this.project, this.group)
       const sorted = tasks.sort((a, b) => (a.taskId > b.taskId ? 1 : -1))
@@ -147,9 +125,17 @@ export default defineComponent({
     tilesInSelection() {
       return this.selectedTaskIds.length > 0
     },
+    tileSize() {
+      const tileSize = Math.min(this.maxTileSize, this.containerWidth / this.columnsPerPage)
+      return tileSize
+    },
     totalColumns() {
       let totalColumns = Math.ceil(this.processedTasks.length / this.rowsPerPage)
       return totalColumns
+    },
+    iconSize() {
+      const size = this.tileSize < 256 ? 'x-small' : 'small'
+      return size
     },
   },
   methods: {
@@ -166,6 +152,7 @@ export default defineComponent({
       if (!this.backDisabled) {
         this.removeFromSelection(this.page.map((row) => row.pop()).map((t) => t.taskId))
         this.columnIndex--
+        this.updatePage()
       }
     },
     bumpResult(taskId, currentOptionIndex) {
@@ -174,6 +161,10 @@ export default defineComponent({
       } else {
         this.results[taskId] = this.options[0].value
       }
+    },
+    clamp(value: number, min: number, max: number) {
+      const clamp = Math.min(Math.max(value, min), max)
+      return clamp
     },
     getCheckboxIcon(taskId) {
       const selected = this.isTaskSelected(taskId)
@@ -197,6 +188,7 @@ export default defineComponent({
       } else if (this.selectedTaskIds.includes(taskId)) {
         this.selectedTaskIds.map((t) => this.bumpResult(t, currentOptionIndex))
       }
+      this.updatePage()
     },
     handleTileSelected(e, taskId) {
       e.preventDefault()
@@ -211,6 +203,7 @@ export default defineComponent({
         this.removeFromSelection(this.page.flat().map((t) => t.taskId))
         let target = this.columnIndex - this.columnsPerPage
         this.columnIndex = Math.max(target, 0)
+        this.updatePage()
       }
     },
     fastBackColumns() {
@@ -222,6 +215,7 @@ export default defineComponent({
         let target = this.columnIndex + this.columnsPerPage
         let max = this.totalColumns - this.columnsPerPage
         this.columnIndex = Math.min(target, max)
+        this.updatePage()
         if (this.isLastPage) this.endReached = true
       }
     },
@@ -233,6 +227,7 @@ export default defineComponent({
       if (!this.forwardDisabled) {
         this.removeFromSelection(this.page.map((row) => row[0]).map((t) => t.taskId))
         this.columnIndex++
+        this.updatePage()
         if (this.isLastPage) this.endReached = true
       }
     },
@@ -241,7 +236,11 @@ export default defineComponent({
       return selected
     },
     onResize() {
-      this.aspectRatio = window.innerWidth / window.innerHeight
+      const container = this.$refs.container.$el as HTMLElement
+      this.containerWidth = container.clientWidth
+      const maxTileHeight = this.clamp((window.innerHeight - 300) / this.rowsPerPage, 128, 512)
+      this.maxTileSize = maxTileHeight
+      this.updatePage()
     },
     removeFromSelection(taskIds: Array<string>) {
       const newSelection = this.selectedTaskIds.filter((t) => !taskIds.includes(t))
@@ -251,6 +250,25 @@ export default defineComponent({
         this.showSnackbar(this.$t('findProject.removedFromSelection', { n: difference }), 'info')
       }
       this.selectedTaskIds = newSelection
+    },
+    updatePage() {
+      this.columnIndex = Math.min(this.columnIndex, this.totalColumns - this.columnsPerPage)
+      let begin = Math.max(this.columnIndex * this.rowsPerPage, 0)
+      let end = begin + this.tasksPerPage
+      let pageTasks = this.processedTasks.slice(begin, end).map(this.appendColorAndLabel)
+      let uniqueY = [...new Set(pageTasks.map((task) => parseInt(task.taskY)))].sort()
+      this.page = []
+      for (let y of uniqueY) {
+        let row = pageTasks
+          .filter((task) => parseInt(task.taskY) === y)
+          .sort((a, b) => parseInt(a.taskX) > parseInt(b.taskX))
+        this.page.push(row)
+      }
+      if (this.processedTasks.length <= this.tasksPerPage) {
+        this.endReached = true
+        this.taskIndex = this.processedTasks.length
+      }
+      this.taskIndex = (this.columnIndex + this.columnsPerPage) * this.rowsPerPage
     },
   },
   mounted() {
@@ -277,7 +295,7 @@ export default defineComponent({
       color="primary"
     />
     <v-btn
-      v-if="page[0][0].urlB"
+      v-if="page.flat()[0]?.urlB"
       :title="$t('findProject.toggleOpacity')"
       :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
       @click="transparent = !transparent"
@@ -286,7 +304,7 @@ export default defineComponent({
     <tile-map :page="page" :zoomLevel="project.zoomLevel" :key="columnsPerPage" />
     <find-project-instructions
       :attribution="attribution"
-      :exampleTileUrls="[page[0][0].url, page[0][0].urlB]"
+      :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
       :first="first"
       :instructionMessage="instructionMessage"
       :manualUrl="project?.manualUrl"
@@ -299,10 +317,10 @@ export default defineComponent({
     v-resize="onResize"
     v-touch="{ left: () => fastForward(), right: () => fastBack() }"
     class="pa-0"
+    ref="container"
   >
-    <v-row v-for="(row, index) in page" :key="index" no-gutters>
-      <v-spacer />
-      <v-col v-for="task in row" :key="task.taskId" :cols="12 / columnsPerPage">
+    <v-row v-for="(row, index) in page" :key="index" justify="center" no-gutters>
+      <div v-for="task in row" :key="task.taskId" :width="tileSize" class="mx-0 px-0">
         <v-hover v-slot="{ isHovering, props }">
           <v-card
             v-bind="props"
@@ -312,6 +330,8 @@ export default defineComponent({
             @contextmenu="($event) => handleTileSelected($event, task.taskId)"
             variant="outlined"
             rounded="0"
+            :height="tileSize"
+            :width="tileSize"
           >
             <v-overlay
               v-model="overlay"
@@ -332,6 +352,7 @@ export default defineComponent({
               contained
             >
               <magnify-image-tile
+                :iconSize="iconSize"
                 :isHovering="isHovering"
                 :task="task"
                 :transparent="transparent"
@@ -342,9 +363,9 @@ export default defineComponent({
                 color="neutral"
                 style="opacity: 0.6"
                 @click.stop="handleTileSelected($event, task.taskId)"
-                class="mr-6 mt-6"
+                class="mr-2 mt-2"
                 :icon="getCheckboxIcon(task.taskId)"
-                size="small"
+                :size="iconSize"
               />
             </v-overlay>
             <image-tile
@@ -355,11 +376,10 @@ export default defineComponent({
             />
           </v-card>
         </v-hover>
-      </v-col>
-      <v-spacer />
+      </div>
     </v-row>
   </v-container>
-  <v-toolbar color="white" extension-height="20" density="compact" extended>
+  <v-toolbar color="white" extension-height="20" density="compact" tag="div" extended>
     <v-spacer />
     <v-btn
       :title="$t('findProject.moveLeft', { n: fastBackColumns() })"
