@@ -126,7 +126,10 @@ export default defineComponent({
       return this.selectedTaskIds.length > 0
     },
     tileSize() {
-      const tileSize = Math.min(this.maxTileSize, this.containerWidth / this.columnsPerPage)
+      const tileSize = Math.min(
+        this.maxTileSize,
+        Math.floor(this.containerWidth / this.columnsPerPage) - 1,
+      )
       return tileSize
     },
     totalColumns() {
@@ -238,7 +241,11 @@ export default defineComponent({
     onResize() {
       const container = this.$refs.container.$el as HTMLElement
       this.containerWidth = container.clientWidth
-      const maxTileHeight = this.clamp((window.innerHeight - 300) / this.rowsPerPage, 128, 512)
+      const maxTileHeight = this.clamp(
+        Math.floor(window.innerHeight - 300) / this.rowsPerPage,
+        128,
+        512,
+      )
       this.maxTileSize = maxTileHeight
       this.updatePage()
     },
