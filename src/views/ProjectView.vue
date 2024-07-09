@@ -52,7 +52,7 @@ export default defineComponent({
             id: 'buddy',
             name: 'MapSwipe Buddy',
             imageUrl: 'https://avatars3.githubusercontent.com/u/1915989?s=230&v=4',
-          }
+          },
         ], // the list of all the participant of the conversation. `name` is the user name, `id` is used to establish the author of a message, `imageUrl` is supposed to be the user avatar.
         titleImageUrl: 'https://a.slack-edge.com/66f9/img/avatars-teams/ava_0001-34.png',
         messageList: [],
@@ -216,7 +216,7 @@ export default defineComponent({
     },
     decompressTasks(tasks) {
       const strTasks = decode(tasks)
-      const charTasks = strTasks.split('').map(function(x) {
+      const charTasks = strTasks.split('').map(function (x) {
         return x.charCodeAt(0)
       })
       const binaryTasks = new Uint8Array(charTasks)
@@ -252,17 +252,17 @@ export default defineComponent({
     appendToLastMessage(text: string) {
       if (this.chat.showTypingIndicator) {
         this.chat.showTypingIndicator = ''
-        let output = { "author": "buddy", "type": "text", "data": { "text": "" } }
+        let output = { author: 'buddy', type: 'text', data: { text: '' } }
         this.chat.messageList.push(output)
       }
       this.chat.messageList[this.chat.messageList.length - 1].data.text += text
     },
 
-
-
     sendMessage(text) {
       if (text.length > 0) {
-        this.chat.newMessagesCount = this.chat.isChatOpen ? this.chat.newMessagesCount : this.chat.newMessagesCount + 1
+        this.chat.newMessagesCount = this.chat.isChatOpen
+          ? this.chat.newMessagesCount
+          : this.chat.newMessagesCount + 1
         this.onMessageWasSent({ author: 'support', type: 'text', data: { text } })
 
         // this.chat.messageList.push({
@@ -272,7 +272,6 @@ export default defineComponent({
         //     "text": `Hey ${this.user?.displayName}! Welcome to MapSwipe! I'm your buddy here to help you contribute to our project. Do you have any questions or need some guidance getting started? Let me know!`
         //   }
         // })
-
       }
     },
     onMessageWasSent(message) {
@@ -280,15 +279,16 @@ export default defineComponent({
       this.chat.showTypingIndicator = 'buddy'
       this.chat.messageList = [...this.chat.messageList, message]
       buddy.sendMessageToOllama(message, this.appendToLastMessage)
-
     },
     openChat() {
-      buddy.initContext(this.user?.uid, systemPrompt.createFrom(this.project, this.user?.displayName)).then(()=>{
-        this.onMessageWasSent({ "data": { "text": " "} })
-        this.chat.isChatOpen = true
-      }).catch(err => {
-        console.log(err)
-      })
+      buddy
+        .initContext(this.user?.uid, systemPrompt.createFrom(this.project, this.user?.displayName))
+        .then(() => {
+          this.chat.isChatOpen = true
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     closeChat() {
       // called when the user clicks on the botton to close the chat
@@ -298,17 +298,10 @@ export default defineComponent({
       // called when the user scrolls message list to top
       // leverage pagination for loading another page of messages
     },
-    handleOnType() {
-    },
+    handleOnType() {},
     editMessage(message) {
       console.log('Disabled')
     },
-
-
-
-
-
-
   },
   beforeRouteLeave(to, from, next) {
     if (this.mode === 'contribute' && to.name !== 'authentication') {
@@ -332,6 +325,11 @@ export default defineComponent({
     this.bindProject()
     this.bindProjectContributions()
     this.bindTaskGroup()
+    this.chat.messageList.push({
+      author: 'buddy',
+      type: 'text',
+      data: { text: `Hey ${this.user?.displayName}! I'm your MapSwipe Buddy. Can I help you?` },
+    })
     logAnalyticsEvent('project_view_opened')
   },
 })
@@ -390,7 +388,7 @@ export default defineComponent({
         </v-card-actions>
       </v-card>
     </v-dialog-->
-<!--    :icons="chat.icons"-->
+    <!--    :icons="chat.icons"-->
 
     <beautiful-chat
       :participants="chat.participants"
@@ -414,12 +412,13 @@ export default defineComponent({
       :disableUserListToggle="false"
       :messageStyling="chat.messageStyling"
       @onType="handleOnType"
-      @edit="editMessage" />
+      @edit="editMessage"
+    />
   </basic-page>
 </template>
 
 <style>
- .sc-launcher {
-   bottom: 100px !important;
- }
+.sc-launcher {
+  bottom: 100px !important;
+}
 </style>
