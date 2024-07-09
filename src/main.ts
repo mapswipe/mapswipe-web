@@ -5,6 +5,7 @@ import { vuetify } from '@/plugins/vuetify'
 import { firebaseApp } from './firebase'
 import OpenLayersMap from 'vue3-openlayers'
 import Shortkey from 'vue3-shortkey'
+import Chat from 'vue3-beautiful-chat'
 
 import App from './App.vue'
 import router from './router'
@@ -22,5 +23,6 @@ app.use(vuetify)
 app.use(i18n)
 app.use(OpenLayersMap)
 app.use(Shortkey)
+app.use(Chat)
 
 app.mount('#app')

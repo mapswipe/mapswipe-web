@@ -23,6 +23,8 @@ import MediaProject from '@/components/MediaProject.vue'
 import ValidateProject from '@/components/ValidateProject.vue'
 import DigitizeProject from '@/components/DigitizeProject.vue'
 import projectTypes from '@/config/projectTypes'
+import { buddy } from '@/service/buddy'
+import systemPrompt from '@/config/buddyConfig'
 
 export default defineComponent({
   components: {
@@ -44,6 +46,46 @@ export default defineComponent({
       projectContributions: [],
       tasks: null,
       to: null,
+      chat: {
+        participants: [
+          {
+            id: 'buddy',
+            name: 'MapSwipe Buddy',
+            imageUrl: 'https://avatars3.githubusercontent.com/u/1915989?s=230&v=4',
+          }
+        ], // the list of all the participant of the conversation. `name` is the user name, `id` is used to establish the author of a message, `imageUrl` is supposed to be the user avatar.
+        titleImageUrl: 'https://a.slack-edge.com/66f9/img/avatars-teams/ava_0001-34.png',
+        messageList: [],
+        newMessagesCount: 0,
+        isChatOpen: false, // to determine whether the chat window should be open or closed
+        showTypingIndicator: '', // when set to a value matching the participant.id it shows the typing indicator for the specific user
+        colors: {
+          header: {
+            bg: '#4e8cff',
+            text: '#ffffff',
+          },
+          launcher: {
+            bg: '#4e8cff',
+          },
+          messageList: {
+            bg: '#ffffff',
+          },
+          sentMessage: {
+            bg: '#4e8cff',
+            text: '#ffffff',
+          },
+          receivedMessage: {
+            bg: '#eaeaea',
+            text: '#222222',
+          },
+          userInput: {
+            bg: '#f4f7f9',
+            text: '#565867',
+          },
+        }, // specifies the color scheme for the component
+        alwaysScrollToBottom: false, // when set to true always scrolls the chat to the bottom when new events are in (new message, user starts typing...)
+        messageStyling: true, // enables *bold* /emph/ _underline_ and such (more info at github.com/mattezza/msgdown)
+      },
     }
   },
   provide() {
@@ -174,7 +216,7 @@ export default defineComponent({
     },
     decompressTasks(tasks) {
       const strTasks = decode(tasks)
-      const charTasks = strTasks.split('').map(function (x) {
+      const charTasks = strTasks.split('').map(function(x) {
         return x.charCodeAt(0)
       })
       const binaryTasks = new Uint8Array(charTasks)
@@ -206,6 +248,67 @@ export default defineComponent({
     handleTaskComponentCreated() {
       goOffline(db)
     },
+
+    appendToLastMessage(text: string) {
+      if (this.chat.showTypingIndicator) {
+        this.chat.showTypingIndicator = ''
+        let output = { "author": "buddy", "type": "text", "data": { "text": "" } }
+        this.chat.messageList.push(output)
+      }
+      this.chat.messageList[this.chat.messageList.length - 1].data.text += text
+    },
+
+
+
+    sendMessage(text) {
+      if (text.length > 0) {
+        this.chat.newMessagesCount = this.chat.isChatOpen ? this.chat.newMessagesCount : this.chat.newMessagesCount + 1
+        this.onMessageWasSent({ author: 'support', type: 'text', data: { text } })
+
+        // this.chat.messageList.push({
+        //   "author": "buddy",
+        //   "type": "text",
+        //   "data": {
+        //     "text": `Hey ${this.user?.displayName}! Welcome to MapSwipe! I'm your buddy here to help you contribute to our project. Do you have any questions or need some guidance getting started? Let me know!`
+        //   }
+        // })
+
+      }
+    },
+    onMessageWasSent(message) {
+      // called when the user sends a message
+      this.chat.showTypingIndicator = 'buddy'
+      this.chat.messageList = [...this.chat.messageList, message]
+      buddy.sendMessageToOllama(message, this.appendToLastMessage)
+
+    },
+    openChat() {
+      buddy.initContext(this.user?.uid, systemPrompt.createFrom(this.project, this.user?.displayName)).then(()=>{
+        this.onMessageWasSent({ "data": { "text": " "} })
+        this.chat.isChatOpen = true
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    closeChat() {
+      // called when the user clicks on the botton to close the chat
+      this.chat.isChatOpen = false
+    },
+    handleScrollToTop() {
+      // called when the user scrolls message list to top
+      // leverage pagination for loading another page of messages
+    },
+    handleOnType() {
+    },
+    editMessage(message) {
+      console.log('Disabled')
+    },
+
+
+
+
+
+
   },
   beforeRouteLeave(to, from, next) {
     if (this.mode === 'contribute' && to.name !== 'authentication') {
@@ -221,6 +324,7 @@ export default defineComponent({
       off(getGroupsQuery(this.projectId))
       off(getProjectContributionsRef(this.user.uid, this.projectId))
       goOnline(db)
+      buddy.endContext()
       next()
     }
   },
@@ -286,5 +390,36 @@ export default defineComponent({
         </v-card-actions>
       </v-card>
     </v-dialog-->
+<!--    :icons="chat.icons"-->
+
+    <beautiful-chat
+      :participants="chat.participants"
+      :titleImageUrl="chat.titleImageUrl"
+      :onMessageWasSent="onMessageWasSent"
+      :messageList="chat.messageList"
+      :newMessagesCount="chat.newMessagesCount"
+      :isOpen="chat.isChatOpen"
+      :close="closeChat"
+      :open="openChat"
+      :showEmoji="false"
+      :showFile="false"
+      :showEdition="true"
+      :showDeletion="true"
+      :deletionConfirmation="true"
+      :showTypingIndicator="chat.showTypingIndicator"
+      :showLauncher="true"
+      :showCloseButton="true"
+      :colors="chat.colors"
+      :alwaysScrollToBottom="chat.alwaysScrollToBottom"
+      :disableUserListToggle="false"
+      :messageStyling="chat.messageStyling"
+      @onType="handleOnType"
+      @edit="editMessage" />
   </basic-page>
 </template>
+
+<style>
+ .sc-launcher {
+   bottom: 100px !important;
+ }
+</style>
