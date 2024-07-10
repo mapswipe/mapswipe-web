@@ -2,7 +2,8 @@ import projectTypes from '@/config/projectTypes'
 
 const systemPrompt = {
   createFrom(project: any, username: String) {
-    project.name = project.name.replace('\n', ' ')
+    project.name = project.name.replace(/(\r\n|\n|\r)/gm, ' ')
+    project.projectDetails = project.projectDetails.replace(/(\r\n|\n|\r)/gm, ' ')
     const systemPrompt =
       eval('`' + this.common + '`') +
       eval('`' + projectTypes[project.projectType]?.description + '`')

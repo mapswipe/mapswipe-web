@@ -313,7 +313,7 @@ export default defineComponent({
       author: 'buddy',
       type: 'text',
       data: { text: `Hey ${this.user?.displayName}! I'm your MapSwipe Buddy. Can I help you?` },
-      suggestions: ['What is this project about?', 'How does this task work?'],
+      suggestions: ['What is this project about?', 'How does this project work?'],
     })
     logAnalyticsEvent('project_view_opened')
   },
