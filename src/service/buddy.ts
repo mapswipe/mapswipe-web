@@ -13,7 +13,7 @@ export const buddy = {
         "model": modelName,
         "modelfile": `FROM llama3\nSYSTEM ${systemStr}`
       }
-      console.log(request)
+      // console.log(request)
       await this.ollama.create(request)
       this.modelName = modelName;
     }

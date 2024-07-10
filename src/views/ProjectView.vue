@@ -25,6 +25,7 @@ import DigitizeProject from '@/components/DigitizeProject.vue'
 import projectTypes from '@/config/projectTypes'
 import { buddy } from '@/service/buddy'
 import systemPrompt from '@/config/buddyConfig'
+import { vuetify } from '@/plugins/vuetify'
 
 export default defineComponent({
   components: {
@@ -36,6 +37,7 @@ export default defineComponent({
     digitizeProject: DigitizeProject,
   },
   data() {
+    const themeColors = vuetify.theme.current._value.colors;
     return {
       completedGroupId: null,
       group: null,
@@ -60,17 +62,17 @@ export default defineComponent({
         showTypingIndicator: '', // when set to a value matching the participant.id it shows the typing indicator for the specific user
         colors: {
           header: {
-            bg: '#4e8cff',
+            bg: themeColors.secondary,
             text: '#ffffff',
           },
           launcher: {
-            bg: '#4e8cff',
+            bg: themeColors.secondary,
           },
           messageList: {
             bg: '#ffffff',
           },
           sentMessage: {
-            bg: '#4e8cff',
+            bg: themeColors.secondary,
             text: '#ffffff',
           },
           receivedMessage: {
@@ -255,7 +257,6 @@ export default defineComponent({
         this.chat.messageList.push(output)
       }
       this.chat.messageList[this.chat.messageList.length - 1].data.text += text
-      this.$emit('edit')
     },
 
     onMessageWasSent(message) {
@@ -282,7 +283,7 @@ export default defineComponent({
       // leverage pagination for loading another page of messages
     },
     handleOnType() {},
-    editMessage(message) {
+    editMessage() {
       console.log('Disabled')
     },
   },
@@ -403,7 +404,24 @@ export default defineComponent({
 </template>
 
 <style>
-.sc-launcher {
-  bottom: 100px !important;
+.sc-launcher, .sc-launcher .sc-open-icon, .sc-launcher .sc-closed-icon, .sc-chat-window {
+  bottom: 60px !important;
+}
+.sc-chat-window {
+  font-family: inherit !important;
+}
+.sc-message--text .sc-message--text-content {
+  font-weight: 400 !important;
+}
+.sc-message--avatar {
+  width: 0px !important;
+  min-width: 0px !important;
+  margin: 0px !important;
+}
+.sc-message-list {
+  padding: 20px 0 !important;
+}
+.sc-message {
+  width: 90% !important;
 }
 </style>
