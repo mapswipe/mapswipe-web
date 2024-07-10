@@ -37,7 +37,7 @@ export default defineComponent({
     digitizeProject: DigitizeProject,
   },
   data() {
-    const themeColors = vuetify.theme.current._value.colors;
+    const themeColors = vuetify.theme.current._value.colors
     return {
       completedGroupId: null,
       group: null,
@@ -53,7 +53,7 @@ export default defineComponent({
           {
             id: 'buddy',
             name: 'MapSwipe Buddy',
-          }
+          },
         ], // the list of all the participant of the conversation. `name` is the user name, `id` is used to establish the author of a message, `imageUrl` is supposed to be the user avatar.
         titleImageUrl: '',
         messageList: [],
@@ -313,7 +313,7 @@ export default defineComponent({
       author: 'buddy',
       type: 'text',
       data: { text: `Hey ${this.user?.displayName}! I'm your MapSwipe Buddy. Can I help you?` },
-      suggestions: ['What is this project about?', 'How does this task work?']
+      suggestions: ['What is this project about?', 'How does this task work?'],
     })
     logAnalyticsEvent('project_view_opened')
   },
@@ -404,7 +404,10 @@ export default defineComponent({
 </template>
 
 <style>
-.sc-launcher, .sc-launcher .sc-open-icon, .sc-launcher .sc-closed-icon, .sc-chat-window {
+.sc-launcher,
+.sc-launcher .sc-open-icon,
+.sc-launcher .sc-closed-icon,
+.sc-chat-window {
   bottom: 86px !important;
 }
 .sc-chat-window {
