@@ -30,7 +30,7 @@ export const buddy = {
       // lock
       console.log(message)
       const ollamaMessage = { role: 'user', content: message.data.text }
-      const response = await this.ollama.chat({ model: this.modelName, messages: [ollamaMessage], stream: true})
+      const response = await this.ollama.chat({ model: this.modelName, messages: [ollamaMessage], stream: true, temperature: 0.1})
       for await (const part of response) {
         callback(part.message.content)
       }

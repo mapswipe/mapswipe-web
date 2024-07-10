@@ -52,7 +52,7 @@ export default defineComponent({
             id: 'buddy',
             name: 'MapSwipe Buddy',
             imageUrl: 'https://avatars3.githubusercontent.com/u/1915989?s=230&v=4',
-          },
+          }
         ], // the list of all the participant of the conversation. `name` is the user name, `id` is used to establish the author of a message, `imageUrl` is supposed to be the user avatar.
         titleImageUrl: 'https://a.slack-edge.com/66f9/img/avatars-teams/ava_0001-34.png',
         messageList: [],
@@ -83,7 +83,7 @@ export default defineComponent({
             text: '#565867',
           },
         }, // specifies the color scheme for the component
-        alwaysScrollToBottom: false, // when set to true always scrolls the chat to the bottom when new events are in (new message, user starts typing...)
+        alwaysScrollToBottom: true, // when set to true always scrolls the chat to the bottom when new events are in (new message, user starts typing...)
         messageStyling: true, // enables *bold* /emph/ _underline_ and such (more info at github.com/mattezza/msgdown)
       },
     }
