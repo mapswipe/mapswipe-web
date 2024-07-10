@@ -25,12 +25,11 @@ export const buddy = {
       this.modelName = ''
   },
 
-  async sendMessageToOllama(message: any, callback: Function) {
+  async sendMessageToOllama(messageList: any, callback: Function) {
     if (this.modelName) {
       // lock
-      console.log(message)
-      const ollamaMessage = { role: 'user', content: message.data.text }
-      const response = await this.ollama.chat({ model: this.modelName, messages: [ollamaMessage], stream: true, temperature: 0.1})
+      const messages = messageList.map((m) => { return { role: m.author === "buddy" ? "assistant" : "user", content: m.data.text}});
+      const response = await this.ollama.chat({ model: this.modelName, messages: messages, stream: true, temperature: 0.1})
       for await (const part of response) {
         callback(part.message.content)
       }
