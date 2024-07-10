@@ -405,7 +405,7 @@ export default defineComponent({
 
 <style>
 .sc-launcher, .sc-launcher .sc-open-icon, .sc-launcher .sc-closed-icon, .sc-chat-window {
-  bottom: 60px !important;
+  bottom: 86px !important;
 }
 .sc-chat-window {
   font-family: inherit !important;
