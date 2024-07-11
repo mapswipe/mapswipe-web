@@ -22,7 +22,7 @@ app.use(router)
 app.use(vuetify)
 app.use(i18n)
 app.use(OpenLayersMap)
-app.use(Shortkey)
+app.use(Shortkey, { prevent: ['.sc-user-input--text'] })
 app.use(Chat)
 
 app.mount('#app')
