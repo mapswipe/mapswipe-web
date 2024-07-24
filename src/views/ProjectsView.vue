@@ -239,20 +239,13 @@ export default defineComponent({
                     >&nbsp;{{ $t('projectsView.byYou') }}</span
                   >
                 </span>
+                <v-spacer />
                 <project-more-info
                   v-if="!projectUnavailable(project)"
                   :project="project"
                   :fallbackImage="fallbackImage"
                   :selectFun="selectProject"
                 />
-                <v-spacer />
-                <v-btn
-                  color="primary"
-                  :disabled="projectUnavailable(project)"
-                  @click="selectProject(project)"
-                >
-                  {{ $t('projectsView.contribute') }}
-                </v-btn>
               </v-card-actions>
             </v-card>
           </v-hover>
