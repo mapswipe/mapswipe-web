@@ -117,7 +117,9 @@ export default defineComponent({
       onValue(getProjectRef(this.projectId), (snapshot) => {
         const data = snapshot.val() || {}
         this.project = data
-        if (this.project?.tutorialId) this.bindTutorial()
+        if (this.project?.tutorialId) {
+            this.bindTutorial()
+        }
       })
     },
     bindProjectContributions() {
@@ -162,8 +164,8 @@ export default defineComponent({
     bindTutorial() {
       onValue(getProjectRef(this.project?.tutorialId), (snapshot) => {
         const data = snapshot.val() || {}
-        console.log(this.informationPages)
-        this.informationPages = data
+        console.log(this.tutorial)
+        this.tutorial = data
       })
     },
     completeOptions(option, index) {
