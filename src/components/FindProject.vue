@@ -22,10 +22,6 @@ export default defineComponent({
       type: Object,
       require: true,
     },
-    informationPages: {
-      type: Array,
-      require: false,
-    },
     // TODO: change this so that instructions dialog is opened with tutorial, but not with project
     first: {
       type: Boolean,
@@ -346,13 +342,11 @@ export default defineComponent({
   created() {
     this.$emit('created')
     this.logMappingStarted(this.project.projectType)
-    this.createInformationPages()
   },
 })
 </script>
 
 <template>
-  {{ informationPages }}
   <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
     <v-chip v-if="tilesInSelection" color="primary" :ripple="false">
       {{ selectedTaskIds.length }}
@@ -377,7 +371,7 @@ export default defineComponent({
       :attribution="attribution"
       :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
       :first="first"
-      :informationPages="informationPages"
+      :informationPages="createInformationPages()"
       :instructionMessage="instructionMessage"
       :manualUrl="project?.manualUrl"
       :options="options"

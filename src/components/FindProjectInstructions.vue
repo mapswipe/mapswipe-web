@@ -7,6 +7,10 @@ export default defineComponent({
     imageTile: ImageTile,
   },
   props: {
+    informationPages: {
+      type: Array,
+      required: false,
+    },
     instructionMessage: {
       type: String,
       required: true,
