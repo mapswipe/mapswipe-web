@@ -43,6 +43,7 @@ export default defineComponent({
       project: null,
       projectContributions: [],
       tasks: null,
+      tutorial: null,
       to: null,
     }
   },
@@ -116,6 +117,7 @@ export default defineComponent({
       onValue(getProjectRef(this.projectId), (snapshot) => {
         const data = snapshot.val() || {}
         this.project = data
+        if (this.project?.tutorialId) this.bindTutorial()
       })
     },
     bindProjectContributions() {
@@ -155,6 +157,13 @@ export default defineComponent({
         const data = snapshot.val() || []
         const tasks = typeof data == 'string' ? this.decompressTasks(data) : data
         this.tasks = tasks
+      })
+    },
+    bindTutorial() {
+      onValue(getProjectRef(this.project?.tutorialId), (snapshot) => {
+        const data = snapshot.val() || {}
+        console.log(this.informationPages)
+        this.informationPages = data
       })
     },
     completeOptions(option, index) {
@@ -235,6 +244,7 @@ export default defineComponent({
 
 <template>
   <basic-page page-name="project">
+    {{ tutorial }}
     <component
       :is="taskComponent"
       v-if="project && group && tasks && mode === 'contribute'"
