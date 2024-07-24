@@ -118,7 +118,7 @@ export default defineComponent({
         const data = snapshot.val() || {}
         this.project = data
         if (this.project?.tutorialId) {
-            this.bindTutorial()
+          this.bindTutorial()
         }
       })
     },
@@ -164,7 +164,6 @@ export default defineComponent({
     bindTutorial() {
       onValue(getProjectRef(this.project?.tutorialId), (snapshot) => {
         const data = snapshot.val() || {}
-        console.log(this.tutorial)
         this.tutorial = data
       })
     },
@@ -246,7 +245,6 @@ export default defineComponent({
 
 <template>
   <basic-page page-name="project">
-    {{ tutorial }}
     <component
       :is="taskComponent"
       v-if="project && group && tasks && mode === 'contribute'"
@@ -255,6 +253,7 @@ export default defineComponent({
       :options="options"
       :project="project"
       :tasks="tasks"
+      :tutorial="tutorial"
       @created="handleTaskComponentCreated"
     />
 

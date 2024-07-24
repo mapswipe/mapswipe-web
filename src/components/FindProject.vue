@@ -22,6 +22,11 @@ export default defineComponent({
       type: Object,
       require: true,
     },
+    informationPages: {
+      type: Array,
+      require: false,
+    },
+    // TODO: change this so that instructions dialog is opened with tutorial, but not with project
     first: {
       type: Boolean,
       default: false,
@@ -44,6 +49,10 @@ export default defineComponent({
     tasks: {
       type: Array,
       require: true,
+    },
+    tutorial: {
+      type: Object,
+      require: false,
     },
   },
   data() {
@@ -169,6 +178,59 @@ export default defineComponent({
       const clamp = Math.min(Math.max(value, min), max)
       return clamp
     },
+    createInformationPages() {
+      var informationPages = {}
+      if (this.tutorial) {
+        // We want to show the information pages for a project
+        informationPages =
+          this.tutorial.informationPages || this.createFallbackInformationPages(this.tutorial)
+      } else {
+        // We want to show the information pages for a tutorial.
+        informationPages =
+          this.project.informationPages || this.createFallbackInformationPages(this.project)
+      }
+      return informationPages
+    },
+    createFallbackInformationPages(tutorial) {
+      if (tutorial.exampleImage1 && tutorial.exampleImage2) {
+        return [
+          {
+            blocks: [
+              {
+                blockNumber: 1,
+                blockType: 'text',
+                textDescription: `You are looking for ${tutorial.lookFor}`,
+              },
+              {
+                blockNumber: 2,
+                blockType: 'text',
+                textDescription: 'From the ground, it looks like this:',
+              },
+              {
+                blockNumber: 3,
+                blockType: 'image',
+                image: tutorial.exampleImage1,
+              },
+              {
+                blockNumber: 4,
+                blockType: 'text',
+                textDescription:
+                  'But the images you will see will show it from above, and it looks like this:',
+              },
+              {
+                blockNumber: 5,
+                blockType: 'image',
+                image: tutorial.exampleImage2,
+              },
+            ],
+            pageNumber: 1,
+            title: 'What to look for',
+          },
+        ]
+      } else {
+        return undefined
+      }
+    },
     getCheckboxIcon(taskId) {
       const selected = this.isTaskSelected(taskId)
       const icon = selected ? 'mdi-checkbox-marked-circle' : 'mdi-checkbox-blank-circle-outline'
@@ -284,11 +346,13 @@ export default defineComponent({
   created() {
     this.$emit('created')
     this.logMappingStarted(this.project.projectType)
+    this.createInformationPages()
   },
 })
 </script>
 
 <template>
+  {{ informationPages }}
   <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
     <v-chip v-if="tilesInSelection" color="primary" :ripple="false">
       {{ selectedTaskIds.length }}
@@ -313,6 +377,7 @@ export default defineComponent({
       :attribution="attribution"
       :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
       :first="first"
+      :informationPages="informationPages"
       :instructionMessage="instructionMessage"
       :manualUrl="project?.manualUrl"
       :options="options"
