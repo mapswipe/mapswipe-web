@@ -64,7 +64,7 @@ export default defineComponent({
     color="primary"
     @click="dialog = true"
   />
-  <v-dialog v-model="dialog" max-width="80vw" height="80vh">
+  <v-dialog v-model="dialog" max-width="70vw" height="80vh">
     <v-card v-click-outside="closeDialog">
       <v-tabs v-model="tabs" show-arrows>
         <v-tab
@@ -85,7 +85,7 @@ export default defineComponent({
                 :options="{ typographer: true }"
               />
             </v-card-text>
-            <v-img v-if="block.blockType === 'image'" :src="block.image"></v-img>
+            <v-img v-if="block.blockType === 'image'" :src="block.image" max-width="400"></v-img>
           </span>
         </v-window-item>
         <v-window-item value="instructions">
@@ -243,8 +243,4 @@ export default defineComponent({
   </v-dialog>
 </template>
 
-<style scoped>
-.scroll {
-  overflow-y: auto;
-}
-</style>
+<style scoped></style>
