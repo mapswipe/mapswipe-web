@@ -73,7 +73,10 @@ export default defineComponent({
 
       <v-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
         <v-window-item v-for="page in informationPages" :value="page.title" :key="page.pageNumber">
-          <span v-for="block in page.blocks" :key="block.blockNumber">
+          <span
+            v-for="block in page.blocks?.sort((a, b) => a.blockNumber - b.blockNumber)"
+            :key="block.blockNumber"
+          >
             <v-card-text v-if="block.blockType === 'text'" class="text-justify">
               <vue-markdown
                 :source="block.textDescription.replaceAll('\\n', '\n')"

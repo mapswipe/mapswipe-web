@@ -177,7 +177,7 @@ export default defineComponent({
       return clamp
     },
     createInformationPages() {
-      var informationPages = {}
+      var informationPages = []
       if (this.tutorial) {
         // We want to show the information pages for a project
         informationPages =
@@ -187,6 +187,7 @@ export default defineComponent({
         informationPages =
           this.project.informationPages || this.createFallbackInformationPages(this.project)
       }
+      informationPages?.sort((a, b) => a.pageNumber - b.pageNumber)
       return informationPages
     },
     createFallbackInformationPages(tutorial) {
