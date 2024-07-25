@@ -82,7 +82,7 @@ export default defineComponent({
     @click="dialog = true"
   />
   <v-dialog v-model="dialog" max-width="70vw">
-    <v-card v-click-outside="closeDialog" class="pa-5">
+    <v-card v-click-outside="closeDialog" class="pa-3">
       <v-tabs v-model="activeTab">
         <v-tab
           v-for="(page, index) in informationPages"
@@ -93,7 +93,7 @@ export default defineComponent({
         <v-tab :text="$t('findProjectInstructions.howToContribute')" value="instructions"></v-tab>
       </v-tabs>
 
-      <v-window v-model="activeTab" style="height: 70vh">
+      <v-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
         <v-window-item v-for="page in informationPages" :value="page.title" :key="page.pageNumber">
           <span v-for="block in page.blocks" :key="block.blockNumber">
             <v-card-text v-if="block.blockType === 'text'">
