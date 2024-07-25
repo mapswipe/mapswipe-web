@@ -96,13 +96,18 @@ export default defineComponent({
       <v-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
         <v-window-item v-for="page in informationPages" :value="page.title" :key="page.pageNumber">
           <span v-for="block in page.blocks" :key="block.blockNumber">
-            <v-card-text v-if="block.blockType === 'text'">
+            <v-card-text v-if="block.blockType === 'text'" class="text-justify">
               <vue-markdown
                 :source="block.textDescription.replaceAll('\\n', '\n')"
                 :options="{ typographer: true }"
               />
             </v-card-text>
-            <v-img v-if="block.blockType === 'image'" :src="block.image" max-width="400"></v-img>
+            <v-img
+              v-if="block.blockType === 'image'"
+              :src="block.image"
+              max-width="400"
+              class="mx-auto"
+            />
           </span>
         </v-window-item>
         <v-window-item value="instructions">
