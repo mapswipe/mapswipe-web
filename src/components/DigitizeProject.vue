@@ -1,10 +1,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import createInformationPages from '@/utils/createInformationPages'
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
 import { theme } from '@/plugins/vuetify'
 import DigitizeProjectInstructions from '@/components/DigitizeProjectInstructions.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
+import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import { GeoJSON } from 'ol/format'
 import { createBox } from 'ol/interaction/Draw'
@@ -15,6 +17,7 @@ export default defineComponent({
     digitizeProjectInstructions: DigitizeProjectInstructions,
     taskProgress: TaskProgress,
     projectHeader: ProjectHeader,
+    projectInfo: ProjectInfo,
   },
   props: {
     group: {
@@ -32,6 +35,10 @@ export default defineComponent({
     tasks: {
       type: Array,
       require: true,
+    },
+    tutorial: {
+      type: Object,
+      require: false,
     },
   },
   data() {
@@ -85,6 +92,10 @@ export default defineComponent({
         this.taskId = this.tasks[this.taskIndex].taskId
         this.updateTaskFeature()
       }
+    },
+    createInformationPages,
+    createFallbackInformationPages() {
+      return undefined
     },
     drawCondition() {
       return this.withinTaskGeom || this.drawing
@@ -234,12 +245,18 @@ export default defineComponent({
       @click="fitView()"
       color="primary"
     />
-    <digitize-project-instructions
+    <project-info
       :first="first"
-      :drawType="drawType"
-      :instructionMessage="instructionMessage"
+      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
-    />
+    >
+      <template #instructions>
+        <digitize-project-instructions
+          :drawType="drawType"
+          :instructionMessage="instructionMessage"
+        />
+      </template>
+    </project-info>
   </project-header>
   <v-container class="ma-0 pa-0">
     <ol-map
