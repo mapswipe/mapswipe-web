@@ -1,7 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import createInformationPages from '@/utils/createInformationPages'
 import OptionButtons from '@/components/OptionButtons.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
+import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import TileMap from '@/components/TileMap.vue'
 import ImageTile from '@/components/ImageTile.vue'
@@ -13,6 +15,7 @@ export default defineComponent({
     taskProgress: TaskProgress,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
+    projectInfo: ProjectInfo,
     imageTile: ImageTile,
     tileMap: TileMap,
   },
@@ -72,6 +75,10 @@ export default defineComponent({
       type: Array,
       require: true,
     },
+    tutorial: {
+      type: Object,
+      require: false,
+    },
   },
   data() {
     return {
@@ -111,6 +118,10 @@ export default defineComponent({
         this.taskId = this.tasks[this.taskIndex].taskId
       }
     },
+    createInformationPages,
+    createFallbackInformationPages() {
+      return undefined
+    },
     forward() {
       if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
@@ -135,13 +146,19 @@ export default defineComponent({
 <template>
   <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
     <tile-map :page="[tasks[taskIndex]]" :zoomLevel="project.zoomLevel" />
-    <compare-project-instructions
-      :attribution="attribution"
+    <project-info
       :first="first"
-      :instructionMessage="instructionMessage"
+      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
-      :options="options"
-    />
+    >
+      <template #instructions>
+        <compare-project-instructions
+          :attribution="attribution"
+          :instructionMessage="instructionMessage"
+          :options="options"
+        />
+      </template>
+    </project-info>
   </project-header>
   <v-container class="pa-0" v-touch="{ left: () => forward(), right: () => back() }">
     <v-row>
