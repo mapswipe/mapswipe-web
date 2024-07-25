@@ -1,7 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import createInformationPages from '@/utils/createInformationPages'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
+import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import MediaProjectInstructions from './MediaProjectInstructions.vue'
 
@@ -10,6 +12,7 @@ export default defineComponent({
     mediaProjectInstructions: MediaProjectInstructions,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
+    projectInfo: ProjectInfo,
     taskProgress: TaskProgress,
   },
   props: {
@@ -38,6 +41,10 @@ export default defineComponent({
     tasks: {
       type: Array,
       require: true,
+    },
+    tutorial: {
+      type: Object,
+      require: false,
     },
   },
   data() {
@@ -90,6 +97,10 @@ export default defineComponent({
         this.taskId = this.tasks[this.taskIndex].taskId
       }
     },
+    createInformationPages,
+    createFallbackInformationPages() {
+      return undefined
+    },
     forward() {
       if (this.isImageLoaded && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.imageLoaded = false
@@ -117,16 +128,19 @@ export default defineComponent({
 
 <template>
   <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
-    <media-project-instructions
-      :attribution="attribution"
+    <project-info
       :first="first"
-      :instructionMessage="instructionMessage"
-      :question="questions"
-      :mediaType="isImageTask ? 'image' : 'video'"
-      :textColor="contrastingTextColor"
+      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
-      :options="options"
-    />
+    >
+      <template #instructions>
+        <media-project-instructions
+          :attribution="attribution"
+          :instructionMessage="instructionMessage"
+          :options="options"
+        />
+      </template>
+    </project-info>
   </project-header>
   <v-container
     class="ma-0 pa-0"
