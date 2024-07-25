@@ -188,14 +188,14 @@ export default defineComponent({
       return informationPages
     },
     createFallbackInformationPages(tutorial) {
-      if (tutorial.exampleImage1 && tutorial.exampleImage2) {
+      if (tutorial.exampleImage1 && tutorial.exampleImage2 && tutorial.lookFor) {
         return [
           {
             blocks: [
               {
                 blockNumber: 1,
                 blockType: 'text',
-                textDescription: `You are looking for ${tutorial.lookFor}`,
+                textDescription: `You are looking for ${tutorial.lookFor}.`,
               },
               {
                 blockNumber: 2,

@@ -48,9 +48,9 @@ export default defineComponent({
   }),
   computed: {
     tabs() {
-      const tabs = Array.from({ length: this.informationPages.length }, (v, i) => i).concat([
-        'instructions',
-      ])
+      const tabs = this.informationPages
+        ? Array.from({ length: this.informationPages.length }, (v, i) => i).concat(['instructions'])
+        : ['instructions']
       return tabs
     },
   },
@@ -252,7 +252,7 @@ export default defineComponent({
           :title="$t('findProjectInstructions.moveLeft')"
           icon="mdi-chevron-left"
           color="secondary"
-          :disabled="tabs.indexOf(activeTab) == 0"
+          :disabled="tabs.indexOf(activeTab) <= 0"
           @click="back"
           v-shortkey.native="['arrowleft']"
           @shortkey="back"
