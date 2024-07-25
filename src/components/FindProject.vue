@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import buildTasks from '@/utils/buildTasks'
+import createInformationPages from '@/utils/createInformationPages'
 import FindProjectInstructions from '@/components/FindProjectInstructions.vue'
 import ImageTile from '@/components/ImageTile.vue'
 import MagnifyImageTile from '@/components/MagnifyImageTile.vue'
@@ -176,20 +177,7 @@ export default defineComponent({
       const clamp = Math.min(Math.max(value, min), max)
       return clamp
     },
-    createInformationPages() {
-      var informationPages = []
-      if (this.tutorial) {
-        // We want to show the information pages for a project
-        informationPages =
-          this.tutorial.informationPages || this.createFallbackInformationPages(this.tutorial)
-      } else {
-        // We want to show the information pages for a tutorial.
-        informationPages =
-          this.project.informationPages || this.createFallbackInformationPages(this.project)
-      }
-      informationPages?.sort((a, b) => a.pageNumber - b.pageNumber)
-      return informationPages
-    },
+    createInformationPages,
     createFallbackInformationPages(tutorial) {
       if (tutorial.exampleImage1 && tutorial.exampleImage2 && tutorial.lookFor) {
         return [
@@ -372,7 +360,7 @@ export default defineComponent({
     <tile-map :page="page" :zoomLevel="project.zoomLevel" :key="columnsPerPage" />
     <project-info
       :first="first"
-      :informationPages="createInformationPages()"
+      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
     >
       <template #instructions>
