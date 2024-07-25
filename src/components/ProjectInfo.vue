@@ -47,7 +47,6 @@ export default defineComponent({
   },
   created() {
     this.dialog = this.first
-    this.activeTab = this.tabs[0]
   },
 })
 </script>
@@ -72,7 +71,11 @@ export default defineComponent({
       </v-tabs>
 
       <v-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
-        <v-window-item v-for="page in informationPages" :value="page.title" :key="page.pageNumber">
+        <v-window-item
+          v-for="(page, index) in informationPages"
+          :value="index"
+          :key="page.pageNumber"
+        >
           <span
             v-for="block in page.blocks?.sort((a, b) => a.blockNumber - b.blockNumber)"
             :key="block.blockNumber"
