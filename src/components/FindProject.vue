@@ -5,6 +5,7 @@ import FindProjectInstructions from '@/components/FindProjectInstructions.vue'
 import ImageTile from '@/components/ImageTile.vue'
 import MagnifyImageTile from '@/components/MagnifyImageTile.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
+import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import TileMap from '@/components/TileMap.vue'
 
@@ -14,6 +15,7 @@ export default defineComponent({
     imageTile: ImageTile,
     magnifyImageTile: MagnifyImageTile,
     projectHeader: ProjectHeader,
+    projectInfo: ProjectInfo,
     tileMap: TileMap,
     taskProgress: TaskProgress,
   },
@@ -367,15 +369,20 @@ export default defineComponent({
       color="primary"
     />
     <tile-map :page="page" :zoomLevel="project.zoomLevel" :key="columnsPerPage" />
-    <find-project-instructions
-      :attribution="attribution"
-      :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
+    <project-info
       :first="first"
       :informationPages="createInformationPages()"
-      :instructionMessage="instructionMessage"
       :manualUrl="project?.manualUrl"
-      :options="options"
-    />
+    >
+      <template #instructions>
+        <find-project-instructions
+          :attribution="attribution"
+          :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
+          :instructionMessage="instructionMessage"
+          :options="options"
+        />
+      </template>
+    </project-info>
   </project-header>
 
   <v-container
