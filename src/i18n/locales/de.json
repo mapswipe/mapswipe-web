@@ -147,6 +147,8 @@
     "classifyTitle": "Klicke oder tippe, um zu klassifizieren",
     "close": "Schließen",
     "moreInfo": "Mehr Info",
+    "moveLeft": "Vorherige Seite",
+    "moveRight": "Nächste Seite",
     "selectionTitle": "Mehrere Bildkacheln auswählen",
     "selectTile": "... oder Rechtsklick/Halten, um die Bildkachel der Auswahl hinzuzufügen. Wiederholen, um sie von der Auswahl zu entfernen",
     "selectAll": "Alle Bildkacheln der aktuellen Ansicht auswählen. Wiederholen, um die Auswahl zu leeren",

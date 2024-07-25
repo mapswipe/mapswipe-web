@@ -147,6 +147,8 @@
     "classifyInstruction": "Click or tap each image tile, until the appropriate answer appears",
     "close": "Close",
     "moreInfo": "More Info",
+    "moveLeft": "Back to previous page",
+    "moveRight": "Go to next page",
     "selectionTitle": "Select multiple tiles",
     "selectTile": "... or right click/hold touch to add a tile to the selection. Repeat to remove the tile from the selection",
     "selectAll": "Select all tiles in view. Repeat to clear selection",

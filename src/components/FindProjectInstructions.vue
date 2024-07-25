@@ -44,15 +44,32 @@ export default defineComponent({
     eyeOff: false,
     overlay: true,
     selected: false,
-    tabs: null,
+    activeTab: null,
   }),
+  computed: {
+    tabs() {
+      const tabs = Array.from({ length: this.informationPages.length }, (v, i) => i).concat([
+        'instructions',
+      ])
+      return tabs
+    },
+  },
   methods: {
     closeDialog() {
       this.dialog = false
     },
+    back() {
+      const currentTabIndex = this.tabs.indexOf(this.activeTab)
+      if (currentTabIndex > 0) this.activeTab = this.tabs[currentTabIndex - 1]
+    },
+    forward() {
+      const currentTabIndex = this.tabs.indexOf(this.activeTab)
+      if (currentTabIndex < this.tabs.length - 1) this.activeTab = this.tabs[currentTabIndex + 1]
+    },
   },
   created() {
     this.dialog = this.first
+    this.activeTab = this.tabs[0]
   },
 })
 </script>
@@ -64,19 +81,19 @@ export default defineComponent({
     color="primary"
     @click="dialog = true"
   />
-  <v-dialog v-model="dialog" max-width="70vw" height="80vh">
-    <v-card v-click-outside="closeDialog">
-      <v-tabs v-model="tabs" show-arrows>
+  <v-dialog v-model="dialog" max-width="70vw">
+    <v-card v-click-outside="closeDialog" class="pa-5">
+      <v-tabs v-model="activeTab">
         <v-tab
-          v-for="page in informationPages"
+          v-for="(page, index) in informationPages"
           :text="page.title"
-          :value="page.title"
+          :value="index"
           :key="page.pageNumber"
         ></v-tab>
         <v-tab :text="$t('findProjectInstructions.howToContribute')" value="instructions"></v-tab>
       </v-tabs>
 
-      <v-window v-model="tabs" class="scroll">
+      <v-window v-model="activeTab" style="height: 70vh">
         <v-window-item v-for="page in informationPages" :value="page.title" :key="page.pageNumber">
           <span v-for="block in page.blocks" :key="block.blockNumber">
             <v-card-text v-if="block.blockType === 'text'">
@@ -223,22 +240,40 @@ export default defineComponent({
             <div class="text-h6 mt-10">{{ $t('findProjectInstructions.imageCredits') }}</div>
             <div class="text-p">{{ attribution }}</div>
           </v-card-text>
-          <v-card-actions class="justify-end">
-            <v-spacer />
-            <v-btn
-              v-if="manualUrl"
-              color="primary"
-              :href="manualUrl"
-              target="_blank"
-              prepend-icon="mdi-help-circle"
-              >{{ $t('findProjectInstructions.moreInfo') }}</v-btn
-            >
-            <v-btn color="primary" @click="dialog = false">{{
-              $t('findProjectInstructions.close')
-            }}</v-btn>
-          </v-card-actions>
         </v-window-item>
       </v-window>
+      <v-card-actions class="justify-end">
+        <v-btn
+          :title="$t('findProjectInstructions.moveLeft')"
+          icon="mdi-chevron-left"
+          color="secondary"
+          :disabled="tabs.indexOf(activeTab) == 0"
+          @click="back"
+          v-shortkey.native="['arrowleft']"
+          @shortkey="back"
+        />
+        <v-btn
+          :title="$t('findProjectInstructions.moveRight')"
+          icon="mdi-chevron-right"
+          color="secondary"
+          :disabled="tabs.indexOf(activeTab) >= tabs.length - 1"
+          @click="forward"
+          v-shortkey.native="['arrowright']"
+          @shortkey="forward"
+        />
+        <v-spacer />
+        <v-btn
+          v-if="manualUrl"
+          color="primary"
+          :href="manualUrl"
+          target="_blank"
+          prepend-icon="mdi-help-circle"
+          >{{ $t('findProjectInstructions.moreInfo') }}</v-btn
+        >
+        <v-btn v-if="activeTab == 'instructions'" color="primary" @click="dialog = false">{{
+          $t('findProjectInstructions.close')
+        }}</v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
