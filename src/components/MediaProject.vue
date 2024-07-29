@@ -99,6 +99,7 @@ export default defineComponent({
       }
     },
     createInformationPages,
+    // fallback information pages for media projects tbd (could be similar to find projects)
     createFallbackInformationPages() {
       return undefined
     },

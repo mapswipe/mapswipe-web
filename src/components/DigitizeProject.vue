@@ -95,6 +95,7 @@ export default defineComponent({
       }
     },
     createInformationPages,
+    // fallback information pages for digitize projects tbd
     createFallbackInformationPages() {
       return undefined
     },

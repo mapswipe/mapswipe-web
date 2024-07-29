@@ -120,6 +120,7 @@ export default defineComponent({
       }
     },
     createInformationPages,
+    // currently no fallback information pages defined in mobile map, same here
     createFallbackInformationPages() {
       return undefined
     },

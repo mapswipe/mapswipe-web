@@ -122,6 +122,7 @@ export default defineComponent({
       }
     },
     createInformationPages,
+    // fallback information pages of mobile app adapted to web app:
     createFallbackInformationPages(tutorial) {
       if (tutorial.lookFor) {
         return [
@@ -130,11 +131,14 @@ export default defineComponent({
               {
                 blockNumber: 1,
                 blockType: 'text',
-                textDescription: "You'll see a shape on an image. Use the buttons to answer.",
+                // web app displays shapes on a web map rather than on a single image
+                textDescription:
+                  "You'll see a shape on an interactive imagery map. Use the buttons to answer.",
               },
               {
                 blockNumber: 2,
                 blockType: 'text',
+                // instead of 'buildings', we get the feature of interest from Firebase (similar as in Find projects)
                 textDescription: 'Does the shape outline a ${tutorial.lookFor}?',
               },
               {
