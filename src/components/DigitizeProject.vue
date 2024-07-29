@@ -43,6 +43,7 @@ export default defineComponent({
   },
   data() {
     return {
+      arrowKeys: true,
       endReached: false,
       center: [0, 0],
       drawing: false,
@@ -249,6 +250,7 @@ export default defineComponent({
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
+      @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
         <digitize-project-instructions
@@ -392,7 +394,7 @@ export default defineComponent({
       color="secondary"
       :disabled="taskIndex <= 0"
       @click="back"
-      v-shortkey.once="['arrowleft']"
+      v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
     />
     <v-btn
@@ -408,7 +410,7 @@ export default defineComponent({
       color="secondary"
       :disabled="taskIndex + 1 === tasks.length"
       @click="forward"
-      v-shortkey.once="['arrowright']"
+      v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
     />
     <v-spacer />

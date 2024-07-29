@@ -83,6 +83,7 @@ export default defineComponent({
   },
   data() {
     return {
+      arrowKeys: true,
       center: [0, 0],
       results: {},
       startTime: null,
@@ -225,6 +226,7 @@ export default defineComponent({
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
+      @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
         <validate-project-instructions
@@ -302,7 +304,7 @@ export default defineComponent({
       color="secondary"
       :disabled="taskIndex <= 0"
       @click="back"
-      v-shortkey.once="['arrowleft']"
+      v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
     />
     <v-btn
@@ -318,7 +320,7 @@ export default defineComponent({
       color="secondary"
       :disabled="!isAnswered() || taskIndex + 1 === tasks.length"
       @click="forward"
-      v-shortkey.once="['arrowright']"
+      v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
     />
     <v-spacer />

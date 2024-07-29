@@ -56,6 +56,7 @@ export default defineComponent({
   },
   data() {
     return {
+      arrowKeys: true,
       columnIndex: 0,
       containerWidth: 1,
       endReached: false,
@@ -362,6 +363,7 @@ export default defineComponent({
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
+      @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
         <find-project-instructions
@@ -449,7 +451,7 @@ export default defineComponent({
       color="secondary"
       :disabled="columnIndex <= 0"
       @click="fastBack"
-      v-shortkey.once="['arrowdown']"
+      v-shortkey.once="[arrowKeys ? 'arrowdown' : '']"
       @shortkey="fastBack"
     />
     <v-btn
@@ -458,7 +460,7 @@ export default defineComponent({
       color="secondary"
       :disabled="columnIndex <= 0"
       @click="back"
-      v-shortkey.once="['arrowleft']"
+      v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
     />
     <v-btn
@@ -474,7 +476,7 @@ export default defineComponent({
       color="secondary"
       :disabled="isLastPage"
       @click="forward"
-      v-shortkey.once="['arrowright']"
+      v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
     />
     <v-btn
@@ -483,7 +485,7 @@ export default defineComponent({
       color="secondary"
       :disabled="isLastPage"
       @click="fastForward"
-      v-shortkey.once="['arrowup']"
+      v-shortkey.once="[arrowKeys ? 'arrowup' : '']"
       @shortkey="fastForward"
     />
     <v-spacer />

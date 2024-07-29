@@ -33,8 +33,9 @@ export default defineComponent({
     },
   },
   methods: {
-    closeDialog() {
-      this.dialog = false
+    toggleDialog() {
+      this.$emit('toggleDialog')
+      this.dialog = !this.dialog
     },
     back() {
       const currentTabIndex = this.tabs.indexOf(this.activeTab)
@@ -46,7 +47,7 @@ export default defineComponent({
     },
   },
   created() {
-    this.dialog = this.first
+    if (this.first) this.toggleDialog()
   },
 })
 </script>
@@ -56,10 +57,10 @@ export default defineComponent({
     :title="$t('findProjectInstructions.howToContribute')"
     icon="mdi-information"
     color="primary"
-    @click="dialog = true"
+    @click="toggleDialog()"
   />
   <v-dialog v-model="dialog" max-width="70vw">
-    <v-card v-click-outside="closeDialog" class="pa-3">
+    <v-card v-click-outside="toggleDialog" class="pa-3">
       <v-tabs v-model="activeTab">
         <v-tab
           v-for="(page, index) in informationPages"
@@ -126,7 +127,7 @@ export default defineComponent({
           prepend-icon="mdi-help-circle"
           >{{ $t('findProjectInstructions.moreInfo') }}</v-btn
         >
-        <v-btn v-if="activeTab == 'instructions'" color="primary" @click="dialog = false">{{
+        <v-btn v-if="activeTab == 'instructions'" color="primary" @click="toggleDialog()">{{
           $t('findProjectInstructions.close')
         }}</v-btn>
       </v-card-actions>
