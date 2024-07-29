@@ -25,7 +25,7 @@ export default defineComponent({
       type: Object,
       require: true,
     },
-    // TODO: change this so that instructions dialog is opened with tutorial, but not with project
+    // TODO: On implementation of interactive tutorials, change this so that instructions dialog is opened with tutorial, but not with project
     first: {
       type: Boolean,
       default: false,
