@@ -59,7 +59,7 @@ export default defineComponent({
     color="primary"
     @click="toggleDialog()"
   />
-  <v-dialog v-model="dialog" max-width="70vw">
+  <v-dialog v-model="dialog" width="80vw" max-width="1024">
     <v-card v-click-outside="toggleDialog" class="pa-3">
       <v-tabs v-model="activeTab">
         <v-tab
