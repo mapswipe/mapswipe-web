@@ -17,9 +17,9 @@ export default defineComponent({
 
 <template>
   <v-card-text>
-    <div class="text-h6">{{ $t('findProjectInstructions.classifyTitle') }}</div>
+    <div class="text-h6">{{ $t('projectInstructions.classifyTitle') }}</div>
     <div class="text-p">
-      {{ instructionMessage }} {{ $t('validateProjectInstructions.classifyInstruction') }}.
+      {{ instructionMessage }} {{ $t('projectInstructions.classifyInstruction') }}.
     </div>
 
     <v-row v-for="(option, optionIndex) in options" :key="optionIndex" align="center" dense>
@@ -37,17 +37,17 @@ export default defineComponent({
       <v-col>{{ [option.title, option.description].filter(Boolean).join(': ') }}</v-col>
     </v-row>
 
-    <div class="text-h6 mt-10">{{ $t('findProjectInstructions.toggleOpacityTitle') }}</div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.toggleOpacityTitle') }}</div>
     <div class="text-p mt-2">
       <v-row align="center" dense>
         <v-col cols="auto" class="mr-4">
           <v-btn color="primary" icon="mdi-eye" size="small" variant="text"> </v-btn>
         </v-col>
-        <v-col>{{ $t('findProjectInstructions.toggleOpacityInstruction') }}.</v-col>
+        <v-col>{{ $t('projectInstructions.toggleOpacityInstruction') }}.</v-col>
       </v-row>
     </div>
 
-    <div class="text-h6 mt-10">{{ $t('validateProjectInstructions.resetTitle') }}</div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.resetTitle') }}</div>
     <div class="text-p mt-2">
       <v-row align="center" dense>
         <v-col cols="auto" class="mr-4">
@@ -60,22 +60,22 @@ export default defineComponent({
           >
           </v-btn>
         </v-col>
-        <v-col>{{ $t('validateProjectInstructions.resetInstruction') }}</v-col>
+        <v-col>{{ $t('projectInstructions.resetInstruction') }}</v-col>
       </v-row>
     </div>
 
-    <div class="text-h6 mt-10">{{ $t('findProjectInstructions.useButtonsToNavigate') }}</div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.useButtonsToNavigate') }}</div>
     <div class="text-p mt-2">
       <v-row class="align-center" dense>
         <v-col cols="auto" class="mr-4">
           <v-btn icon="mdi-chevron-left" color="secondary" class="mr-2" variant="text" />
           <v-btn icon="mdi-chevron-right" color="secondary" variant="text" />
         </v-col>
-        <v-col>{{ $t('digitizeProjectInstructions.move') }}</v-col>
+        <v-col>{{ $t('projectInstructions.move') }}</v-col>
       </v-row>
     </div>
 
-    <div class="text-h6 mt-10">{{ $t('findProjectInstructions.saveYourAnswers') }}</div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.saveYourAnswers') }}</div>
     <div class="text-p mt-2">
       <v-row class="align-center" dense>
         <v-col cols="auto" class="mr-4">

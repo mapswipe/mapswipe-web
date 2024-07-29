@@ -35,9 +35,9 @@ export default defineComponent({
 
 <template>
   <v-card-text>
-    <div class="text-h6">{{ $t('findProjectInstructions.classifyTitle') }}</div>
+    <div class="text-h6">{{ $t('projectInstructions.classifyTitle') }}</div>
     <div class="text-p">
-      {{ instructionMessage }}. {{ $t('findProjectInstructions.classifyInstruction') }}.
+      {{ instructionMessage }}. {{ $t('projectInstructions.classifyInstruction') }}.
     </div>
     <v-row class="mt-2" dense>
       <v-col sm="auto" lg="auto" v-for="(option, index) in options" :key="index">
@@ -104,7 +104,7 @@ export default defineComponent({
     </div>
     <span v-if="exampleTileUrls[1]">
       <div class="text-h6 mt-10">
-        {{ $t('findProjectInstructions.toggleOpacityTitle') }}
+        {{ $t('projectInstructions.toggleOpacityTitle') }}
       </div>
       <div class="text-p mt-2">
         <v-row class="align-center" dense>
@@ -116,22 +116,22 @@ export default defineComponent({
               variant="text"
             />
           </v-col>
-          <v-col>{{ $t('findProjectInstructions.toggleOpacityInstruction') }}.</v-col>
+          <v-col>{{ $t('projectInstructions.toggleOpacityInstruction') }}.</v-col>
         </v-row>
       </div>
     </span>
-    <div class="text-h6 mt-10">{{ $t('compareProjectInstructions.whereIamTitle') }}</div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.whereIamTitle') }}</div>
     <div class="text-p mt-2">
       <v-row align="center" dense>
         <v-col cols="auto" class="mr-4">
           <v-btn color="primary" icon="mdi-earth" size="small" variant="text"> </v-btn>
         </v-col>
-        <v-col>{{ $t('compareProjectInstructions.whereIamInstruction') }}</v-col>
+        <v-col>{{ $t('projectInstructions.whereIamInstruction') }}</v-col>
       </v-row>
     </div>
 
     <div class="text-h6 mt-10">
-      {{ $t('findProjectInstructions.useButtonsToNavigate') }}
+      {{ $t('projectInstructions.useButtonsToNavigate') }}
     </div>
     <div class="text-p mt-2">
       <v-row class="align-center" dense>
@@ -149,16 +149,16 @@ export default defineComponent({
         <v-col>{{ $t('findProjectInstructions.movePage') }}</v-col>
       </v-row>
     </div>
-    <div class="text-h6 mt-10">{{ $t('findProjectInstructions.saveYourAnswers') }}</div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.saveYourAnswers') }}</div>
     <div class="text-p mt-2">
       <v-row class="align-center" dense>
         <v-col cols="auto" class="mr-4">
           <v-btn icon="mdi-content-save" color="primary" variant="text" />
         </v-col>
-        <v-col>{{ $t('findProjectInstructions.seenAll') }}</v-col>
+        <v-col>{{ $t('projectInstructions.seenAll') }}</v-col>
       </v-row>
     </div>
-    <div class="text-h6 mt-10">{{ $t('findProjectInstructions.imageCredits') }}</div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.imageCredits') }}</div>
     <div class="text-p">{{ attribution }}</div>
   </v-card-text>
 </template>
