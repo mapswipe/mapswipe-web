@@ -15,6 +15,7 @@ import { decode } from 'base-64'
 import { mapStores } from 'pinia'
 import { i18nRoute } from '@/i18n/translation'
 import { useCurrentUserStore } from '@/stores/currentUser'
+import { version } from '../../package.json'
 import matchIcon from '@/utils/matchIcon'
 import BasicPage from '@/components/BasicPage.vue'
 import CompareProject from '@/components/CompareProject.vue'
@@ -55,9 +56,14 @@ export default defineComponent({
       saveResults: (results, startTime) => {
         const numberOfTasks = Object.keys(results).length
         const endTime = new Date().toISOString()
+        const dev = import.meta.env.DEV
+        const appVersion = version + (dev ? '-dev' : '')
+        const clientType = 'web'
         this.mappingSpeed = (Date.parse(endTime) - Date.parse(startTime)) / numberOfTasks
 
         const entry = {
+          appVersion,
+          clientType,
           endTime,
           results,
           startTime,
