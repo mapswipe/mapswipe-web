@@ -1,10 +1,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import createInformationPages from '@/utils/createInformationPages'
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
 import { theme } from '@/plugins/vuetify'
 import OptionButtons from '@/components/OptionButtons.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
+import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import ValidateProjectInstructions from '@/components/ValidateProjectInstructions.vue'
 import { GeoJSON } from 'ol/format'
@@ -16,6 +18,7 @@ export default defineComponent({
     taskProgress: TaskProgress,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
+    projectInfo: ProjectInfo,
   },
   props: {
     group: {
@@ -73,9 +76,14 @@ export default defineComponent({
       type: Array,
       require: true,
     },
+    tutorial: {
+      type: Object,
+      require: false,
+    },
   },
   data() {
     return {
+      arrowKeys: true,
       center: [0, 0],
       results: {},
       startTime: null,
@@ -111,6 +119,41 @@ export default defineComponent({
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
         this.updateTaskFeature()
+      }
+    },
+    createInformationPages,
+    // fallback information pages of mobile app adapted to web app:
+    createFallbackInformationPages(tutorial) {
+      if (tutorial.lookFor) {
+        return [
+          {
+            blocks: [
+              {
+                blockNumber: 1,
+                blockType: 'text',
+                // web app displays shapes on a web map rather than on a single image
+                textDescription:
+                  "You'll see a shape on an interactive imagery map. Use the buttons to answer.",
+              },
+              {
+                blockNumber: 2,
+                blockType: 'text',
+                // instead of 'buildings', we get the feature of interest from Firebase (similar as in Find projects)
+                textDescription: 'Does the shape outline a ${tutorial.lookFor}?',
+              },
+              {
+                blockNumber: 3,
+                blockType: 'text',
+                textDescription:
+                  "Every time you select an option, you'll be shown a new shape and image.",
+              },
+            ],
+            pageNumber: 1,
+            title: 'What to look for',
+          },
+        ]
+      } else {
+        return undefined
       }
     },
     fitView(duration = 600, delay = 100) {
@@ -183,12 +226,19 @@ export default defineComponent({
       @click="fitView()"
       color="primary"
     />
-    <validate-project-instructions
+    <project-info
       :first="first"
-      :instructionMessage="instructionMessage"
+      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
-      :options="options"
-    />
+      @toggle-dialog="arrowKeys = !arrowKeys"
+    >
+      <template #instructions>
+        <validate-project-instructions
+          :instructionMessage="instructionMessage"
+          :options="options"
+        />
+      </template>
+    </project-info>
   </project-header>
   <v-container class="ma-0 pa-0">
     <ol-map
@@ -258,7 +308,7 @@ export default defineComponent({
       color="secondary"
       :disabled="taskIndex <= 0"
       @click="back"
-      v-shortkey.once="['arrowleft']"
+      v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
     />
     <v-btn
@@ -274,7 +324,7 @@ export default defineComponent({
       color="secondary"
       :disabled="!isAnswered() || taskIndex + 1 === tasks.length"
       @click="forward"
-      v-shortkey.once="['arrowright']"
+      v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
     />
     <v-spacer />

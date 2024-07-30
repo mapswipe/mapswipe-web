@@ -1,10 +1,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import createInformationPages from '@/utils/createInformationPages'
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
 import { theme } from '@/plugins/vuetify'
 import DigitizeProjectInstructions from '@/components/DigitizeProjectInstructions.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
+import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import { GeoJSON } from 'ol/format'
 import { createBox } from 'ol/interaction/Draw'
@@ -15,6 +17,7 @@ export default defineComponent({
     digitizeProjectInstructions: DigitizeProjectInstructions,
     taskProgress: TaskProgress,
     projectHeader: ProjectHeader,
+    projectInfo: ProjectInfo,
   },
   props: {
     group: {
@@ -33,9 +36,14 @@ export default defineComponent({
       type: Array,
       require: true,
     },
+    tutorial: {
+      type: Object,
+      require: false,
+    },
   },
   data() {
     return {
+      arrowKeys: true,
       endReached: false,
       center: [0, 0],
       drawing: false,
@@ -85,6 +93,11 @@ export default defineComponent({
         this.taskId = this.tasks[this.taskIndex].taskId
         this.updateTaskFeature()
       }
+    },
+    createInformationPages,
+    // fallback information pages for digitize projects tbd
+    createFallbackInformationPages() {
+      return undefined
     },
     drawCondition() {
       return this.withinTaskGeom || this.drawing
@@ -234,12 +247,19 @@ export default defineComponent({
       @click="fitView()"
       color="primary"
     />
-    <digitize-project-instructions
+    <project-info
       :first="first"
-      :drawType="drawType"
-      :instructionMessage="instructionMessage"
+      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
-    />
+      @toggle-dialog="arrowKeys = !arrowKeys"
+    >
+      <template #instructions>
+        <digitize-project-instructions
+          :drawType="drawType"
+          :instructionMessage="instructionMessage"
+        />
+      </template>
+    </project-info>
   </project-header>
   <v-container class="ma-0 pa-0">
     <ol-map
@@ -375,7 +395,7 @@ export default defineComponent({
       color="secondary"
       :disabled="taskIndex <= 0"
       @click="back"
-      v-shortkey.once="['arrowleft']"
+      v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
     />
     <v-btn
@@ -391,7 +411,7 @@ export default defineComponent({
       color="secondary"
       :disabled="taskIndex + 1 === tasks.length"
       @click="forward"
-      v-shortkey.once="['arrowright']"
+      v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
     />
     <v-spacer />

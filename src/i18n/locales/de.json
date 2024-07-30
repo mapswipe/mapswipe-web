@@ -141,26 +141,35 @@
     "resetView": "Ansicht zurücksetzen",
     "close": "Schließen"
   },
+  "projectInstructions": {
+    "classifyTitle": "Klicke oder tippe, um zu klassifizieren",
+    "classifyInstruction": "Klicke oder tippe auf jede Bildkachel, bis die passende Antwort erscheint",
+    "imageCredits": "Bildnachweis",
+    "move": "Zurück und weiter bewegen",
+    "resetTitle": "Ansicht zurücksetzen",
+    "resetInstruction": "Zoom auf die aktuelle Geometrie",
+    "saveYourAnswers": "Speichere deine Antworten",
+    "seenAll": "sobald du alle Bildkacheln gesehen und klassifiziert hast",
+    "toggleOpacityTitle": "Transparenz umschalten",
+    "toggleOpacityInstruction": "Schalte die Transparenz der oberen Schicht für eine bessere Sicht auf die Bildkacheln um",
+    "useButtonsToNavigate": "Navigationstasten",
+    "whereIamTitle": "Wo bin ich?",
+    "whereIamInstruction": "Öffne eine Karte, um zu sehen wo du gerade beiträgst"
+  },
   "findProjectInstructions": {
     "howToContribute": "Wie kann ich beitragen?",
-    "classifyInstruction": "Klicke oder tippe auf jede Bildkachel, bis die passende Antwort erscheint",
-    "classifyTitle": "Klicke oder tippe, um zu klassifizieren",
     "close": "Schließen",
     "moreInfo": "Mehr Info",
+    "moveLeft": "Vorherige Seite",
+    "moveRight": "Nächste Seite",
     "selectionTitle": "Mehrere Bildkacheln auswählen",
     "selectTile": "... oder Rechtsklick/Halten, um die Bildkachel der Auswahl hinzuzufügen. Wiederholen, um sie von der Auswahl zu entfernen",
     "selectAll": "Alle Bildkacheln der aktuellen Ansicht auswählen. Wiederholen, um die Auswahl zu leeren",
     "selectionInstruction": "Jeder Klick zur Klassifizierung wird auf alle Bildkacheln in der Auswahl angewandt",
-    "useButtonsToNavigate": "Navigationstasten",
     "moveColumn": "Spaltenweise links/rechts bewegen",
     "movePage": "Seitenweise links/rechts bewegen",
-    "toggleOpacityTitle": "Transparenz umschalten",
-    "toggleOpacityInstruction": "Schalte die Transparenz der oberen Schicht für eine bessere Sicht auf die Bildkacheln um",
     "haveCloserLook": "Schau genauer hin",
-    "magnifyInstruction": "Klicke das Symbol in der oberen rechten Ecke der Bildkachel, um das Bild zu vergrößern",
-    "saveYourAnswers": "Speichere deine Antworten",
-    "seenAll": ", sobald du alle Bildkacheln gesehen und klassifiziert hast",
-    "imageCredits": "Bildnachweis"
+    "magnifyInstruction": "Klicke das Symbol in der oberen rechten Ecke der Bildkachel, um das Bild zu vergrößern"
   },
   "validateProject": {
     "doesTheShapeOutline": "Ist der Umriss ein {feature}?",
@@ -168,14 +177,13 @@
     "moveRight": "Weiter zum nächsten Umriss"
   },
   "validateProjectInstructions": {
-    "resetTitle": "Ansicht zurücksetzen",
-    "resetInstruction": "Zoom auf die aktuelle Geometrie",
     "seenAll": "sobald du alle Umrisse gesehen und klassifiziert hast.",
     "classifyInstruction": "Benutze die Buttons, um deine Antwort zu geben"
   },
   "compareProject": {
     "before": "Vorher",
-    "after": "Nachher"
+    "after": "Nachher",
+    "lookForChange": "Vergleiche {lookFor}"
   },
   "digitizeProject": {
     "moveLeft": "Zurück",
@@ -183,10 +191,6 @@
     "draw": "{lookFor} einzeichnen",
     "modify": "Bearbeiten",
     "delete": "Löschen"
-  },
-  "compareProjectInstructions": {
-    "whereIamTitle": "Wollen Sie wissen, wo Sie kartieren?",
-    "whereIamInstruction": "Öffne eine Karte wo du gerade beiträgst"
   },
   "mediaProject": {
     "moveLeft": "Zurück",
@@ -196,7 +200,6 @@
     "switchMode": "Editiermodus umschalten",
     "drawNewFeature": "Neue Objekte einzeichnen",
     "modifyFeature": "Objekte bearbeiten",
-    "deleteFeature": "Objekte löschen",
-    "move": "Zurück und weiter bewegen"
+    "deleteFeature": "Objekte löschen"
   }
 }

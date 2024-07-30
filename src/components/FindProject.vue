@@ -1,10 +1,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import buildTasks from '@/utils/buildTasks'
+import createInformationPages from '@/utils/createInformationPages'
 import FindProjectInstructions from '@/components/FindProjectInstructions.vue'
 import ImageTile from '@/components/ImageTile.vue'
 import MagnifyImageTile from '@/components/MagnifyImageTile.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
+import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import TileMap from '@/components/TileMap.vue'
 
@@ -14,6 +16,7 @@ export default defineComponent({
     imageTile: ImageTile,
     magnifyImageTile: MagnifyImageTile,
     projectHeader: ProjectHeader,
+    projectInfo: ProjectInfo,
     tileMap: TileMap,
     taskProgress: TaskProgress,
   },
@@ -22,6 +25,7 @@ export default defineComponent({
       type: Object,
       require: true,
     },
+    // TODO: On implementation of interactive tutorials, change this so that instructions dialog is opened with tutorial, but not with project
     first: {
       type: Boolean,
       default: false,
@@ -45,9 +49,14 @@ export default defineComponent({
       type: Array,
       require: true,
     },
+    tutorial: {
+      type: Object,
+      require: false,
+    },
   },
   data() {
     return {
+      arrowKeys: true,
       columnIndex: 0,
       containerWidth: 1,
       endReached: false,
@@ -168,6 +177,47 @@ export default defineComponent({
     clamp(value: number, min: number, max: number) {
       const clamp = Math.min(Math.max(value, min), max)
       return clamp
+    },
+    createInformationPages,
+    createFallbackInformationPages(tutorial) {
+      if (tutorial.exampleImage1 && tutorial.exampleImage2 && tutorial.lookFor) {
+        return [
+          {
+            blocks: [
+              {
+                blockNumber: 1,
+                blockType: 'text',
+                textDescription: `You are looking for ${tutorial.lookFor}.`,
+              },
+              {
+                blockNumber: 2,
+                blockType: 'text',
+                textDescription: 'From the ground, it looks like this:',
+              },
+              {
+                blockNumber: 3,
+                blockType: 'image',
+                image: tutorial.exampleImage1,
+              },
+              {
+                blockNumber: 4,
+                blockType: 'text',
+                textDescription:
+                  'But the images you will see will show it from above, and it looks like this:',
+              },
+              {
+                blockNumber: 5,
+                blockType: 'image',
+                image: tutorial.exampleImage2,
+              },
+            ],
+            pageNumber: 1,
+            title: 'What to look for',
+          },
+        ]
+      } else {
+        return undefined
+      }
     },
     getCheckboxIcon(taskId) {
       const selected = this.isTaskSelected(taskId)
@@ -309,14 +359,21 @@ export default defineComponent({
       color="primary"
     />
     <tile-map :page="page" :zoomLevel="project.zoomLevel" :key="columnsPerPage" />
-    <find-project-instructions
-      :attribution="attribution"
-      :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
+    <project-info
       :first="first"
-      :instructionMessage="instructionMessage"
+      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
-      :options="options"
-    />
+      @toggle-dialog="arrowKeys = !arrowKeys"
+    >
+      <template #instructions>
+        <find-project-instructions
+          :attribution="attribution"
+          :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
+          :instructionMessage="instructionMessage"
+          :options="options"
+        />
+      </template>
+    </project-info>
   </project-header>
 
   <v-container
@@ -394,7 +451,7 @@ export default defineComponent({
       color="secondary"
       :disabled="columnIndex <= 0"
       @click="fastBack"
-      v-shortkey.once="['arrowdown']"
+      v-shortkey.once="[arrowKeys ? 'arrowdown' : '']"
       @shortkey="fastBack"
     />
     <v-btn
@@ -403,7 +460,7 @@ export default defineComponent({
       color="secondary"
       :disabled="columnIndex <= 0"
       @click="back"
-      v-shortkey.once="['arrowleft']"
+      v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
     />
     <v-btn
@@ -419,7 +476,7 @@ export default defineComponent({
       color="secondary"
       :disabled="isLastPage"
       @click="forward"
-      v-shortkey.once="['arrowright']"
+      v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
     />
     <v-btn
@@ -428,7 +485,7 @@ export default defineComponent({
       color="secondary"
       :disabled="isLastPage"
       @click="fastForward"
-      v-shortkey.once="['arrowup']"
+      v-shortkey.once="[arrowKeys ? 'arrowup' : '']"
       @shortkey="fastForward"
     />
     <v-spacer />

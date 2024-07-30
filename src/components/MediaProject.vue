@@ -1,7 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import createInformationPages from '@/utils/createInformationPages'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
+import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import MediaProjectInstructions from './MediaProjectInstructions.vue'
 
@@ -10,6 +12,7 @@ export default defineComponent({
     mediaProjectInstructions: MediaProjectInstructions,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
+    projectInfo: ProjectInfo,
     taskProgress: TaskProgress,
   },
   props: {
@@ -39,9 +42,14 @@ export default defineComponent({
       type: Array,
       require: true,
     },
+    tutorial: {
+      type: Object,
+      require: false,
+    },
   },
   data() {
     return {
+      arrowKeys: true,
       isImageLoaded: false,
       results: {},
       startTime: null,
@@ -90,6 +98,11 @@ export default defineComponent({
         this.taskId = this.tasks[this.taskIndex].taskId
       }
     },
+    createInformationPages,
+    // fallback information pages for media projects tbd (could be similar to find projects)
+    createFallbackInformationPages() {
+      return undefined
+    },
     forward() {
       if (this.isImageLoaded && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.imageLoaded = false
@@ -117,16 +130,20 @@ export default defineComponent({
 
 <template>
   <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
-    <media-project-instructions
-      :attribution="attribution"
+    <project-info
       :first="first"
-      :instructionMessage="instructionMessage"
-      :question="questions"
-      :mediaType="isImageTask ? 'image' : 'video'"
-      :textColor="contrastingTextColor"
+      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
-      :options="options"
-    />
+      @toggle-dialog="arrowKeys = !arrowKeys"
+    >
+      <template #instructions>
+        <media-project-instructions
+          :attribution="attribution"
+          :instructionMessage="instructionMessage"
+          :options="options"
+        />
+      </template>
+    </project-info>
   </project-header>
   <v-container
     class="ma-0 pa-0"
@@ -166,7 +183,7 @@ export default defineComponent({
       color="secondary"
       :disabled="taskIndex <= 0"
       @click="back"
-      v-shortkey.once="['arrowleft']"
+      v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
     />
     <v-btn
@@ -182,7 +199,7 @@ export default defineComponent({
       color="secondary"
       :disabled="!isImageLoaded || !isAnswered() || taskIndex + 1 === tasks.length"
       @click="forward"
-      v-shortkey.once="['arrowright']"
+      v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
     />
     <v-spacer />

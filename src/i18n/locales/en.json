@@ -141,26 +141,36 @@
     "resetView": "Reset view",
     "close": "Close"
   },
+  "projectInstructions": {
+    "classifyTitle": "Click or tap to classify",
+    "classifyInstruction": "Use buttons to provide your answers",
+    "imageCredits": "Image credits",
+    "move": "Move back and forward",
+    "resetInstruction": "Zoom to the current shape",
+    "resetTitle": "Reset the view",
+    "saveYourAnswers": "Save your answers",
+    "seenAll": "as soon as you have seen and classified all images",
+    "toggleOpacityTitle": "Toggle the overlay opacity",
+    "toggleOpacityInstruction": "For a clearer view of the underlying imagery, toggle the opacity of the overlay",
+    "useButtonsToNavigate": "Use buttons to navigate",
+    "whereIamTitle": "Where am I mapping?",
+    "whereIamInstruction": "Open a map of where you are currently contributing"
+  },
   "findProjectInstructions": {
     "howToContribute": "How to Contribute?",
-    "classifyTitle": "Click or tap to classify",
     "classifyInstruction": "Click or tap each image tile, until the appropriate answer appears",
     "close": "Close",
     "moreInfo": "More Info",
+    "moveLeft": "Back to previous page",
+    "moveRight": "Go to next page",
     "selectionTitle": "Select multiple tiles",
     "selectTile": "... or right click/hold touch to add a tile to the selection. Repeat to remove the tile from the selection",
     "selectAll": "Select all tiles in view. Repeat to clear selection",
     "selectionInstruction": "Any click to classify applies to all selected tiles",
-    "useButtonsToNavigate": "Use buttons to navigate",
     "moveColumn": "Move left/right by column",
     "movePage": "Move left/right by page",
-    "toggleOpacityTitle": "Toggle the overlay opacity",
-    "toggleOpacityInstruction": "For a clearer view of the underlying imagery, toggle the opacity of the overlay",
     "haveCloserLook": "Have a closer look",
-    "magnifyInstruction": "Click this icon in the upper right corner of a tile to magnify the image",
-    "saveYourAnswers": "Save your answers",
-    "seenAll": "as soon as you have seen and classified all images",
-    "imageCredits": "Image credits"
+    "magnifyInstruction": "Click this icon in the upper right corner of a tile to magnify the image"
   },
   "validateProject": {
     "doesTheShapeOutline": "Does the shape outline a {feature}?",
@@ -168,10 +178,7 @@
     "moveRight": "Forward to next feature"
   },
   "validateProjectInstructions": {
-    "resetTitle": "Reset the view",
-    "resetInstruction": "Zoom to the current shape",
-    "seenAll": "as soon as you have seen and classified all the features.",
-    "classifyInstruction": "Use buttons to provide your answers"
+    "seenAll": "as soon as you have seen and classified all the features."
   },
   "compareProject": {
     "before": "Before",
@@ -185,10 +192,6 @@
     "modify": "Modify",
     "delete": "Delete"
   },
-  "compareProjectInstructions": {
-    "whereIamTitle": "Where am I mapping?",
-    "whereIamInstruction": "Open a map of where you are currently contributing"
-  },
   "mediaProject": {
     "moveLeft": "Back",
     "moveRight": "Forward"
@@ -197,7 +200,6 @@
     "switchMode": "Switch editing mode",
     "drawNewFeature": "Draw new features",
     "modifyFeature": "Modify features",
-    "deleteFeature": "Delete features",
-    "move": "Move back and forward"
+    "deleteFeature": "Delete features"
   }
 }
