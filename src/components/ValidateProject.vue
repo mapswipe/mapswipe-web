@@ -139,7 +139,7 @@ export default defineComponent({
                 blockNumber: 2,
                 blockType: 'text',
                 // instead of 'buildings', we get the feature of interest from Firebase (similar as in Find projects)
-                textDescription: 'Does the shape outline a ${tutorial.lookFor}?',
+                textDescription: `Does the shape outline a ${tutorial.lookFor}?`,
               },
               {
                 blockNumber: 3,
