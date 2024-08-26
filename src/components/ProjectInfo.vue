@@ -54,7 +54,7 @@ export default defineComponent({
 
 <template>
   <v-btn
-    :title="$t('findProjectInstructions.howToContribute')"
+    :title="$t('projectInstructions.howToContribute')"
     icon="mdi-information"
     color="primary"
     @click="toggleDialog()"
@@ -68,7 +68,7 @@ export default defineComponent({
           :value="index"
           :key="page.pageNumber"
         ></v-tab>
-        <v-tab :text="$t('findProjectInstructions.howToContribute')" value="instructions"></v-tab>
+        <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions"></v-tab>
       </v-tabs>
 
       <v-window v-model="activeTab" style="height: 70vh; overflow-y: auto">

@@ -35,9 +35,9 @@ export default defineComponent({
 
 <template>
   <v-card-text>
-    <div class="text-h6">{{ $t('projectInstructions.classifyTitle') }}</div>
+    <div class="text-h6">{{ $t('findProjectInstructions.classifyTitle') }}</div>
     <div class="text-p">
-      {{ instructionMessage }}. {{ $t('projectInstructions.classifyInstruction') }}.
+      {{ instructionMessage }}. {{ $t('findProjectInstructions.classifyInstruction') }}.
     </div>
     <v-row class="mt-2" dense>
       <v-col sm="auto" lg="auto" v-for="(option, index) in options" :key="index">

@@ -142,8 +142,9 @@
     "close": "Close"
   },
   "projectInstructions": {
-    "classifyTitle": "Click or tap to classify",
+    "classifyTitle": "Provide your answer",
     "classifyInstruction": "Use buttons to provide your answers",
+    "howToContribute": "How to Contribute?",
     "imageCredits": "Image credits",
     "move": "Move back and forward",
     "resetInstruction": "Zoom to the current shape",
@@ -157,7 +158,7 @@
     "whereIamInstruction": "Open a map of where you are currently contributing"
   },
   "findProjectInstructions": {
-    "howToContribute": "How to Contribute?",
+    "classifyTitle": "Click or tap to classify",
     "classifyInstruction": "Click or tap each image tile, until the appropriate answer appears",
     "close": "Close",
     "moreInfo": "More Info",

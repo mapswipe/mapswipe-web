@@ -142,8 +142,9 @@
     "close": "Schließen"
   },
   "projectInstructions": {
-    "classifyTitle": "Klicke oder tippe, um zu klassifizieren",
-    "classifyInstruction": "Klicke oder tippe auf jede Bildkachel, bis die passende Antwort erscheint",
+    "classifyTitle": "Gib deine Antwort",
+    "classifyInstruction": "Benutze Buttons, um deine Antwort zu geben",
+    "howToContribute": "Wie kann ich beitragen?",
     "imageCredits": "Bildnachweis",
     "move": "Zurück und weiter bewegen",
     "resetTitle": "Ansicht zurücksetzen",
@@ -157,7 +158,8 @@
     "whereIamInstruction": "Öffne eine Karte, um zu sehen wo du gerade beiträgst"
   },
   "findProjectInstructions": {
-    "howToContribute": "Wie kann ich beitragen?",
+    "classifyTitle": "Klicke oder tippe, um zu klassifizieren",
+    "classifyInstruction": "Klicke oder tippe auf jede Bildkachel, bis die passende Antwort erscheint",
     "close": "Schließen",
     "moreInfo": "Mehr Info",
     "moveLeft": "Vorherige Seite",
