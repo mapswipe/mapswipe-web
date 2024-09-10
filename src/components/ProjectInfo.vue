@@ -2,13 +2,15 @@
 import { defineComponent } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
+type TabType = number | string;
+
 export default defineComponent({
   components: {
     VueMarkdown,
   },
   props: {
     informationPages: {
-      type: Array,
+      type: Array<string>,
       required: false,
     },
     manualUrl: {
@@ -20,16 +22,22 @@ export default defineComponent({
       default: false,
     },
   },
-  data: () => ({
+  data: (): {
+    activeTab: TabType | null;
+    dialog: boolean;
+  } => ({
     activeTab: null,
     dialog: false,
   }),
   computed: {
     tabs() {
-      const tabs = this.informationPages
-        ? Array.from({ length: this.informationPages.length }, (v, i) => i).concat(['instructions'])
-        : ['instructions']
-      return tabs
+      const tabs: TabType[] = [
+        ...Array.from(new Array(this.informationPages?.length ?? 0).keys()),
+        'instructions',
+        'tutorial',
+      ];
+
+      return tabs;
     },
   },
   methods: {
@@ -38,10 +46,18 @@ export default defineComponent({
       this.dialog = !this.dialog
     },
     back() {
+      if (this.activeTab === null) {
+        return;
+      }
+
       const currentTabIndex = this.tabs.indexOf(this.activeTab)
       if (currentTabIndex > 0) this.activeTab = this.tabs[currentTabIndex - 1]
     },
     forward() {
+      if (this.activeTab === null) {
+        return;
+      }
+
       const currentTabIndex = this.tabs.indexOf(this.activeTab)
       if (currentTabIndex < this.tabs.length - 1) this.activeTab = this.tabs[currentTabIndex + 1]
     },
@@ -59,8 +75,8 @@ export default defineComponent({
     color="primary"
     @click="toggleDialog()"
   />
-  <v-dialog v-model="dialog" width="80vw" max-width="1024">
-    <v-card v-click-outside="toggleDialog" class="pa-3">
+  <v-dialog v-model="dialog" width="80vw" max-width="1024" >
+    <v-card v-click-outside="toggleDialog" class="pa-2">
       <v-tabs v-model="activeTab">
         <v-tab
           v-for="(page, index) in informationPages"
@@ -69,10 +85,11 @@ export default defineComponent({
           :key="page.pageNumber"
         ></v-tab>
         <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions"></v-tab>
+        <v-tab value="tutorial">Tutorial</v-tab>
       </v-tabs>
-
-      <v-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
-        <v-window-item
+      <v-divider />
+      <v-tabs-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
+        <v-tabs-window-item
           v-for="(page, index) in informationPages"
           :value="index"
           :key="page.pageNumber"
@@ -94,12 +111,16 @@ export default defineComponent({
               class="mx-auto"
             />
           </span>
-        </v-window-item>
-        <v-window-item value="instructions">
+        </v-tabs-window-item>
+        <v-tabs-window-item value="instructions">
           <slot name="instructions"></slot>
-        </v-window-item>
-      </v-window>
-      <v-card-actions class="justify-end">
+        </v-tabs-window-item>
+        <v-tabs-window-item value="tutorial">
+          <slot name="tutorial"></slot>
+        </v-tabs-window-item>
+      </v-tabs-window>
+      <v-divider />
+      <v-card-actions>
         <v-btn
           :title="$t('findProjectInstructions.moveLeft')"
           icon="mdi-chevron-left"

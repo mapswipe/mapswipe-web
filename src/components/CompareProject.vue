@@ -1,22 +1,60 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+
 import createInformationPages from '@/utils/createInformationPages'
 import OptionButtons from '@/components/OptionButtons.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
 import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import TileMap from '@/components/TileMap.vue'
-import ImageTile from '@/components/ImageTile.vue'
 import CompareProjectInstructions from '@/components/CompareProjectInstructions.vue'
+import CompareProjectTutorial from '@/components/CompareProjectTutorial.vue'
+import CompareProjectTask from '@/components/CompareProjectTask.vue'
+
+const defaultOptions = [
+    {
+      description: "I don't see any change between the two images.",
+      iconColor: '',
+      title: 'No change',
+      mdiIcon: 'mdi-equal',
+      shortkey: 1,
+      value: 0,
+    },
+    {
+      description: 'There is change between the two images.',
+      iconColor: 'green',
+      title: 'Change',
+      mdiIcon: 'mdi-not-equal-variant',
+      shortkey: 2,
+      value: 1,
+    },
+    {
+      description: 'I am not sure.',
+      iconColor: 'orange',
+      title: 'Not sure',
+      mdiIcon: 'mdi-head-question',
+      shortkey: 3,
+      value: 2,
+    },
+    {
+      description: 'The imagery is bad or clouded.',
+      iconColor: 'red',
+      title: 'Bad imagery',
+      mdiIcon: 'mdi-weather-cloudy',
+      shortkey: 4,
+      value: 3,
+    },
+];
 
 export default defineComponent({
   components: {
     compareProjectInstructions: CompareProjectInstructions,
+    compareProjectTutorial: CompareProjectTutorial,
+    compareProjectTask: CompareProjectTask,
     taskProgress: TaskProgress,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
     projectInfo: ProjectInfo,
-    imageTile: ImageTile,
     tileMap: TileMap,
   },
   props: {
@@ -31,40 +69,7 @@ export default defineComponent({
     options: {
       type: Array,
       default() {
-        return [
-          {
-            description: "I don't see any change between the two images.",
-            iconColor: '',
-            title: 'No change',
-            mdiIcon: 'mdi-equal',
-            shortkey: 1,
-            value: 0,
-          },
-          {
-            description: 'There is change between the two images.',
-            iconColor: 'green',
-            title: 'Change',
-            mdiIcon: 'mdi-not-equal-variant',
-            shortkey: 2,
-            value: 1,
-          },
-          {
-            description: 'I am not sure.',
-            iconColor: 'orange',
-            title: 'Not sure',
-            mdiIcon: 'mdi-head-question',
-            shortkey: 3,
-            value: 2,
-          },
-          {
-            description: 'The imagery is bad or clouded.',
-            iconColor: 'red',
-            title: 'Bad imagery',
-            mdiIcon: 'mdi-weather-cloudy',
-            shortkey: 4,
-            value: 3,
-          },
-        ]
+        return defaultOptions;
       },
     },
     project: {
@@ -146,9 +151,10 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
+  <project-header :instructionMessage="instructionMessage" :title="project.name">
     <tile-map :page="[tasks[taskIndex]]" :zoomLevel="project.zoomLevel" />
     <project-info
+      ref="projectInfo"
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
@@ -161,65 +167,20 @@ export default defineComponent({
           :options="options"
         />
       </template>
+      <template #tutorial>
+        <compare-project-tutorial
+          :tutorial="tutorial"
+          :options="options"
+          @tutorialComplete="$refs.projectInfo?.toggleDialog"
+        />
+      </template>
     </project-info>
   </project-header>
-  <v-container class="pa-0" v-touch="{ left: () => forward(), right: () => back() }">
-    <v-row>
-      <v-col cols="12" md="6" align="center">
-        <v-hover v-slot="{ isHovering, props }">
-          <v-card
-            :max-width="$vuetify.display.smAndDown ? '35vh' : '80vh'"
-            v-bind="props"
-            color="white"
-            variant="outlined"
-            rounded="0"
-          >
-            <v-overlay
-              v-model="overlay"
-              @update:modelValue="overlay = true"
-              opacity="0"
-              class="justify-center align-center"
-              contained
-            >
-              <h2 v-show="isHovering">{{ $t('compareProject.before') }}</h2>
-            </v-overlay>
-            <image-tile
-              :url="tasks[taskIndex].url"
-              :spinner="true"
-              :maxSize="$vuetify.display.smAndDown ? '35vh' : '65vh'"
-            />
-          </v-card>
-        </v-hover>
-      </v-col>
-      <v-col cols="12" md="6" align="center">
-        <v-hover v-slot="{ isHovering, props }">
-          <v-card
-            :max-width="$vuetify.display.smAndDown ? '35vh' : '65vh'"
-            v-bind="props"
-            color="white"
-            variant="outlined"
-            rounded="0"
-          >
-            <v-overlay
-              v-model="overlay"
-              @update:modelValue="overlay = true"
-              opacity="0"
-              class="justify-center align-center"
-              contained
-            >
-              <h2 v-show="isHovering">{{ $t('compareProject.after') }}</h2>
-            </v-overlay>
-            <image-tile
-              :url="tasks[taskIndex].urlB"
-              :spinner="true"
-              :maxSize="$vuetify.display.smAndDown ? '35vh' : '80vh'"
-            />
-          </v-card>
-        </v-hover>
-      </v-col>
-    </v-row>
+  <v-container v-touch="{ left: () => forward(), right: () => back() }">
+    <compare-project-task
+      :task="tasks?.[taskIndex]"
+    />
   </v-container>
-
   <option-buttons
     v-if="taskId"
     :options="options"
