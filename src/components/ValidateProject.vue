@@ -1,20 +1,21 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { Collection } from 'ol'
 import createInformationPages from '@/utils/createInformationPages'
-import hex2rgb from '@/utils/hex2rgb'
-import makeXyzUrl from '@/utils/makeXyzUrl'
 import { theme } from '@/plugins/vuetify'
 import OptionButtons from '@/components/OptionButtons.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
 import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import ValidateProjectInstructions from '@/components/ValidateProjectInstructions.vue'
-import { GeoJSON } from 'ol/format'
-import { Collection } from 'ol'
+import ValidateProjectTutorial from '@/components/ValidateProjectTutorial.vue'
+import ValidateProjectTask from './ValidateProjectTask.vue'
 
 export default defineComponent({
   components: {
     validateProjectInstructions: ValidateProjectInstructions,
+    validateProjectTutorial: ValidateProjectTutorial,
+    validateProjectTask: ValidateProjectTask,
     taskProgress: TaskProgress,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
@@ -118,7 +119,6 @@ export default defineComponent({
       if (!this.taskIndex <= 0) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
-        this.updateTaskFeature()
       }
     },
     createInformationPages,
@@ -156,56 +156,22 @@ export default defineComponent({
         return undefined
       }
     },
-    fitView(duration = 600, delay = 100) {
-      const map = this.$refs.map.map
-      const mapView = this.$refs.mapView
-      const extent = this.$refs.taskSource.source.getExtent()
-      if (!extent.some((coordinate) => coordinate == Infinity)) {
-        setTimeout(() => {
-          mapView.fit(extent, {
-            size: map.getSize(),
-            padding: [20, 20, 20, 20],
-            maxZoom: this.project.tileServer.maxZoom | 19,
-            duration: duration,
-          })
-        }, delay)
-      }
-    },
     forward() {
       if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
-        this.updateTaskFeature()
       }
     },
-    handleToggleOpacity() {
-      this.transparent = !this.transparent
-      this.updateTaskFeature()
-    },
-    hex2rgb,
     isAnswered() {
       const result = this.results[this.taskId]
       const defined = result !== undefined
       return defined
     },
-    updateTaskFeature() {
-      const geoJson = new GeoJSON()
-      const geom = this.tasks[this.taskIndex].geojson
-      const feature = { geometry: geom, type: 'Feature' }
-      const options = {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:3857',
-      }
-      const newFeature = geoJson.readFeature(feature, options)
-      this.taskFeatures.clear()
-      this.taskFeatures.push(newFeature)
-    },
-    makeXyzUrl,
   },
+  emits: ['created'],
   created() {
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId
-    this.updateTaskFeature()
     this.$emit('created')
     this.logMappingStarted(this.project.projectType)
   },
@@ -217,16 +183,17 @@ export default defineComponent({
     <v-btn
       :title="$t('findProject.toggleOpacity')"
       :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
-      @click="handleToggleOpacity()"
+      @click="transparent = !transparent"
       color="primary"
     />
     <v-btn
       :title="$t('tileMap.resetView')"
       icon="mdi-fit-to-screen-outline"
-      @click="fitView()"
+      @click="$refs['validate-project-task']?.fitView()"
       color="primary"
     />
     <project-info
+      ref="projectInfo"
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
@@ -238,60 +205,22 @@ export default defineComponent({
           :options="options"
         />
       </template>
+      <template #tutorial>
+        <validate-project-tutorial
+          :tutorial="tutorial"
+          :options="options"
+          @tutorialComplete="$refs.projectInfo?.toggleDialog"
+        />
+      </template>
     </project-info>
   </project-header>
   <v-container class="ma-0 pa-0">
-    <ol-map
-      ref="map"
-      :load-tiles-while-animating="true"
-      :load-tiles-while-interacting="true"
-      style="height: calc(100vh - 375px)"
-      @rendercomplete.once="fitView(1200, 300)"
-    >
-      <ol-view
-        ref="mapView"
-        :zoom="zoom"
-        :center="center"
-        :maxZoom="project?.tileServer?.maxZoom"
-      />
-      <ol-tile-layer
-        v-if="project?.tileServer?.name != 'bing'"
-        id="osmLayer"
-        ref="osmLayer"
-        :zIndex="1"
-      >
-        <ol-source-osm />
-      </ol-tile-layer>
-      <ol-tile-layer id="basemapLayer" ref="basemapLayer" :zIndex="2">
-        <ol-source-bingmaps
-          v-if="project?.tileServer?.name === 'bing'"
-          :api-key="project?.tileServer?.apiKey"
-          :imagery-set="project?.tileServer?.imagerySet || 'Aerial'"
-        />
-        <ol-source-xyz
-          v-else
-          :url="makeXyzUrl(project.tileServer)"
-          :attributions="project.tileServer.credits"
-        />
-      </ol-tile-layer>
-
-      <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3">
-        <ol-source-vector
-          v-model:features="taskFeatures"
-          @change="fitView()"
-          ref="taskSource"
-          ident="taskSource"
-        />
-        <ol-style>
-          <ol-style-stroke
-            :color="hex2rgb(colors.light.accent, transparent ? 0.4 : 1)"
-            :width="5"
-          />
-          <ol-style-fill color="#0000" />
-        </ol-style>
-      </ol-vector-layer>
-      <ol-scaleline-control />
-    </ol-map>
+    <validate-project-task
+      ref="validate-project-task"
+      :task="tasks?.[taskIndex]"
+      :project="project"
+      :transparent="transparent"
+    />
   </v-container>
   <option-buttons
     v-if="taskId"

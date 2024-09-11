@@ -4,11 +4,13 @@ import { goOnline, onValue } from 'firebase/database'
 import { db, getTasksRef } from '@/firebase'
 import matchIcon from '@/utils/matchIcon';
 import OptionButtons from '@/components/OptionButtons.vue'
-import CompareProjectTask from '@/components/CompareProjectTask.vue';
 import TaskProgress from '@/components/TaskProgress.vue';
 import { decompressTasks } from '@/utils/tasks';
-import { isDefined } from '@/utils/common';
+import ValidateProjectTask, { type Project } from './ValidateProjectTask.vue';
 
+function isDefined<T>(item: T | null | undefined): item is T {
+  return item !== null && item !== undefined;
+}
 
 interface Option {
   title: string;
@@ -20,10 +22,12 @@ interface Option {
 }
 
 interface Task {
+  geojson: object;
+  geometry: string;
+  properties: object;
+  reference: number;
+  screen: number;
   taskId: string;
-  url?: string;
-  urlB?: string;
-  referenceAnswer: number;
 }
 
 interface Screen {
@@ -32,7 +36,7 @@ interface Screen {
   description: string;
 }
 
-interface Tutorial {
+interface Tutorial extends Project {
   projectId: string;
   name: string;
   lookFor?: string;
@@ -45,7 +49,7 @@ interface Tutorial {
 
 export default defineComponent({
   components: {
-    compareProjectTask: CompareProjectTask,
+    validateProjectTask: ValidateProjectTask,
     optionButtons: OptionButtons,
     taskProgress: TaskProgress,
   },
@@ -90,7 +94,7 @@ export default defineComponent({
     answeredCorrectly() {
       const result = this.results[this.task?.taskId];
 
-      return isDefined(result) && result === this.task?.referenceAnswer;
+      return isDefined(result) && result === this.task?.reference;
     },
     alertContent() {
       if (!this.screen) {
@@ -171,7 +175,7 @@ export default defineComponent({
     },
     showAnswer() {
       this.answersRevealed = true;
-      this.results[this.task.taskId] = this.task.referenceAnswer;
+      this.results[this.task.taskId] = this.task.reference;
     },
   },
   emits: ['tutorialComplete'],
@@ -206,9 +210,11 @@ export default defineComponent({
     </v-row>
     <v-row>
       <v-col>
-        <compare-project-task
-          v-if="tasks[currentTaskIndex]"
+        <validate-project-task
+          v-if="tasks[currentTaskIndex] && tutorial"
           :task="tasks[currentTaskIndex]"
+          :project="tutorial"
+          compact
         />
       </v-col>
     </v-row>

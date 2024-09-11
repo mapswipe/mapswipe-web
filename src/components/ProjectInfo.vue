@@ -62,6 +62,7 @@ export default defineComponent({
       if (currentTabIndex < this.tabs.length - 1) this.activeTab = this.tabs[currentTabIndex + 1]
     },
   },
+  emits: ['toggleDialog'],
   created() {
     if (this.first) this.toggleDialog()
   },

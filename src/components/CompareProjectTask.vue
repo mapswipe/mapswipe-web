@@ -1,5 +1,5 @@
 <script lang="ts">
-import { PropType, defineComponent } from 'vue'
+import { type PropType, defineComponent } from 'vue'
 import ImageTile from '@/components/ImageTile.vue'
 
 interface Task {
