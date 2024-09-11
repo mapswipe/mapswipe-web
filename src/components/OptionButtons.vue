@@ -1,22 +1,46 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
+
+// FIXME: move this to utils
+function isDefined<T>(item: T | null | undefined): item is T {
+  return item !== null && item !== undefined;
+}
+
+export interface Option {
+  shortkey: number;
+  title: string;
+  description: string;
+  iconColor: string;
+  mdiIcon: string;
+
+  value: number;
+  subOptions?: {
+    value: number;
+    description: string;
+  }[];
+  subOptionValues?: number[];
+}
 
 export default defineComponent({
   props: {
     options: {
-      type: Array,
-      require: true,
+      type: Array as PropType<Option[]>,
+      required: true,
     },
     taskId: {
       type: String,
-      require: true,
+      required: true,
     },
     result: {
       type: Number,
       default: undefined,
     },
   },
-  data() {
+  data(): {
+    selectedOption: Option | undefined,
+    selectedSubOptionValue: number | undefined,
+    subOptionsDialog: boolean,
+  } {
     return {
       selectedOption: undefined,
       selectedSubOptionValue: undefined,
@@ -34,7 +58,7 @@ export default defineComponent({
       this.$emit('addResult', value)
       this.subOptionsDialog = false
     },
-    handleOptionButtonClicked(option) {
+    handleOptionButtonClicked(option: Option) {
       if (!option.subOptions) {
         const value = option.value
         this.$emit('addResult', value)
@@ -43,15 +67,14 @@ export default defineComponent({
         this.subOptionsDialog = true
       }
     },
-    isOptionSelected(option) {
+    isOptionSelected(option: Option) {
       const values = option.subOptionValues || [option.value]
-      const isOptionSelected = values.includes(this.result)
+      const isOptionSelected = isDefined(this.result) && values.includes(this.result)
       return isOptionSelected
     },
     resetSelectedSubOption() {
-      const hasResult = this.result !== undefined
-      const resultIsSubOption = !this.options.map((o) => o.value).includes(this.result)
-      this.selectedSubOptionValue = hasResult && resultIsSubOption ? this.result : undefined
+      const resultIsSubOption = isDefined(this.result) && !this.options.map((o) => o.value).includes(this.result)
+      this.selectedSubOptionValue = resultIsSubOption ? this.result : undefined
     },
   },
 })

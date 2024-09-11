@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 
 import createInformationPages from '@/utils/createInformationPages'
 import OptionButtons from '@/components/OptionButtons.vue'
@@ -8,10 +8,32 @@ import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import TileMap from '@/components/TileMap.vue'
 import CompareProjectInstructions from '@/components/CompareProjectInstructions.vue'
-import CompareProjectTutorial from '@/components/CompareProjectTutorial.vue'
-import CompareProjectTask from '@/components/CompareProjectTask.vue'
+import CompareProjectTutorial, { type Tutorial } from '@/components/CompareProjectTutorial.vue'
+import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue'
+import { type Option } from '@/components/OptionButtons.vue'
 
-const defaultOptions = [
+// FIXME: move this to utils
+function isDefined<T>(item: T | null | undefined): item is T {
+  return item !== null && item !== undefined;
+}
+
+// NOTE: is only for compare project
+interface ProjectCompareType {
+    projectType: string;
+    name: string;
+    zoomLevel: number;
+    manualUrl?: string;
+    tileServer: {
+        credits: string
+    };
+    tileServerB: {
+        credits: string;
+    },
+    credits: string;
+    lookFor: string;
+}
+
+const defaultOptions: Option[] = [
     {
       description: "I don't see any change between the two images.",
       iconColor: '',
@@ -58,34 +80,45 @@ export default defineComponent({
     tileMap: TileMap,
   },
   props: {
+    // FIXME: this prop is not used
     group: {
       type: Object,
-      require: true,
+      required: true,
     },
     first: {
       type: Boolean,
       default: false,
     },
     options: {
-      type: Array,
+      type: Array as PropType<Option[]>,
       default() {
         return defaultOptions;
       },
     },
     project: {
-      type: Object,
-      require: true,
+      type: Object as PropType<ProjectCompareType>,
+      required: true,
     },
     tasks: {
-      type: Array,
-      require: true,
+      type: Array as PropType<Task[]>,
+      required: true,
     },
     tutorial: {
-      type: Object,
-      require: false,
+      type: Object as PropType<Tutorial>,
+      required: false,
     },
   },
-  data() {
+  data(): {
+      allAnswered: boolean,
+      arrowKeys: boolean,
+      overlay: boolean,
+      results: Record<string, number | undefined>,
+      startTime: string | null,
+      task: object,
+      taskId: string | undefined,
+      taskIndex: 0,
+      transparent: boolean,
+  } {
     return {
       allAnswered: false,
       arrowKeys: true,
@@ -98,6 +131,8 @@ export default defineComponent({
       transparent: false,
     }
   },
+  // NOTE: These are not typesafe.
+  // We can use the inject method on setup and add explicity type
   inject: {
     logMappingStarted: 'logMappingStarted',
     saveResults: 'saveResults',
@@ -115,13 +150,15 @@ export default defineComponent({
     },
   },
   methods: {
-    addResult(value) {
-      this.results[this.taskId] = value
+    addResult(value: number | undefined) {
+      if (isDefined(this.taskId)) {
+          this.results[this.taskId] = value;
+      }
     },
     back() {
-      if (!this.taskIndex <= 0) {
-        this.taskIndex--
-        this.taskId = this.tasks[this.taskIndex].taskId
+      if (this.taskIndex > 0) {
+        this.taskIndex--;
+        this.taskId = this.tasks[this.taskIndex].taskId;
       }
     },
     createInformationPages,
@@ -136,6 +173,9 @@ export default defineComponent({
       }
     },
     isAnswered() {
+      if (!this.taskId) {
+          return false;
+      }
       const result = this.results[this.taskId]
       const defined = result !== undefined
       return defined
@@ -217,7 +257,7 @@ export default defineComponent({
     />
     <v-spacer />
     <template #extension>
-      <task-progress :progress="taskIndex + isAnswered()" :total="tasks.length" />
+      <task-progress :progress="taskIndex + (isAnswered() ? 1 : 0)" :total="tasks.length" />
     </template>
   </v-toolbar>
 </template>

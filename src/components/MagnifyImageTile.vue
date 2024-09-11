@@ -9,7 +9,7 @@ export default defineComponent({
   props: {
     handleTileClickedFun: {
       type: String,
-      require: true,
+      required: true,
     },
     iconSize: {
       type: String,
@@ -21,7 +21,7 @@ export default defineComponent({
     },
     task: {
       type: Object,
-      require: true,
+      required: true,
     },
     transparent: {
       type: Boolean,

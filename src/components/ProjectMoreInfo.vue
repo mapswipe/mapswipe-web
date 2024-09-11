@@ -9,15 +9,15 @@ export default defineComponent({
   props: {
     project: {
       type: Object,
-      require: true,
+      required: true,
     },
     fallbackImage: {
       type: String,
-      require: true,
+      required: true,
     },
     selectFun: {
       type: Function,
-      require: true,
+      required: true,
     },
   },
   data() {

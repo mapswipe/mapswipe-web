@@ -1,5 +1,6 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { type PropType, defineComponent } from 'vue'
+import { type Option } from '@/components/OptionButtons.vue';
 
 export default defineComponent({
   props: {
@@ -12,7 +13,7 @@ export default defineComponent({
       require: false,
     },
     options: {
-      type: Array,
+      type: Array as PropType<Option[]>,
       required: true,
     },
   },

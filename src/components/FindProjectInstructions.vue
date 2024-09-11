@@ -21,7 +21,7 @@ export default defineComponent({
     },
     exampleTileUrls: {
       type: Array,
-      require: true,
+      required: true,
     },
   },
   data: () => ({

@@ -2,9 +2,12 @@
 import { type PropType, defineComponent } from 'vue'
 import ImageTile from '@/components/ImageTile.vue'
 
-interface Task {
+export interface Task {
+  taskId: string;
+  // Are we sure that urls are optional?
   url?: string;
   urlB?: string;
+  referenceAnswer: number;
 }
 
 export default defineComponent({

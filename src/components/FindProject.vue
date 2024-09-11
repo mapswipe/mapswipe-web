@@ -23,7 +23,7 @@ export default defineComponent({
   props: {
     group: {
       type: Object,
-      require: true,
+      required: true,
     },
     // TODO: On implementation of interactive tutorials, change this so that instructions dialog is opened with tutorial, but not with project
     first: {
@@ -43,11 +43,11 @@ export default defineComponent({
     },
     project: {
       type: Object,
-      require: true,
+      required: true,
     },
     tasks: {
       type: Array,
-      require: true,
+      required: true,
     },
     tutorial: {
       type: Object,

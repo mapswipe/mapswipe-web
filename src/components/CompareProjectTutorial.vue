@@ -4,27 +4,12 @@ import { goOnline, onValue } from 'firebase/database'
 import { db, getTasksRef } from '@/firebase'
 import matchIcon from '@/utils/matchIcon';
 import OptionButtons from '@/components/OptionButtons.vue'
-import CompareProjectTask from '@/components/CompareProjectTask.vue';
+import { type Option } from '@/components/OptionButtons.vue'
+import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue';
 import TaskProgress from '@/components/TaskProgress.vue';
 import { decompressTasks } from '@/utils/tasks';
 import { isDefined } from '@/utils/common';
 
-
-interface Option {
-  title: string;
-  description: string;
-  iconColor: string;
-  mdiIcon: string;
-  shortKey: number;
-  value: number;
-}
-
-interface Task {
-  taskId: string;
-  url?: string;
-  urlB?: string;
-  referenceAnswer: number;
-}
 
 interface Screen {
   title: string;
@@ -32,7 +17,7 @@ interface Screen {
   description: string;
 }
 
-interface Tutorial {
+export interface Tutorial {
   projectId: string;
   name: string;
   lookFor?: string;
@@ -51,7 +36,10 @@ export default defineComponent({
   },
   props: {
     tutorial: Object as PropType<Tutorial>,
-    options: Array as PropType<Option[]>
+    options: {
+      type: Array as PropType<Option[]>,
+      required: true,
+    },
   },
   data(): {
     tasks: Task[],

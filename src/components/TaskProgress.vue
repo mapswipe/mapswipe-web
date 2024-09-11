@@ -5,11 +5,11 @@ export default defineComponent({
   props: {
     progress: {
       type: Number,
-      require: true,
+      required: true,
     },
     total: {
       type: Number,
-      require: true,
+      required: true,
     },
   },
 })
