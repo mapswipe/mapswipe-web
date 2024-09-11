@@ -7,15 +7,11 @@ export default defineComponent({
     imageTile: ImageTile,
   },
   props: {
-    handleTileClickedFun: {
-      type: String,
-      required: true,
-    },
     iconSize: {
       type: String,
       default: 'small',
     },
-    isHovering: {
+    show: {
       type: Boolean,
       default: false,
     },
@@ -39,12 +35,13 @@ export default defineComponent({
       this.dialog = false
     },
   },
+  emits: ['tileClicked'],
 })
 </script>
 
 <template>
   <v-btn
-    v-show="isHovering"
+    v-show="show"
     @click.stop="dialog = true"
     color="neutral"
     style="opacity: 0.6"

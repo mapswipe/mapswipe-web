@@ -7,7 +7,7 @@ function isDefined<T>(item: T | null | undefined): item is T {
 }
 
 export interface Option {
-  shortkey: number;
+  shortkey?: number;
   title: string;
   description: string;
   iconColor: string;

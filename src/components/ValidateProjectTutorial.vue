@@ -24,8 +24,10 @@ interface Option {
 interface Task {
   geojson: object;
   geometry: string;
-  properties: object;
-  reference: number;
+  properties: {
+    reference: number;
+    screen: number;
+  };
   screen: number;
   taskId: string;
 }
@@ -77,11 +79,8 @@ export default defineComponent({
       const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
       return message;
     },
-    screen() {
+    currentScreen() {
       return this.tutorial?.screens[this.currentTaskIndex];
-    },
-    stepperTasks() {
-      return this.tasks?.map((_, i) => `Task ${i + 1}`);
     },
     task() {
       return this.tasks?.[this.currentTaskIndex];
@@ -94,10 +93,10 @@ export default defineComponent({
     answeredCorrectly() {
       const result = this.results[this.task?.taskId];
 
-      return isDefined(result) && result === this.task?.reference;
+      return isDefined(result) && result === this.task?.properties.reference;
     },
     alertContent() {
-      if (!this.screen) {
+      if (!this.currentScreen) {
         return undefined;
       }
 
@@ -105,7 +104,7 @@ export default defineComponent({
         instructions,
         success,
         hint,
-      } = this.screen;
+      } = this.currentScreen;
 
       if (this.answeredCorrectly && success) {
         const icon = success.icon;
@@ -175,7 +174,7 @@ export default defineComponent({
     },
     showAnswer() {
       this.answersRevealed = true;
-      this.results[this.task.taskId] = this.task.reference;
+      this.results[this.task.taskId] = this.task.properties?.reference;
     },
   },
   emits: ['tutorialComplete'],
@@ -218,7 +217,7 @@ export default defineComponent({
         />
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="options">
       <v-col>
         <option-buttons
           v-if="task?.taskId"

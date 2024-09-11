@@ -2,13 +2,24 @@
 import { defineComponent, type PropType } from 'vue'
 import { goOnline, onValue } from 'firebase/database'
 import { db, getTasksRef } from '@/firebase'
-import matchIcon from '@/utils/matchIcon';
-import OptionButtons from '@/components/OptionButtons.vue'
-import { type Option } from '@/components/OptionButtons.vue'
-import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue';
-import TaskProgress from '@/components/TaskProgress.vue';
+
 import { decompressTasks } from '@/utils/tasks';
+import matchIcon from '@/utils/matchIcon';
+
+import TaskProgress from '@/components/TaskProgress.vue';
+import FindProjectTask, { type Option } from '@/components/FindProjectTask.vue'
 import { isDefined } from '@/utils/common';
+
+interface MappedOption extends Option {
+  nextOptionKey: number;
+}
+
+interface Task {
+  taskId: string;
+  url: string;
+  screen: number;
+  referenceAnswer: number;
+}
 
 interface Screen {
   title: string;
@@ -29,9 +40,8 @@ export interface Tutorial {
 
 export default defineComponent({
   components: {
-    compareProjectTask: CompareProjectTask,
-    optionButtons: OptionButtons,
     taskProgress: TaskProgress,
+    findProjectTask: FindProjectTask,
   },
   props: {
     tutorial: Object as PropType<Tutorial>,
@@ -44,6 +54,7 @@ export default defineComponent({
     tasks: Task[],
     currentTaskIndex: number,
     results: Record<string, number>,
+    selectedTasks: Record<string, boolean>,
     userAttempts: number,
     answersRevealed: boolean,
   } {
@@ -51,11 +62,28 @@ export default defineComponent({
       tasks: [],
       currentTaskIndex: 0,
       results: {},
+      selectedTasks: {},
       userAttempts: 0,
       answersRevealed: false,
     }
   },
   computed: {
+    optionMap() {
+      const maxOptionIndex = this.options.length - 1;
+
+      return this.options.map(
+        (option, index) => ({
+          ...option,
+          nextOptionKey: index === maxOptionIndex
+            ? this.options[0].value
+            : this.options[index + 1].value
+        })
+      ).reduce((acc, val) => {
+        acc[val.value] = val;
+
+        return acc;
+      }, {} as Record<number, MappedOption>);
+    },
     instructionMessage() {
       const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
       return message;
@@ -64,18 +92,30 @@ export default defineComponent({
       // NOTE: this should be extracted from the `screen` property of current task
       return this.tutorial?.screens[this.currentTaskIndex];
     },
-    task() {
-      return this.tasks?.[this.currentTaskIndex];
+    taskList() {
+      if (!this.tasks) {
+        return [];
+      }
+
+      return this.tasks.filter(
+        ({ screen }) => screen === this.currentTaskIndex + 1
+      );
     },
     isLastTask() {
-      const maxIndex = this.tasks.length - 1;
+      const maxIndex = (this.tutorial?.screens.length ?? 1) - 1;
 
       return this.currentTaskIndex === maxIndex;
     },
     answeredCorrectly() {
-      const result = this.results[this.task?.taskId];
+      if (!this.taskList || this.taskList.length === 0) {
+        return false;
+      }
 
-      return isDefined(result) && result === this.task?.referenceAnswer;
+      const hasWrongAnswer = this.taskList.some(
+        ({ taskId, referenceAnswer }) => referenceAnswer !== this.results[taskId]
+      );
+
+      return !hasWrongAnswer;
     },
     alertContent() {
       if (!this.currentScreen) {
@@ -88,7 +128,7 @@ export default defineComponent({
         hint,
       } = this.currentScreen;
 
-      if (this.answeredCorrectly && success) {
+      if (!this.answersRevealed && this.answeredCorrectly && success) {
         const icon = success.icon;
 
         return {
@@ -99,7 +139,7 @@ export default defineComponent({
         }
       }
 
-      if (this.userAttempts > 0 && hint) {
+      if (this.answersRevealed && hint) {
         const icon = hint.icon;
 
         return {
@@ -133,6 +173,15 @@ export default defineComponent({
           (snapshot) => {
             const data = snapshot.val();
             this.tasks = decompressTasks(data);
+            this.results = this.tasks.reduce(
+              (acc, val) => {
+                // Fill all the result with initial value
+                acc[val.taskId] = this.options[0].value;
+
+                return acc;
+              },
+              {} as Record<string, number>,
+            );
           },
           (error) => {
             console.error('Error fetching tasks for the tutorial', error);
@@ -143,20 +192,44 @@ export default defineComponent({
     },
     nextTask() {
       if (!this.isLastTask) {
+        if (this.isLastTask) {
+          return;
+        }
+
+        this.selectedTasks = {};
         this.currentTaskIndex += 1;
         this.userAttempts = 0;
         this.answersRevealed = false;
       }
     },
-    addResult(value: number) {
+    updateResult(taskId: string) {
       if (!this.answersRevealed) {
         this.userAttempts += 1;
-        this.results[this.task.taskId] = value
+        const currentResult = this.results[taskId];
+
+        if (!isDefined(currentResult)) {
+          this.results[taskId] = this.options[0].value;
+          return;
+        }
+
+        const newValue = this.optionMap[
+          this.optionMap[currentResult].nextOptionKey
+        ].value;
+
+        this.results[taskId] = newValue;
       }
+    },
+    handleTileClicked(taskId: string) {
+      this.updateResult(taskId);
+    },
+    handleTileSelected(newValue: boolean, taskId: string) {
+      this.selectedTasks[taskId] = newValue;
     },
     showAnswer() {
       this.answersRevealed = true;
-      this.results[this.task.taskId] = this.task.referenceAnswer;
+      this.taskList.forEach((task) => {
+        this.results[task.taskId] = task.referenceAnswer;
+      });
     },
   },
   emits: ['tutorialComplete'],
@@ -189,28 +262,24 @@ export default defineComponent({
         />
       </v-col>
     </v-row>
-    <v-row>
-      <v-col>
-        <compare-project-task
-          v-if="tasks[currentTaskIndex]"
-          :task="tasks[currentTaskIndex]"
-        />
+    <v-row justify="center">
+      <v-col md="6">
+        <div class="image-grid">
+          <find-project-task
+            v-for="(task) in taskList" :key="task.taskId"
+            :task="task"
+            :optionMap="optionMap"
+            :selected="selectedTasks[task.taskId]"
+            :value="results[task.taskId]"
+            @updateValue="handleTileClicked"
+            @updateSelected="handleTileSelected"
+          />
+        </div>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <option-buttons
-          v-if="task?.taskId"
-          :options="options"
-          :result="results[task.taskId]"
-          :taskId="task.taskId"
-          @addResult="addResult"
-        />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <task-progress :progress="currentTaskIndex" :total="tasks?.length ?? 0" />
+        <task-progress :progress="currentTaskIndex" :total="tutorial?.screens.length ?? 0" />
       </v-col>
     </v-row>
     <v-row justify="center">
@@ -238,4 +307,11 @@ export default defineComponent({
   </v-container>
 </template>
 
-<style scoped></style>
+<style scoped>
+.image-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-auto-flow: column;
+}
+</style>
