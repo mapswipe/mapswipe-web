@@ -1,30 +1,30 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import { goOnline, onValue } from 'firebase/database'
-import { db, getTasksRef } from '@/firebase'
-import matchIcon from '@/utils/matchIcon';
+import { db, getTasksRef, getGroupsRef } from '@/firebase'
+import matchIcon from '@/utils/matchIcon'
 import OptionButtons from '@/components/OptionButtons.vue'
 import { type Option } from '@/components/OptionButtons.vue'
-import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue';
-import TaskProgress from '@/components/TaskProgress.vue';
-import { decompressTasks } from '@/utils/tasks';
-import { isDefined } from '@/utils/common';
+import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue'
+import TaskProgress from '@/components/TaskProgress.vue'
+import { decompressTasks } from '@/utils/tasks'
+import { isDefined } from '@/utils/common'
 
 interface Screen {
-  title: string;
-  icon: string;
-  description: string;
+  title: string
+  icon: string
+  description: string
 }
 
 export interface Tutorial {
-  projectId: string;
-  name: string;
-  lookFor?: string;
+  projectId: string
+  name: string
+  lookFor?: string
   screens: {
-    hint: Screen;
-    instructions: Screen;
-    success: Screen;
-  }[];
+    hint: Screen
+    instructions: Screen
+    success: Screen
+  }[]
 }
 
 export default defineComponent({
@@ -41,11 +41,11 @@ export default defineComponent({
     },
   },
   data(): {
-    tasks: Task[],
-    currentTaskIndex: number,
-    results: Record<string, number>,
-    userAttempts: number,
-    answersRevealed: boolean,
+    tasks: Task[]
+    currentTaskIndex: number
+    results: Record<string, number>
+    userAttempts: number
+    answersRevealed: boolean
   } {
     return {
       tasks: [],
@@ -58,113 +58,124 @@ export default defineComponent({
   computed: {
     instructionMessage() {
       const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
-      return message;
+      return message
     },
     currentScreen() {
       // NOTE: this should be extracted from the `screen` property of current task
-      return this.tutorial?.screens[this.currentTaskIndex];
+      return this.tutorial?.screens[this.currentTaskIndex]
     },
-    task() {
-      return this.tasks?.[this.currentTaskIndex];
+    currentTask() {
+      return this.tasks?.[this.currentTaskIndex]
     },
     isLastTask() {
-      const maxIndex = this.tasks.length - 1;
+      const maxIndex = this.tasks.length - 1
 
-      return this.currentTaskIndex === maxIndex;
+      return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
-      const result = this.results[this.task?.taskId];
+      const result = this.results[this.currentTask?.taskId]
 
-      return isDefined(result) && result === this.task?.referenceAnswer;
+      return isDefined(result) && result === this.currentTask?.referenceAnswer
     },
     alertContent() {
       if (!this.currentScreen) {
-        return undefined;
+        return undefined
       }
 
-      const {
-        instructions,
-        success,
-        hint,
-      } = this.currentScreen;
+      const { instructions, success, hint } = this.currentScreen
 
       if (this.answeredCorrectly && success) {
-        const icon = success.icon;
+        const icon = success.icon
 
         return {
-          type: "success" as const,
+          type: 'success' as const,
           title: success.title,
           text: success.description,
-          icon: icon ? matchIcon(icon) : icon,
+          icon: icon ? matchIcon(icon) : undefined,
         }
       }
 
       if (this.userAttempts > 0 && hint) {
-        const icon = hint.icon;
+        const icon = hint.icon
 
         return {
           type: undefined,
           title: hint.title,
           text: hint.description,
-          icon: icon ? matchIcon(icon) : icon,
+          icon: icon ? matchIcon(icon) : undefined,
         }
       }
 
       if (!instructions) {
-        return undefined;
+        return undefined
       }
 
-      const icon = instructions.icon;
+      const icon = instructions.icon
 
       return {
-        type: "info" as const,
+        type: 'info' as const,
         title: instructions.title,
         text: instructions.description,
-        icon: icon ? matchIcon(icon) : icon,
+        icon: icon ? matchIcon(icon) : undefined,
       }
     },
   },
   methods: {
-    fetchTutorialProject() {
+    fetchTutorialGroups() {
       if (this.tutorial?.projectId) {
         onValue(
-          // FIXME: verify group id
-          getTasksRef(this.tutorial.projectId, '101'),
+          getGroupsRef(this.tutorial.projectId),
           (snapshot) => {
-            const data = snapshot.val();
-            this.tasks = decompressTasks(data);
+            const data = snapshot.val()
+            const groupKeys = Object.keys(data)
+            this.fetchTutorialProject(groupKeys[0])
           },
           (error) => {
-            console.error('Error fetching tasks for the tutorial', error);
+            console.error('Error fetching tasks for the tutorial', error)
           },
           { onlyOnce: true },
-        );
+        )
+      }
+    },
+    fetchTutorialProject(groupId: string | undefined) {
+      if (this.tutorial?.projectId && groupId) {
+        onValue(
+          getTasksRef(this.tutorial.projectId, groupId),
+          (snapshot) => {
+            const data = snapshot.val()
+            this.tasks = decompressTasks(data)
+          },
+          (error) => {
+            console.error('Error fetching tasks for the tutorial', error)
+          },
+          { onlyOnce: true },
+        )
       }
     },
     nextTask() {
       if (!this.isLastTask) {
-        this.currentTaskIndex += 1;
-        this.userAttempts = 0;
-        this.answersRevealed = false;
+        this.currentTaskIndex += 1
+        this.userAttempts = 0
+        this.answersRevealed = false
       }
     },
     addResult(value: number) {
       if (!this.answersRevealed) {
-        this.userAttempts += 1;
-        this.results[this.task.taskId] = value
+        this.userAttempts += 1
+        this.results[this.currentTask.taskId] = value
       }
     },
     showAnswer() {
-      this.answersRevealed = true;
-      this.results[this.task.taskId] = this.task.referenceAnswer;
+      this.answersRevealed = true
+      this.results[this.currentTask.taskId] = this.currentTask.referenceAnswer
     },
   },
   emits: ['tutorialComplete'],
   mounted() {
-    goOnline(db);
-    this.fetchTutorialProject();
-  }
-});
+    goOnline(db)
+    this.fetchTutorialGroups()
+  },
+})
 </script>
 
 <template>
@@ -191,19 +202,16 @@ export default defineComponent({
     </v-row>
     <v-row>
       <v-col>
-        <compare-project-task
-          v-if="tasks[currentTaskIndex]"
-          :task="tasks[currentTaskIndex]"
-        />
+        <compare-project-task v-if="tasks[currentTaskIndex]" :task="tasks[currentTaskIndex]" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <option-buttons
-          v-if="task?.taskId"
+          v-if="currentTask?.taskId"
           :options="options"
-          :result="results[task.taskId]"
-          :taskId="task.taskId"
+          :result="results[currentTask.taskId]"
+          :taskId="currentTask.taskId"
           @addResult="addResult"
         />
       </v-col>
@@ -221,16 +229,8 @@ export default defineComponent({
         >
           Show answer
         </v-btn>
-        <v-btn
-          v-if="!isLastTask && answeredCorrectly"
-          @click="nextTask"
-        >
-          Next task
-        </v-btn>
-        <v-btn
-          v-if="isLastTask && answeredCorrectly"
-          @click="$emit('tutorialComplete')"
-        >
+        <v-btn v-if="!isLastTask && answeredCorrectly" @click="nextTask"> Next task </v-btn>
+        <v-btn v-if="isLastTask && answeredCorrectly" @click="$emit('tutorialComplete')">
           Start mapping
         </v-btn>
       </v-col>

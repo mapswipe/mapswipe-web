@@ -42,9 +42,7 @@ export const projectsRef = ref(db, 'v2/projects')
 export const userGroupsRef = ref(db, 'v2/userGroups')
 export const userGroupMembershipLogsRef = ref(db, '/v2/userGroupMembershipLogs/')
 
-export const getGroupsRef = (projectId: string) => (
-  ref(db, `v2/groups/${projectId}`)
-)
+export const getGroupsRef = (projectId: string) => ref(db, `v2/groups/${projectId}`)
 // export reusable database queries
 export const getGroupsQuery = (projectId: string) => {
   return query(getGroupsRef(projectId), orderByChild('requiredCount'), startAfter(0))

@@ -10,8 +10,6 @@ import {
   getTasksRef,
   logAnalyticsEvent,
 } from '@/firebase'
-import { inflate } from 'pako'
-import { decode } from 'base-64'
 import { mapStores } from 'pinia'
 import { i18nRoute } from '@/i18n/translation'
 import { useCurrentUserStore } from '@/stores/currentUser'
@@ -158,7 +156,7 @@ export default defineComponent({
     bindTasks() {
       onValue(getTasksRef(this.projectId, this.group?.groupId), (snapshot) => {
         const data = snapshot.val()
-        this.tasks = decompressTasks(data);
+        this.tasks = decompressTasks(data)
       })
     },
     bindTutorial() {

@@ -85,11 +85,14 @@ export default defineComponent({
   },
   computed: {
     optionMap() {
-      return this.options.reduce((acc, val) => {
-        acc[val.value] = val;
+      return this.options.reduce(
+        (acc, val) => {
+          acc[val.value] = val
 
-        return acc;
-      }, {} as Record<number, Option>);
+          return acc
+        },
+        {} as Record<number, Option>,
+      )
     },
     allTilesSelected() {
       return this.selectedTaskIds.length === this.page.flat().length
@@ -250,7 +253,7 @@ export default defineComponent({
     },
     handleTileSelected(newValue: boolean, taskId: string) {
       if (newValue) {
-        this.selectedTaskIds.push(taskId);
+        this.selectedTaskIds.push(taskId)
       } else {
         this.selectedTaskIds = this.selectedTaskIds.filter((t) => t != taskId)
       }
@@ -385,7 +388,7 @@ export default defineComponent({
           :tutorial="tutorial"
           :options="options"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
-          />
+        />
       </template>
     </project-info>
   </project-header>

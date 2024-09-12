@@ -1,41 +1,41 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import { goOnline, onValue } from 'firebase/database'
-import { db, getTasksRef } from '@/firebase'
+import { db, getTasksRef, getGroupsRef } from '@/firebase'
 
-import { decompressTasks } from '@/utils/tasks';
-import matchIcon from '@/utils/matchIcon';
+import { decompressTasks } from '@/utils/tasks'
+import matchIcon from '@/utils/matchIcon'
 
-import TaskProgress from '@/components/TaskProgress.vue';
+import TaskProgress from '@/components/TaskProgress.vue'
 import FindProjectTask, { type Option } from '@/components/FindProjectTask.vue'
-import { isDefined } from '@/utils/common';
+import { isDefined } from '@/utils/common'
 
 interface MappedOption extends Option {
-  nextOptionKey: number;
+  nextOptionKey: number
 }
 
 interface Task {
-  taskId: string;
-  url: string;
-  screen: number;
-  referenceAnswer: number;
+  taskId: string
+  url: string
+  screen: number
+  referenceAnswer: number
 }
 
 interface Screen {
-  title: string;
-  icon: string;
-  description: string;
+  title: string
+  icon: string
+  description: string
 }
 
 export interface Tutorial {
-  projectId: string;
-  name: string;
-  lookFor?: string;
+  projectId: string
+  name: string
+  lookFor?: string
   screens: {
-    hint: Screen;
-    instructions: Screen;
-    success: Screen;
-  }[];
+    hint: Screen
+    instructions: Screen
+    success: Screen
+  }[]
 }
 
 export default defineComponent({
@@ -51,12 +51,12 @@ export default defineComponent({
     },
   },
   data(): {
-    tasks: Task[],
-    currentTaskIndex: number,
-    results: Record<string, number>,
-    selectedTasks: Record<string, boolean>,
-    userAttempts: number,
-    answersRevealed: boolean,
+    tasks: Task[]
+    currentTaskIndex: number
+    results: Record<string, number>
+    selectedTasks: Record<string, boolean>
+    userAttempts: number
+    answersRevealed: boolean
   } {
     return {
       tasks: [],
@@ -69,175 +69,186 @@ export default defineComponent({
   },
   computed: {
     optionMap() {
-      const maxOptionIndex = this.options.length - 1;
+      const maxOptionIndex = this.options.length - 1
 
-      return this.options.map(
-        (option, index) => ({
+      return this.options
+        .map((option, index) => ({
           ...option,
-          nextOptionKey: index === maxOptionIndex
-            ? this.options[0].value
-            : this.options[index + 1].value
-        })
-      ).reduce((acc, val) => {
-        acc[val.value] = val;
+          nextOptionKey:
+            index === maxOptionIndex ? this.options[0].value : this.options[index + 1].value,
+        }))
+        .reduce(
+          (acc, val) => {
+            acc[val.value] = val
 
-        return acc;
-      }, {} as Record<number, MappedOption>);
+            return acc
+          },
+          {} as Record<number, MappedOption>,
+        )
     },
     instructionMessage() {
       const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
-      return message;
+      return message
     },
     currentScreen() {
       // NOTE: this should be extracted from the `screen` property of current task
-      return this.tutorial?.screens[this.currentTaskIndex];
+      return this.tutorial?.screens[this.currentTaskIndex]
     },
     taskList() {
       if (!this.tasks) {
-        return [];
+        return []
       }
 
-      return this.tasks.filter(
-        ({ screen }) => screen === this.currentTaskIndex + 1
-      );
+      return this.tasks.filter(({ screen }) => screen === this.currentTaskIndex + 1)
     },
     isLastTask() {
-      const maxIndex = (this.tutorial?.screens.length ?? 1) - 1;
+      const maxIndex = (this.tutorial?.screens.length ?? 1) - 1
 
-      return this.currentTaskIndex === maxIndex;
+      return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
       if (!this.taskList || this.taskList.length === 0) {
-        return false;
+        return false
       }
 
       const hasWrongAnswer = this.taskList.some(
-        ({ taskId, referenceAnswer }) => referenceAnswer !== this.results[taskId]
-      );
+        ({ taskId, referenceAnswer }) => referenceAnswer !== this.results[taskId],
+      )
 
-      return !hasWrongAnswer;
+      return !hasWrongAnswer
     },
     alertContent() {
       if (!this.currentScreen) {
-        return undefined;
+        return undefined
       }
 
-      const {
-        instructions,
-        success,
-        hint,
-      } = this.currentScreen;
+      const { instructions, success, hint } = this.currentScreen
 
       if (!this.answersRevealed && this.answeredCorrectly && success) {
-        const icon = success.icon;
+        const icon = success.icon
 
         return {
-          type: "success" as const,
+          type: 'success' as const,
           title: success.title,
           text: success.description,
-          icon: icon ? matchIcon(icon) : icon,
+          icon: icon ? matchIcon(icon) : undefined,
         }
       }
 
       if (this.answersRevealed && hint) {
-        const icon = hint.icon;
+        const icon = hint.icon
 
         return {
           type: undefined,
           title: hint.title,
           text: hint.description,
-          icon: icon ? matchIcon(icon) : icon,
+          icon: icon ? matchIcon(icon) : undefined,
         }
       }
 
       if (!instructions) {
-        return undefined;
+        return undefined
       }
 
-      const icon = instructions.icon;
+      const icon = instructions.icon
 
       return {
-        type: "info" as const,
+        type: 'info' as const,
         title: instructions.title,
         text: instructions.description,
-        icon: icon ? matchIcon(icon) : icon,
+        icon: icon ? matchIcon(icon) : undefined,
       }
     },
   },
   methods: {
-    fetchTutorialProject() {
+    fetchTutorialGroups() {
       if (this.tutorial?.projectId) {
         onValue(
           // FIXME: verify group id
-          getTasksRef(this.tutorial.projectId, '101'),
+          getGroupsRef(this.tutorial.projectId),
           (snapshot) => {
-            const data = snapshot.val();
-            this.tasks = decompressTasks(data);
+            const data = snapshot.val()
+            const groupKeys = Object.keys(data)
+            this.fetchTutorialProject(groupKeys[0])
+          },
+          (error) => {
+            console.error('Error fetching tasks for the tutorial', error)
+          },
+          { onlyOnce: true },
+        )
+      }
+    },
+    fetchTutorialProject(groupId: string | undefined) {
+      if (this.tutorial?.projectId && groupId) {
+        onValue(
+          getTasksRef(this.tutorial.projectId, groupId),
+          (snapshot) => {
+            const data = snapshot.val()
+            this.tasks = decompressTasks(data)
             this.results = this.tasks.reduce(
               (acc, val) => {
                 // Fill all the result with initial value
-                acc[val.taskId] = this.options[0].value;
+                acc[val.taskId] = this.options[0].value
 
-                return acc;
+                return acc
               },
               {} as Record<string, number>,
-            );
+            )
           },
           (error) => {
-            console.error('Error fetching tasks for the tutorial', error);
+            console.error('Error fetching tasks for the tutorial', error)
           },
           { onlyOnce: true },
-        );
+        )
       }
     },
     nextTask() {
       if (!this.isLastTask) {
         if (this.isLastTask) {
-          return;
+          return
         }
 
-        this.selectedTasks = {};
-        this.currentTaskIndex += 1;
-        this.userAttempts = 0;
-        this.answersRevealed = false;
+        this.selectedTasks = {}
+        this.currentTaskIndex += 1
+        this.userAttempts = 0
+        this.answersRevealed = false
       }
     },
     updateResult(taskId: string) {
       if (!this.answersRevealed) {
-        this.userAttempts += 1;
-        const currentResult = this.results[taskId];
+        this.userAttempts += 1
+        const currentResult = this.results[taskId]
 
         if (!isDefined(currentResult)) {
-          this.results[taskId] = this.options[0].value;
-          return;
+          this.results[taskId] = this.options[0].value
+          return
         }
 
-        const newValue = this.optionMap[
-          this.optionMap[currentResult].nextOptionKey
-        ].value;
+        const newValue = this.optionMap[this.optionMap[currentResult].nextOptionKey].value
 
-        this.results[taskId] = newValue;
+        this.results[taskId] = newValue
       }
     },
     handleTileClicked(taskId: string) {
-      this.updateResult(taskId);
+      this.updateResult(taskId)
     },
     handleTileSelected(newValue: boolean, taskId: string) {
-      this.selectedTasks[taskId] = newValue;
+      this.selectedTasks[taskId] = newValue
     },
     showAnswer() {
-      this.answersRevealed = true;
+      this.answersRevealed = true
       this.taskList.forEach((task) => {
-        this.results[task.taskId] = task.referenceAnswer;
-      });
+        this.results[task.taskId] = task.referenceAnswer
+      })
     },
   },
   emits: ['tutorialComplete'],
   mounted() {
-    goOnline(db);
-    this.fetchTutorialProject();
-  }
-});
+    goOnline(db)
+    this.fetchTutorialGroups()
+    // this.fetchTutorialProject();
+  },
+})
 </script>
 
 <template>
@@ -266,7 +277,8 @@ export default defineComponent({
       <v-col md="6">
         <div class="image-grid">
           <find-project-task
-            v-for="(task) in taskList" :key="task.taskId"
+            v-for="task in taskList"
+            :key="task.taskId"
             :task="task"
             :optionMap="optionMap"
             :selected="selectedTasks[task.taskId]"
@@ -290,16 +302,8 @@ export default defineComponent({
         >
           Show answer
         </v-btn>
-        <v-btn
-          v-if="!isLastTask && answeredCorrectly"
-          @click="nextTask"
-        >
-          Next task
-        </v-btn>
-        <v-btn
-          v-if="isLastTask && answeredCorrectly"
-          @click="$emit('tutorialComplete')"
-        >
+        <v-btn v-if="!isLastTask && answeredCorrectly" @click="nextTask"> Next task </v-btn>
+        <v-btn v-if="isLastTask && answeredCorrectly" @click="$emit('tutorialComplete')">
           Start mapping
         </v-btn>
       </v-col>

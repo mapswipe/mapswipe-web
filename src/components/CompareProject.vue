@@ -11,62 +11,59 @@ import CompareProjectInstructions from '@/components/CompareProjectInstructions.
 import CompareProjectTutorial, { type Tutorial } from '@/components/CompareProjectTutorial.vue'
 import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue'
 import { type Option } from '@/components/OptionButtons.vue'
-
-// FIXME: move this to utils
-function isDefined<T>(item: T | null | undefined): item is T {
-  return item !== null && item !== undefined;
-}
+import { isDefined } from '@/utils/common'
 
 // NOTE: is only for compare project
 interface ProjectCompareType {
-    projectType: string;
-    name: string;
-    zoomLevel: number;
-    manualUrl?: string;
-    tileServer: {
-        credits: string
-    };
-    tileServerB: {
-        credits: string;
-    },
-    credits: string;
-    lookFor: string;
+  projectType: string
+  projectTopic: string
+  name: string
+  zoomLevel: number
+  manualUrl?: string
+  tileServer: {
+    credits: string
+  }
+  tileServerB: {
+    credits: string
+  }
+  credits: string
+  lookFor: string
 }
 
 const defaultOptions: Option[] = [
-    {
-      description: "I don't see any change between the two images.",
-      iconColor: '',
-      title: 'No change',
-      mdiIcon: 'mdi-equal',
-      shortkey: 1,
-      value: 0,
-    },
-    {
-      description: 'There is change between the two images.',
-      iconColor: 'green',
-      title: 'Change',
-      mdiIcon: 'mdi-not-equal-variant',
-      shortkey: 2,
-      value: 1,
-    },
-    {
-      description: 'I am not sure.',
-      iconColor: 'orange',
-      title: 'Not sure',
-      mdiIcon: 'mdi-head-question',
-      shortkey: 3,
-      value: 2,
-    },
-    {
-      description: 'The imagery is bad or clouded.',
-      iconColor: 'red',
-      title: 'Bad imagery',
-      mdiIcon: 'mdi-weather-cloudy',
-      shortkey: 4,
-      value: 3,
-    },
-];
+  {
+    description: "I don't see any change between the two images.",
+    iconColor: '',
+    title: 'No change',
+    mdiIcon: 'mdi-equal',
+    shortkey: 1,
+    value: 0,
+  },
+  {
+    description: 'There is change between the two images.',
+    iconColor: 'green',
+    title: 'Change',
+    mdiIcon: 'mdi-not-equal-variant',
+    shortkey: 2,
+    value: 1,
+  },
+  {
+    description: 'I am not sure.',
+    iconColor: 'orange',
+    title: 'Not sure',
+    mdiIcon: 'mdi-head-question',
+    shortkey: 3,
+    value: 2,
+  },
+  {
+    description: 'The imagery is bad or clouded.',
+    iconColor: 'red',
+    title: 'Bad imagery',
+    mdiIcon: 'mdi-weather-cloudy',
+    shortkey: 4,
+    value: 3,
+  },
+]
 
 export default defineComponent({
   components: {
@@ -92,7 +89,7 @@ export default defineComponent({
     options: {
       type: Array as PropType<Option[]>,
       default() {
-        return defaultOptions;
+        return defaultOptions
       },
     },
     project: {
@@ -109,15 +106,15 @@ export default defineComponent({
     },
   },
   data(): {
-      allAnswered: boolean,
-      arrowKeys: boolean,
-      overlay: boolean,
-      results: Record<string, number | undefined>,
-      startTime: string | null,
-      task: object,
-      taskId: string | undefined,
-      taskIndex: 0,
-      transparent: boolean,
+    allAnswered: boolean
+    arrowKeys: boolean
+    overlay: boolean
+    results: Record<string, number | undefined>
+    startTime: string | null
+    task: object
+    taskId: string | undefined
+    taskIndex: 0
+    transparent: boolean
   } {
     return {
       allAnswered: false,
@@ -152,13 +149,13 @@ export default defineComponent({
   methods: {
     addResult(value: number | undefined) {
       if (isDefined(this.taskId)) {
-          this.results[this.taskId] = value;
+        this.results[this.taskId] = value
       }
     },
     back() {
       if (this.taskIndex > 0) {
-        this.taskIndex--;
-        this.taskId = this.tasks[this.taskIndex].taskId;
+        this.taskIndex--
+        this.taskId = this.tasks[this.taskIndex].taskId
       }
     },
     createInformationPages,
@@ -174,7 +171,7 @@ export default defineComponent({
     },
     isAnswered() {
       if (!this.taskId) {
-          return false;
+        return false
       }
       const result = this.results[this.taskId]
       const defined = result !== undefined
@@ -191,7 +188,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project.name">
+  <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
     <tile-map :page="[tasks[taskIndex]]" :zoomLevel="project.zoomLevel" />
     <project-info
       ref="projectInfo"
@@ -217,9 +214,7 @@ export default defineComponent({
     </project-info>
   </project-header>
   <v-container v-touch="{ left: () => forward(), right: () => back() }">
-    <compare-project-task
-      :task="tasks?.[taskIndex]"
-    />
+    <compare-project-task :task="tasks?.[taskIndex]" />
   </v-container>
   <option-buttons
     v-if="taskId"

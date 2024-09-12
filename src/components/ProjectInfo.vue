@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
-type TabType = number | string;
+type TabType = number | string
 
 export default defineComponent({
   components: {
@@ -23,8 +23,8 @@ export default defineComponent({
     },
   },
   data: (): {
-    activeTab: TabType | null;
-    dialog: boolean;
+    activeTab: TabType | null
+    dialog: boolean
   } => ({
     activeTab: null,
     dialog: false,
@@ -35,9 +35,9 @@ export default defineComponent({
         ...Array.from(new Array(this.informationPages?.length ?? 0).keys()),
         'instructions',
         'tutorial',
-      ];
+      ]
 
-      return tabs;
+      return tabs
     },
   },
   methods: {
@@ -47,7 +47,7 @@ export default defineComponent({
     },
     back() {
       if (this.activeTab === null) {
-        return;
+        return
       }
 
       const currentTabIndex = this.tabs.indexOf(this.activeTab)
@@ -55,7 +55,7 @@ export default defineComponent({
     },
     forward() {
       if (this.activeTab === null) {
-        return;
+        return
       }
 
       const currentTabIndex = this.tabs.indexOf(this.activeTab)
@@ -76,8 +76,8 @@ export default defineComponent({
     color="primary"
     @click="toggleDialog()"
   />
-  <v-dialog v-model="dialog" width="80vw" max-width="1024" >
-    <v-card v-click-outside="toggleDialog" class="pa-2">
+  <v-dialog v-model="dialog" width="80vw" max-width="1024" persistent>
+    <v-card class="pa-2">
       <v-tabs v-model="activeTab">
         <v-tab
           v-for="(page, index) in informationPages"
@@ -149,7 +149,7 @@ export default defineComponent({
           prepend-icon="mdi-help-circle"
           >{{ $t('findProjectInstructions.moreInfo') }}</v-btn
         >
-        <v-btn v-if="activeTab == 'instructions'" color="primary" @click="toggleDialog()">{{
+        <v-btn color="primary" @click="toggleDialog()">{{
           $t('findProjectInstructions.close')
         }}</v-btn>
       </v-card-actions>

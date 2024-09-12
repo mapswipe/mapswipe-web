@@ -1,26 +1,26 @@
 <script lang="ts">
-import { theme } from '@/plugins/vuetify';
-import hex2rgb from '@/utils/hex2rgb';
-import makeXyzUrl from '@/utils/makeXyzUrl';
-import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map';
-import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources';
-import { Collection } from 'ol';
-import { GeoJSON } from 'ol/format';
+import { theme } from '@/plugins/vuetify'
+import hex2rgb from '@/utils/hex2rgb'
+import makeXyzUrl from '@/utils/makeXyzUrl'
+import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map'
+import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
+import { Collection } from 'ol'
+import { GeoJSON } from 'ol/format'
 import { type PropType, defineComponent } from 'vue'
 
 interface Task {
-  taskId: string;
-  geojson: object;
+  taskId: string
+  geojson: object
 }
 
 export interface Project {
   tileServer: {
-    apiKey: string;
-    credits: string;
-    name: string;
-    url: string;
-    maxZoom?: number;
-    imagerySet?: string;
+    apiKey: string
+    credits: string
+    name: string
+    url: string
+    maxZoom?: number
+    imagerySet?: string
   }
 }
 
@@ -42,11 +42,11 @@ export default defineComponent({
     },
   },
   data(): {
-    center: [number, number];
+    center: [number, number]
     results: Record<string, number>
-    startTime: string | null;
-    currentTaskIndex: number,
-    zoom: number;
+    startTime: string | null
+    currentTaskIndex: number
+    zoom: number
   } {
     return {
       center: [0, 0],
@@ -57,12 +57,12 @@ export default defineComponent({
     }
   },
   updated() {
-    this.fitView();
+    this.fitView()
   },
   computed: {
     mapStyle() {
       if (this.compact) {
-        return { height: 'max(calc(70vh - 375px), 300px)' };
+        return { height: 'max(calc(70vh - 375px), 300px)' }
       }
 
       return {
@@ -70,21 +70,18 @@ export default defineComponent({
       }
     },
     xyzUrl() {
-      return makeXyzUrl(this.project.tileServer);
+      return makeXyzUrl(this.project.tileServer)
     },
     strokeColor() {
-      const color = hex2rgb(
-        theme.light.accent,
-        this.transparent ? 0.4 : 1
-      );
-      return color;
+      const color = hex2rgb(theme.light.accent, this.transparent ? 0.4 : 1)
+      return color
     },
     maxZoom() {
       // return this.project.tileServer.maxZoom ?? 19;
-      return this.project.tileServer.maxZoom ?? 20;
+      return this.project.tileServer.maxZoom ?? 20
     },
     taskFeatures() {
-      const features =  new Collection();
+      const features = new Collection()
       const geoJson = new GeoJSON()
 
       const geom = this.task.geojson
@@ -97,31 +94,30 @@ export default defineComponent({
       const newFeature = geoJson.readFeature(feature, options)
       features.push(newFeature)
 
-      return features;
+      return features
     },
   },
   methods: {
     fitView(duration = 600, delay = 100) {
-      const map = (this.$refs.map as InstanceType<typeof OlMap>).map;
-      const mapView = this.$refs.mapView as InstanceType<typeof OlView>;
-      const extent = (this.$refs.taskSource as InstanceType<typeof OlSourceVector>).source.getExtent();
+      const map = (this.$refs.map as InstanceType<typeof OlMap>).map
+      const mapView = this.$refs.mapView as InstanceType<typeof OlView>
+      const extent = (
+        this.$refs.taskSource as InstanceType<typeof OlSourceVector>
+      ).source.getExtent()
 
       if (!extent.some((coordinate) => coordinate == Infinity)) {
         setTimeout(() => {
           mapView.fit(extent, {
             size: map.getSize(),
-            padding: this.compact
-              ? [10, 10, 10, 10]
-              : [20, 20, 20, 20],
+            padding: this.compact ? [10, 10, 10, 10] : [20, 20, 20, 20],
             maxZoom: this.maxZoom,
             duration: duration,
           })
         }, delay)
       }
     },
-  }
-});
-
+  },
+})
 </script>
 
 <template>
@@ -132,12 +128,7 @@ export default defineComponent({
     :style="mapStyle"
     @rendercomplete.once="fitView(1200, 300)"
   >
-    <ol-view
-      ref="mapView"
-      :zoom="zoom"
-      :center="center"
-      :maxZoom="project?.tileServer?.maxZoom"
-    />
+    <ol-view ref="mapView" :zoom="zoom" :center="center" :maxZoom="project?.tileServer?.maxZoom" />
     <ol-tile-layer
       v-if="project?.tileServer?.name != 'bing'"
       id="osmLayer"
@@ -152,28 +143,12 @@ export default defineComponent({
         :api-key="project?.tileServer?.apiKey"
         :imagery-set="project?.tileServer?.imagerySet || 'Aerial'"
       />
-      <ol-source-xyz
-        v-else
-        :url="xyzUrl"
-        :attributions="project.tileServer.credits"
-      />
+      <ol-source-xyz v-else :url="xyzUrl" :attributions="project.tileServer.credits" />
     </ol-tile-layer>
-    <ol-vector-layer
-      id="taskLayer"
-      ref="taskLayer"
-      :zIndex="3"
-      :key="task.taskId"
-    >
-      <ol-source-vector
-        :features="taskFeatures"
-        ref="taskSource"
-        ident="taskSource"
-      />
+    <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3" :key="task.taskId">
+      <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />
       <ol-style :key="strokeColor">
-        <ol-style-stroke
-          :color="strokeColor"
-          :width="5"
-        />
+        <ol-style-stroke :color="strokeColor" :width="5" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>

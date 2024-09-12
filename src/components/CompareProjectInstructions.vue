@@ -1,6 +1,6 @@
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue'
-import { type Option } from '@/components/OptionButtons.vue';
+import { type Option } from '@/components/OptionButtons.vue'
 
 export default defineComponent({
   props: {

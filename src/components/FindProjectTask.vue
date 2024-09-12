@@ -1,19 +1,19 @@
 <script lang="ts">
-import { isDefined } from '@/utils/common';
+import { isDefined } from '@/utils/common'
 import { type PropType, defineComponent } from 'vue'
 import ImageTile from '@/components/ImageTile.vue'
 import MagnifyImageTile from '@/components/MagnifyImageTile.vue'
 
 interface Task {
-  taskId: string;
-  url: string;
-  urlB?: string;
+  taskId: string
+  url: string
+  urlB?: string
 }
 
 export interface Option {
-  color: string;
-  label: string;
-  value: number;
+  color: string
+  label: string
+  value: number
 }
 
 export default defineComponent({
@@ -44,36 +44,36 @@ export default defineComponent({
     optionMap: {
       type: Object as PropType<Record<number, Option>>,
       required: true,
-    }
+    },
   },
   computed: {
     overlayBorder() {
       if (!this.selected) {
-        return undefined;
+        return undefined
       }
 
-      return 'border: 20px solid #ccca';
+      return 'border: 20px solid #ccca'
     },
     overlayOpacity() {
       if (!isDefined(this.value) || this.value === 0) {
-        return 0;
+        return 0
       }
 
-      return 0.5;
+      return 0.5
     },
     overlayColor() {
       if (!isDefined(this.value)) {
-        return undefined;
+        return undefined
       }
 
-      return this.optionMap[this.value]?.color;
+      return this.optionMap[this.value]?.color
     },
     overlayLabel() {
       if (!isDefined(this.value)) {
-        return undefined;
+        return undefined
       }
 
-      return this.optionMap[this.value].label;
+      return this.optionMap[this.value].label
     },
     iconSize() {
       const size = (this.tileSize ?? 0) < 256 ? 'x-small' : 'small'
@@ -81,7 +81,7 @@ export default defineComponent({
     },
     checkboxIcon() {
       if (this.selected) {
-        return 'mdi-checkbox-marked-circle';
+        return 'mdi-checkbox-marked-circle'
       }
 
       return 'mdi-checkbox-blank-circle-outline'
@@ -89,26 +89,26 @@ export default defineComponent({
   },
   methods: {
     handleContextMenu(event: MouseEvent) {
-      event.preventDefault();
-      event.stopPropagation();
+      event.preventDefault()
+      event.stopPropagation()
 
-      this.$emit('updateSelected', !this.selected, this.task.taskId);
+      this.$emit('updateSelected', !this.selected, this.task.taskId)
     },
     handleSelectClick(event: MouseEvent) {
-      event.preventDefault();
-      event.stopPropagation();
+      event.preventDefault()
+      event.stopPropagation()
 
-      this.$emit('updateSelected', !this.selected, this.task.taskId);
+      this.$emit('updateSelected', !this.selected, this.task.taskId)
     },
     handleClick(event: MouseEvent) {
-      event.preventDefault();
-      event.stopPropagation();
+      event.preventDefault()
+      event.stopPropagation()
 
-      this.$emit('updateValue', this.task.taskId);
+      this.$emit('updateValue', this.task.taskId)
     },
   },
   emits: ['updateValue', 'updateSelected'],
-});
+})
 </script>
 
 <template>
@@ -139,20 +139,11 @@ export default defineComponent({
         class="justify-center align-center"
         contained
       >
-        <h2
-          v-if="overlayLabel"
-          v-show="isHovering || selected"
-          style="text-align: center"
-        >
+        <h2 v-if="overlayLabel" v-show="isHovering || selected" style="text-align: center">
           {{ overlayLabel }}
         </h2>
       </v-overlay>
-      <v-overlay
-        :model-value="true"
-        opacity="0"
-        class="justify-end align-start"
-        contained
-      >
+      <v-overlay :model-value="true" opacity="0" class="justify-end align-start" contained>
         <magnify-image-tile
           :iconSize="iconSize"
           :show="!!isHovering"

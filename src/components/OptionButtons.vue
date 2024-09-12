@@ -1,24 +1,20 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-
-// FIXME: move this to utils
-function isDefined<T>(item: T | null | undefined): item is T {
-  return item !== null && item !== undefined;
-}
+import { isDefined } from '@/utils/common'
 
 export interface Option {
-  shortkey?: number;
-  title: string;
-  description: string;
-  iconColor: string;
-  mdiIcon: string;
+  shortkey?: number
+  title: string
+  description: string
+  iconColor: string
+  mdiIcon: string
 
-  value: number;
+  value: number
   subOptions?: {
-    value: number;
-    description: string;
-  }[];
-  subOptionValues?: number[];
+    value: number
+    description: string
+  }[]
+  subOptionValues?: number[]
 }
 
 export default defineComponent({
@@ -37,9 +33,9 @@ export default defineComponent({
     },
   },
   data(): {
-    selectedOption: Option | undefined,
-    selectedSubOptionValue: number | undefined,
-    subOptionsDialog: boolean,
+    selectedOption: Option | undefined
+    selectedSubOptionValue: number | undefined
+    subOptionsDialog: boolean
   } {
     return {
       selectedOption: undefined,
@@ -73,7 +69,8 @@ export default defineComponent({
       return isOptionSelected
     },
     resetSelectedSubOption() {
-      const resultIsSubOption = isDefined(this.result) && !this.options.map((o) => o.value).includes(this.result)
+      const resultIsSubOption =
+        isDefined(this.result) && !this.options.map((o) => o.value).includes(this.result)
       this.selectedSubOptionValue = resultIsSubOption ? this.result : undefined
     },
   },
@@ -100,11 +97,7 @@ export default defineComponent({
       stacked
     />
     <v-spacer />
-    <v-dialog
-      v-model="subOptionsDialog"
-      :persistent="selectedSubOptionValue === undefined"
-      width="unset"
-    >
+    <v-dialog v-model="subOptionsDialog" width="unset">
       <v-card>
         <v-card-title class="text-h5">
           {{ selectedOption?.title }}

@@ -3,11 +3,11 @@ import { type PropType, defineComponent } from 'vue'
 import ImageTile from '@/components/ImageTile.vue'
 
 export interface Task {
-  taskId: string;
+  taskId: string
   // Are we sure that urls are optional?
-  url?: string;
-  urlB?: string;
-  referenceAnswer: number;
+  url?: string
+  urlB?: string
+  referenceAnswer: number
 }
 
 export default defineComponent({
@@ -25,8 +25,7 @@ export default defineComponent({
       overlay: true,
     }
   },
-});
-
+})
 </script>
 
 <template>
