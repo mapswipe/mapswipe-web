@@ -30,12 +30,17 @@ export default defineComponent({
     dialog: false,
   }),
   computed: {
+    hasTutorialSlot() {
+      return !!this.$slots.tutorial
+    },
     tabs() {
       const tabs: TabType[] = [
         ...Array.from(new Array(this.informationPages?.length ?? 0).keys()),
         'instructions',
-        'tutorial',
       ]
+      if (this.hasTutorialSlot) {
+        tabs.push('tutorial')
+      }
 
       return tabs
     },
@@ -86,7 +91,7 @@ export default defineComponent({
           :key="page.pageNumber"
         ></v-tab>
         <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions"></v-tab>
-        <v-tab value="tutorial">Tutorial</v-tab>
+        <v-tab v:if="hasTutorialSlot" value="tutorial">Tutorial</v-tab>
       </v-tabs>
       <v-divider />
       <v-tabs-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
