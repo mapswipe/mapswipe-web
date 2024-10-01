@@ -5,11 +5,11 @@ export default defineComponent({
   props: {
     options: {
       type: Array,
-      require: true,
+      required: true,
     },
     taskId: {
       type: String,
-      require: true,
+      required: true,
     },
     result: {
       type: Number,

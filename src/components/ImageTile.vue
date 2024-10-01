@@ -5,7 +5,7 @@ export default defineComponent({
   props: {
     url: {
       type: String,
-      require: true,
+      required: true,
     },
     urlB: {
       type: String,

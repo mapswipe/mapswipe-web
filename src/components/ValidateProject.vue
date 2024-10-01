@@ -23,7 +23,7 @@ export default defineComponent({
   props: {
     group: {
       type: Object,
-      require: true,
+      required: true,
     },
     first: {
       type: Boolean,
@@ -62,11 +62,11 @@ export default defineComponent({
     },
     project: {
       type: Object,
-      require: true,
+      required: true,
     },
     tasks: {
       type: Array,
-      require: true,
+      required: true,
     },
     tutorial: {
       type: Object,

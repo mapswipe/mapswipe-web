@@ -11,7 +11,7 @@ export default defineComponent({
     },
     zoomLevel: {
       type: Number,
-      require: true,
+      required: true,
     },
   },
   data: () => ({
