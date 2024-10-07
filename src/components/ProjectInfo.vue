@@ -10,7 +10,17 @@ export default defineComponent({
   },
   props: {
     informationPages: {
-      type: Array<string>,
+      // FIXME: move type to common types
+      type: Array<{
+        pageNumber: number;
+        title: string;
+        blocks: {
+          blockNumber: number;
+          blockType: 'text' | 'image';
+          textDescription?: string;
+          image?: string;
+        }[];
+      }>,
       required: false,
     },
     manualUrl: {
@@ -35,13 +45,14 @@ export default defineComponent({
     },
     tabs() {
       const tabs: TabType[] = [
-        ...Array.from(new Array(this.informationPages?.length ?? 0).keys()),
         'instructions',
       ]
+      if (this.informationPages && this.informationPages.length > 0) {
+          tabs.push(...Array.from(new Array(this.informationPages?.length ?? 0).keys()));
+      }
       if (this.hasTutorialSlot) {
         tabs.push('tutorial')
       }
-
       return tabs
     },
   },
@@ -84,17 +95,20 @@ export default defineComponent({
   <v-dialog v-model="dialog" width="80vw" max-width="1024" persistent>
     <v-card class="pa-2">
       <v-tabs v-model="activeTab">
+        <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions"></v-tab>
         <v-tab
           v-for="(page, index) in informationPages"
           :text="page.title"
           :value="index"
           :key="page.pageNumber"
         ></v-tab>
-        <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions"></v-tab>
         <v-tab v:if="hasTutorialSlot" value="tutorial">Tutorial</v-tab>
       </v-tabs>
       <v-divider />
       <v-tabs-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
+        <v-tabs-window-item value="instructions">
+          <slot name="instructions"></slot>
+        </v-tabs-window-item>
         <v-tabs-window-item
           v-for="(page, index) in informationPages"
           :value="index"
@@ -106,7 +120,7 @@ export default defineComponent({
           >
             <v-card-text v-if="block.blockType === 'text'" class="text-justify">
               <vue-markdown
-                :source="block.textDescription.replaceAll('\\n', '\n')"
+                :source="block.textDescription?.replaceAll('\\n', '\n')"
                 :options="{ typographer: true }"
               />
             </v-card-text>
@@ -117,9 +131,6 @@ export default defineComponent({
               class="mx-auto"
             />
           </span>
-        </v-tabs-window-item>
-        <v-tabs-window-item value="instructions">
-          <slot name="instructions"></slot>
         </v-tabs-window-item>
         <v-tabs-window-item value="tutorial">
           <slot name="tutorial"></slot>
