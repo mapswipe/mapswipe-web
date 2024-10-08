@@ -1,7 +1,8 @@
 <script lang="ts">
 import { isDefined } from '@/utils/common'
-import { type PropType, defineComponent } from 'vue'
+import { type PropType, defineComponent, type CSSProperties } from 'vue'
 import ImageTile from '@/components/ImageTile.vue'
+import ImageTileOverlay from '@/components/ImageTileOverlay.vue'
 import MagnifyImageTile from '@/components/MagnifyImageTile.vue'
 
 interface Task {
@@ -19,6 +20,7 @@ export interface Option {
 export default defineComponent({
   components: {
     imageTile: ImageTile,
+    imageTileOverlay: ImageTileOverlay,
     magnifyImageTile: MagnifyImageTile,
   },
   props: {
@@ -45,28 +47,25 @@ export default defineComponent({
       type: Object as PropType<Record<number, Option>>,
       required: true,
     },
+    withoutActions: {
+      type: Boolean,
+    },
   },
   computed: {
-    overlayBorder() {
-      if (!this.selected) {
-        return undefined
+    overlayStyle() {
+      const style: CSSProperties = {};
+
+      if (this.selected) {
+        style.border = `20px solid #fff`;
+      } else {
+        style.border = 'unset';
       }
 
-      return 'border: 20px solid #ccca'
-    },
-    overlayOpacity() {
-      if (!isDefined(this.value) || this.value === 0) {
-        return 0
+      if (isDefined(this.value)) {
+        style.backgroundColor = this.optionMap[this.value]?.color;
       }
 
-      return 0.5
-    },
-    overlayColor() {
-      if (!isDefined(this.value)) {
-        return undefined
-      }
-
-      return this.optionMap[this.value]?.color
+      return style;
     },
     overlayLabel() {
       if (!isDefined(this.value)) {
@@ -112,11 +111,11 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-hover v-slot="{ isHovering, props }">
+  <v-hover v-slot="{ isHovering, props: hoverProps }">
     <v-card
-      v-bind="props"
+      class="task-card"
+      v-bind="hoverProps"
       color="white"
-      :disabled="tilesInSelection && !selected"
       @click.stop="handleClick"
       @contextmenu="handleContextMenu"
       variant="outlined"
@@ -130,29 +129,25 @@ export default defineComponent({
         :spinner="true"
         :opacityB="transparent ? 0.3 : 1"
       />
-      <v-overlay
-        :key="value"
-        :model-value="true"
-        :opacity="overlayOpacity"
-        :style="overlayBorder"
-        :scrim="overlayColor"
-        class="justify-center align-center"
-        contained
+      <image-tile-overlay
+        :isHovering="!!isHovering"
+        :overlayStyle="overlayStyle"
+        :overlayLabel="overlayLabel"
+      />
+      <div
+        v-if="!withoutActions"
+        class="tile-actions"
+        v-show="isHovering"
       >
-        <h2 v-if="overlayLabel" v-show="isHovering || selected" style="text-align: center">
-          {{ overlayLabel }}
-        </h2>
-      </v-overlay>
-      <v-overlay :model-value="true" opacity="0" class="justify-end align-start" contained>
         <magnify-image-tile
           :iconSize="iconSize"
-          :show="!!isHovering"
           :task="task"
           :transparent="transparent"
+          :overlayStyle="overlayStyle"
+          :overlayLabel="overlayLabel"
           @tileClicked="$emit('updateValue', task.taskId)"
         />
         <v-btn
-          v-show="isHovering"
           color="neutral"
           style="opacity: 0.6"
           @click="handleSelectClick"
@@ -160,7 +155,18 @@ export default defineComponent({
           :icon="checkboxIcon"
           :size="iconSize"
         />
-      </v-overlay>
+      </div>
     </v-card>
   </v-hover>
 </template>
+<style scoped>
+.task-card {
+  position: relative;
+}
+
+.tile-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+</style>

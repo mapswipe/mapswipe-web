@@ -8,6 +8,7 @@ import matchIcon from '@/utils/matchIcon'
 
 import TaskProgress from '@/components/TaskProgress.vue'
 import FindProjectTask, { type Option } from '@/components/FindProjectTask.vue'
+import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import { isDefined } from '@/utils/common'
 
 interface MappedOption extends Option {
@@ -42,6 +43,7 @@ export default defineComponent({
   components: {
     taskProgress: TaskProgress,
     findProjectTask: FindProjectTask,
+    tutorialCompletionCard: TutorialCompletionCard,
   },
   props: {
     tutorial: Object as PropType<Tutorial>,
@@ -101,12 +103,26 @@ export default defineComponent({
 
       return this.tasks.filter(({ screen }) => screen === this.currentTaskIndex + 1)
     },
-    isLastTask() {
-      const maxIndex = (this.tutorial?.screens.length ?? 1) - 1
+    hasTasks() {
+      return this.tasks.length !== 0;
+    },
+    hasCompletedAllTasks() {
+      if (!this.hasTasks) {
+        return false;
+      }
 
+      const maxIndex = (this.tutorial?.screens.length ?? 1)
       return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
+      if (this.tasks.length === 0) {
+        return false;
+      }
+
+      if (this.hasCompletedAllTasks) {
+        return true;
+      }
+
       if (!this.taskList || this.taskList.length === 0) {
         return false
       }
@@ -203,8 +219,8 @@ export default defineComponent({
       }
     },
     nextTask() {
-      if (!this.isLastTask) {
-        if (this.isLastTask) {
+      if (!this.hasCompletedAllTasks) {
+        if (this.hasCompletedAllTasks) {
           return
         }
 
@@ -214,23 +230,47 @@ export default defineComponent({
         this.answersRevealed = false
       }
     },
+    getNextValueForTask(taskId: string) {
+      const currentResult = this.results[taskId]
+
+      if (!isDefined(currentResult)) {
+        return this.options[0].value
+      }
+
+      const newValue = this.optionMap[this.optionMap[currentResult].nextOptionKey].value
+
+      return newValue;
+    },
+    setResult(taskId: string, newValue: number) {
+        this.results[taskId] = newValue
+    },
     updateResult(taskId: string) {
       if (!this.answersRevealed) {
         this.userAttempts += 1
-        const currentResult = this.results[taskId]
-
-        if (!isDefined(currentResult)) {
-          this.results[taskId] = this.options[0].value
-          return
-        }
-
-        const newValue = this.optionMap[this.optionMap[currentResult].nextOptionKey].value
-
+        const newValue = this.getNextValueForTask(taskId);
         this.results[taskId] = newValue
       }
     },
     handleTileClicked(taskId: string) {
-      this.updateResult(taskId)
+      const selectedTaskKeys = Object.keys(this.selectedTasks).filter(
+        (taskKey) => !!this.selectedTasks[taskKey]
+      );
+
+      const hasSomeSelectedItem = selectedTaskKeys.length > 0;
+      const isTaskFromSelectedItem = selectedTaskKeys.findIndex(
+        (taskKey) => taskKey === taskId
+      ) !== -1;
+
+      if (hasSomeSelectedItem) {
+        if (isTaskFromSelectedItem) {
+          const newValue = this.getNextValueForTask(taskId);
+          selectedTaskKeys.forEach((taskKey) => {
+            this.setResult(taskKey, newValue);
+          });
+        }
+      } else {
+        this.updateResult(taskId)
+      }
     },
     handleTileSelected(newValue: boolean, taskId: string) {
       this.selectedTasks[taskId] = newValue
@@ -253,7 +293,7 @@ export default defineComponent({
 
 <template>
   <v-container>
-    <v-row>
+    <v-row v-if="!hasCompletedAllTasks">
       <v-col>
         <div>
           {{ instructionMessage }}
@@ -274,7 +314,7 @@ export default defineComponent({
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col md="6">
+      <v-col cols="auto">
         <div class="image-grid">
           <find-project-task
             v-for="task in taskList"
@@ -289,7 +329,15 @@ export default defineComponent({
         </div>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row
+      v-if="!hasTasks"
+      justify="center"
+    >
+      <v-col cols="auto">
+        <v-progress-circular indeterminate />
+      </v-col>
+    </v-row>
+    <v-row v-if="hasTasks && !hasCompletedAllTasks">
       <v-col>
         <task-progress :progress="currentTaskIndex" :total="tutorial?.screens.length ?? 0" />
       </v-col>
@@ -302,10 +350,16 @@ export default defineComponent({
         >
           Show answer
         </v-btn>
-        <v-btn v-if="!isLastTask && answeredCorrectly" @click="nextTask"> Next task </v-btn>
-        <v-btn v-if="isLastTask && answeredCorrectly" @click="$emit('tutorialComplete')">
-          Start mapping
+        <v-btn v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask">
+          Next task
         </v-btn>
+      </v-col>
+    </v-row>
+    <v-row v-if="hasCompletedAllTasks">
+      <v-col>
+        <tutorial-completion-card
+          @on-start-mapping-click="$emit('tutorialComplete')"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -314,7 +368,7 @@ export default defineComponent({
 <style scoped>
 .image-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 18vh 18vh;
   grid-template-rows: 1fr 1fr 1fr;
   grid-auto-flow: column;
 }

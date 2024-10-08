@@ -92,8 +92,8 @@ export default defineComponent({
     color="primary"
     @click="toggleDialog()"
   />
-  <v-dialog v-model="dialog" width="80vw" max-width="1024" persistent>
-    <v-card class="pa-2">
+  <v-dialog v-model="dialog" height="calc(100% - 32px)" max-height="100vh" width="calc(100% - 32px)" max-width="1024" persistent>
+    <v-card class="pa-2" height="100%">
       <v-tabs v-model="activeTab">
         <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions"></v-tab>
         <v-tab
@@ -105,7 +105,7 @@ export default defineComponent({
         <v-tab v:if="hasTutorialSlot" value="tutorial">Tutorial</v-tab>
       </v-tabs>
       <v-divider />
-      <v-tabs-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
+      <v-tabs-window v-model="activeTab" style="height: 100%; overflow-y: auto">
         <v-tabs-window-item value="instructions">
           <slot name="instructions"></slot>
         </v-tabs-window-item>

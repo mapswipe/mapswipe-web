@@ -6,6 +6,7 @@ import matchIcon from '@/utils/matchIcon'
 import OptionButtons from '@/components/OptionButtons.vue'
 import { type Option } from '@/components/OptionButtons.vue'
 import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue'
+import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import { decompressTasks } from '@/utils/tasks'
 import { isDefined } from '@/utils/common'
@@ -32,6 +33,7 @@ export default defineComponent({
     compareProjectTask: CompareProjectTask,
     optionButtons: OptionButtons,
     taskProgress: TaskProgress,
+    tutorialCompletionCard: TutorialCompletionCard,
   },
   props: {
     tutorial: Object as PropType<Tutorial>,
@@ -67,14 +69,27 @@ export default defineComponent({
     currentTask() {
       return this.tasks?.[this.currentTaskIndex]
     },
-    isLastTask() {
-      const maxIndex = this.tasks.length - 1
+    hasTasks() {
+      return this.tasks.length !== 0;
+    },
+    hasCompletedAllTasks() {
+      if (!this.hasTasks) {
+        return false;
+      }
 
+      const maxIndex = this.tasks.length
       return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
-      const result = this.results[this.currentTask?.taskId]
+      if (!this.hasTasks) {
+        return false;
+      }
 
+      if (this.hasCompletedAllTasks) {
+        return true;
+      }
+
+      const result = this.results[this.currentTask?.taskId]
       return isDefined(result) && result === this.currentTask?.referenceAnswer
     },
     alertContent() {
@@ -153,7 +168,7 @@ export default defineComponent({
       }
     },
     nextTask() {
-      if (!this.isLastTask) {
+      if (!this.hasCompletedAllTasks) {
         this.currentTaskIndex += 1
         this.userAttempts = 0
         this.answersRevealed = false
@@ -180,7 +195,7 @@ export default defineComponent({
 
 <template>
   <v-container>
-    <v-row>
+    <v-row v-if="!hasCompletedAllTasks">
       <v-col>
         <div>
           {{ instructionMessage }}
@@ -216,7 +231,15 @@ export default defineComponent({
         />
       </v-col>
     </v-row>
-    <v-row>
+    <v-row
+      v-if="!hasTasks"
+      justify="center"
+    >
+      <v-col cols="auto">
+        <v-progress-circular indeterminate />
+      </v-col>
+    </v-row>
+    <v-row v-if="hasTasks && !hasCompletedAllTasks">
       <v-col>
         <task-progress :progress="currentTaskIndex" :total="tasks?.length ?? 0" />
       </v-col>
@@ -229,10 +252,16 @@ export default defineComponent({
         >
           Show answer
         </v-btn>
-        <v-btn v-if="!isLastTask && answeredCorrectly" @click="nextTask"> Next task </v-btn>
-        <v-btn v-if="isLastTask && answeredCorrectly" @click="$emit('tutorialComplete')">
-          Start mapping
+        <v-btn v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask">
+          Next task
         </v-btn>
+      </v-col>
+    </v-row>
+    <v-row v-if="hasCompletedAllTasks">
+      <v-col>
+        <tutorial-completion-card
+          @on-start-mapping-click="$emit('tutorialComplete')"
+        />
       </v-col>
     </v-row>
   </v-container>
