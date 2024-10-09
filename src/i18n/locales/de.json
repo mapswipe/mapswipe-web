@@ -203,5 +203,12 @@
     "drawNewFeature": "Neue Objekte einzeichnen",
     "modifyFeature": "Objekte bearbeiten",
     "deleteFeature": "Objekte löschen"
+  },
+  "projectTutorial": {
+    "showAnswer": "Antwort zeigen",
+    "nextTask": "Nächste Aufgabe",
+    "completionTitle": "Du bist bereit zum MapSwipen!",
+    "completionDescription": "Du hast jetzt alles was du brauchst, um mit der App einen Beitrag zur humanitären Kartierung zu leisten. Du kannst jederzeit für eine Auffrischung zurückkommen.",
+    "startMapping": "Beginnen"
   }
 }
