@@ -12,14 +12,14 @@ export default defineComponent({
     informationPages: {
       // FIXME: move type to common types
       type: Array<{
-        pageNumber: number;
-        title: string;
+        pageNumber: number
+        title: string
         blocks: {
-          blockNumber: number;
-          blockType: 'text' | 'image';
-          textDescription?: string;
-          image?: string;
-        }[];
+          blockNumber: number
+          blockType: 'text' | 'image'
+          textDescription?: string
+          image?: string
+        }[]
       }>,
       required: false,
     },
@@ -44,11 +44,9 @@ export default defineComponent({
       return !!this.$slots.tutorial
     },
     tabs() {
-      const tabs: TabType[] = [
-        'instructions',
-      ]
+      const tabs: TabType[] = ['instructions']
       if (this.informationPages && this.informationPages.length > 0) {
-          tabs.push(...Array.from(new Array(this.informationPages?.length ?? 0).keys()));
+        tabs.push(...Array.from(new Array(this.informationPages?.length ?? 0).keys()))
       }
       if (this.hasTutorialSlot) {
         tabs.push('tutorial')
@@ -92,24 +90,24 @@ export default defineComponent({
     color="primary"
     @click="toggleDialog()"
   />
-  <v-dialog v-model="dialog" height="calc(100% - 32px)" max-height="100vh" width="calc(100% - 32px)" max-width="1024" persistent>
+  <v-dialog
+    v-model="dialog"
+    height="calc(100% - 32px)"
+    max-height="100vh"
+    width="calc(100% - 32px)"
+    max-width="1024"
+    persistent
+  >
     <v-card class="pa-2" height="100%">
       <v-tabs v-model="activeTab">
-        <v-tab
-          :text="$t('projectInstructions.howToContribute')"
-          value="instructions"
-        />
+        <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions" />
         <v-tab
           v-for="(page, index) in informationPages"
           :text="page.title"
           :value="index"
           :key="page.pageNumber"
         />
-        <v-tab
-          v:if="hasTutorialSlot"
-          value="tutorial"
-          :text="$t('projectInstructions.tutorial')"
-        />
+        <v-tab v:if="hasTutorialSlot" value="tutorial" :text="$t('projectInstructions.tutorial')" />
       </v-tabs>
       <v-divider />
       <v-tabs-window v-model="activeTab" style="height: 100%; overflow-y: auto">

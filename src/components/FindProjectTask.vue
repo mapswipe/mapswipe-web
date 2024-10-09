@@ -53,19 +53,19 @@ export default defineComponent({
   },
   computed: {
     overlayStyle() {
-      const style: CSSProperties = {};
+      const style: CSSProperties = {}
 
       if (this.selected) {
-        style.border = `20px solid #fff`;
+        style.border = `20px solid #fff`
       } else {
-        style.border = 'unset';
+        style.border = 'unset'
       }
 
       if (isDefined(this.value)) {
-        style.backgroundColor = this.optionMap[this.value]?.color;
+        style.backgroundColor = this.optionMap[this.value]?.color
       }
 
-      return style;
+      return style
     },
     overlayLabel() {
       if (!isDefined(this.value)) {
@@ -134,11 +134,7 @@ export default defineComponent({
         :overlayStyle="overlayStyle"
         :overlayLabel="overlayLabel"
       />
-      <div
-        v-if="!withoutActions"
-        class="tile-actions"
-        v-show="isHovering"
-      >
+      <div v-if="!withoutActions" class="tile-actions" v-show="isHovering">
         <magnify-image-tile
           :iconSize="iconSize"
           :task="task"

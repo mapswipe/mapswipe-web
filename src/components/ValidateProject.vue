@@ -195,6 +195,7 @@ export default defineComponent({
         <validate-project-instructions
           :instructionMessage="instructionMessage"
           :options="options"
+          :verificationNumber="project.verificationNumber"
         />
       </template>
       <template #tutorial>

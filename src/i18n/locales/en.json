@@ -144,6 +144,8 @@
   "projectInstructions": {
     "classifyTitle": "Provide your answer",
     "classifyInstruction": "Use buttons to provide your answers",
+    "dontWorry": "Don't worry if you are not sure",
+    "everyTaskIsViewedBy": "Every tasks is viewed by at least {verificationNumber} MapSwipers, so it's ok if you think you missed something",
     "howToContribute": "How to Contribute?",
     "imageCredits": "Image credits",
     "move": "Move back and forward",

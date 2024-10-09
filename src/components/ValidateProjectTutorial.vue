@@ -85,11 +85,11 @@ export default defineComponent({
       return this.tasks?.[this.currentTaskIndex]
     },
     hasTasks() {
-      return this.tasks.length !== 0;
+      return this.tasks.length !== 0
     },
     hasCompletedAllTasks() {
       if (!this.hasTasks) {
-        return false;
+        return false
       }
 
       const maxIndex = this.tasks.length
@@ -97,11 +97,11 @@ export default defineComponent({
     },
     answeredCorrectly() {
       if (!this.hasTasks) {
-        return false;
+        return false
       }
 
       if (this.hasCompletedAllTasks) {
-        return true;
+        return true
       }
 
       const result = this.results[this.task?.taskId]
@@ -236,9 +236,7 @@ export default defineComponent({
             >
               {{ $t('projectTutorial.showAnswer') }}
             </v-btn>
-            <v-btn
-              v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask"
-            >
+            <v-btn v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask">
               {{ $t('projectTutorial.nextTask') }}
             </v-btn>
           </template>
@@ -266,10 +264,7 @@ export default defineComponent({
         />
       </v-col>
     </v-row>
-    <v-row
-      v-if="!hasTasks"
-      justify="center"
-    >
+    <v-row v-if="!hasTasks" justify="center">
       <v-col cols="auto">
         <v-progress-circular indeterminate />
       </v-col>
@@ -281,9 +276,7 @@ export default defineComponent({
     </v-row>
     <v-row v-if="hasCompletedAllTasks">
       <v-col>
-        <tutorial-completion-card
-          @on-start-mapping-click="$emit('tutorialComplete')"
-        />
+        <tutorial-completion-card @on-start-mapping-click="$emit('tutorialComplete')" />
       </v-col>
     </v-row>
   </v-container>

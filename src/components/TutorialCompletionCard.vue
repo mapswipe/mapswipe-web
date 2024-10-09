@@ -1,17 +1,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 export default defineComponent({
-  emits: ['onStartMappingClick']
-});
+  emits: ['onStartMappingClick'],
+})
 </script>
 <template>
   <v-card class="tutorial-completion-card" flat>
-    <v-icon
-      color="green"
-      size="72"
-    >
-      mdi-check-circle
-    </v-icon>
+    <v-icon color="green" size="72"> mdi-check-circle </v-icon>
     <v-card-title>
       {{ $t('projectTutorial.completionTitle') }}
     </v-card-title>

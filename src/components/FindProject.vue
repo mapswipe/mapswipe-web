@@ -381,6 +381,7 @@ export default defineComponent({
           :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
           :instructionMessage="instructionMessage"
           :options="options"
+          :verificationNumber="project.verificationNumber"
         />
       </template>
       <template #tutorial>

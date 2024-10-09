@@ -104,23 +104,23 @@ export default defineComponent({
       return this.tasks.filter(({ screen }) => screen === this.currentTaskIndex + 1)
     },
     hasTasks() {
-      return this.tasks.length !== 0;
+      return this.tasks.length !== 0
     },
     hasCompletedAllTasks() {
       if (!this.hasTasks) {
-        return false;
+        return false
       }
 
-      const maxIndex = (this.tutorial?.screens.length ?? 1)
+      const maxIndex = this.tutorial?.screens.length ?? 1
       return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
       if (this.tasks.length === 0) {
-        return false;
+        return false
       }
 
       if (this.hasCompletedAllTasks) {
-        return true;
+        return true
       }
 
       if (!this.taskList || this.taskList.length === 0) {
@@ -239,34 +239,33 @@ export default defineComponent({
 
       const newValue = this.optionMap[this.optionMap[currentResult].nextOptionKey].value
 
-      return newValue;
+      return newValue
     },
     setResult(taskId: string, newValue: number) {
-        this.results[taskId] = newValue
+      this.results[taskId] = newValue
     },
     updateResult(taskId: string) {
       if (!this.answersRevealed) {
         this.userAttempts += 1
-        const newValue = this.getNextValueForTask(taskId);
+        const newValue = this.getNextValueForTask(taskId)
         this.results[taskId] = newValue
       }
     },
     handleTileClicked(taskId: string) {
       const selectedTaskKeys = Object.keys(this.selectedTasks).filter(
-        (taskKey) => !!this.selectedTasks[taskKey]
-      );
+        (taskKey) => !!this.selectedTasks[taskKey],
+      )
 
-      const hasSomeSelectedItem = selectedTaskKeys.length > 0;
-      const isTaskFromSelectedItem = selectedTaskKeys.findIndex(
-        (taskKey) => taskKey === taskId
-      ) !== -1;
+      const hasSomeSelectedItem = selectedTaskKeys.length > 0
+      const isTaskFromSelectedItem =
+        selectedTaskKeys.findIndex((taskKey) => taskKey === taskId) !== -1
 
       if (hasSomeSelectedItem) {
         if (isTaskFromSelectedItem) {
-          const newValue = this.getNextValueForTask(taskId);
+          const newValue = this.getNextValueForTask(taskId)
           selectedTaskKeys.forEach((taskKey) => {
-            this.setResult(taskKey, newValue);
-          });
+            this.setResult(taskKey, newValue)
+          })
         }
       } else {
         this.updateResult(taskId)
@@ -342,10 +341,7 @@ export default defineComponent({
         </div>
       </v-col>
     </v-row>
-    <v-row
-      v-if="!hasTasks"
-      justify="center"
-    >
+    <v-row v-if="!hasTasks" justify="center">
       <v-col cols="auto">
         <v-progress-circular indeterminate />
       </v-col>
@@ -357,9 +353,7 @@ export default defineComponent({
     </v-row>
     <v-row v-if="hasCompletedAllTasks">
       <v-col>
-        <tutorial-completion-card
-          @on-start-mapping-click="$emit('tutorialComplete')"
-        />
+        <tutorial-completion-card @on-start-mapping-click="$emit('tutorialComplete')" />
       </v-col>
     </v-row>
   </v-container>

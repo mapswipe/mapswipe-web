@@ -12,18 +12,12 @@ export default defineComponent({
     overlayLabel: {
       type: String,
     },
-  }
-});
+  },
+})
 </script>
 <template>
-  <div
-    class="overlay"
-    :style="overlayStyle"
-  />
-  <div
-    class="overlay-label"
-    v-if="isHovering"
-  >
+  <div class="overlay" :style="overlayStyle" />
+  <div class="overlay-label" v-if="isHovering">
     {{ overlayLabel }}
   </div>
 </template>
@@ -52,5 +46,4 @@ export default defineComponent({
   color: white;
   text-shadow: 0 0 10px #000;
 }
-
 </style>
