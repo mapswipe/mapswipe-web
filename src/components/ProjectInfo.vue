@@ -107,7 +107,7 @@ export default defineComponent({
           :value="index"
           :key="page.pageNumber"
         />
-        <v-tab v:if="hasTutorialSlot" value="tutorial" :text="$t('projectInstructions.tutorial')" />
+        <v-tab v-if="hasTutorialSlot" value="tutorial" :text="$t('projectInstructions.tutorial')" />
       </v-tabs>
       <v-divider />
       <v-tabs-window v-model="activeTab" style="height: 100%; overflow-y: auto">
