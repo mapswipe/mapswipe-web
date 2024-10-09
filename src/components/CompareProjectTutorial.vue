@@ -205,6 +205,7 @@ export default defineComponent({
     <v-row v-if="alertContent">
       <v-col>
         <v-alert
+          prominent
           density="compact"
           border="start"
           variant="tonal"
@@ -212,7 +213,21 @@ export default defineComponent({
           :title="alertContent.title"
           :text="alertContent.text"
           :icon="alertContent.icon"
-        />
+        >
+          <template #append>
+            <v-btn
+              v-if="userAttempts > 1 && !answeredCorrectly && !answersRevealed"
+              @click="showAnswer"
+            >
+              Show answer
+            </v-btn>
+            <v-btn
+              v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask"
+            >
+              Next task
+            </v-btn>
+          </template>
+        </v-alert>
       </v-col>
     </v-row>
     <v-row>
@@ -242,19 +257,6 @@ export default defineComponent({
     <v-row v-if="hasTasks && !hasCompletedAllTasks">
       <v-col>
         <task-progress :progress="currentTaskIndex" :total="tasks?.length ?? 0" />
-      </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col cols="auto">
-        <v-btn
-          v-if="userAttempts > 1 && !answeredCorrectly && !answersRevealed"
-          @click="showAnswer"
-        >
-          Show answer
-        </v-btn>
-        <v-btn v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask">
-          Next task
-        </v-btn>
       </v-col>
     </v-row>
     <v-row v-if="hasCompletedAllTasks">

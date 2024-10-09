@@ -303,6 +303,7 @@ export default defineComponent({
     <v-row v-if="alertContent">
       <v-col>
         <v-alert
+          prominent
           density="compact"
           border="start"
           variant="tonal"
@@ -310,7 +311,19 @@ export default defineComponent({
           :title="alertContent.title"
           :text="alertContent.text"
           :icon="alertContent.icon"
-        />
+        >
+          <template #append>
+            <v-btn
+              v-if="userAttempts > 1 && !answeredCorrectly && !answersRevealed"
+              @click="showAnswer"
+            >
+              Show answer
+            </v-btn>
+            <v-btn v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask">
+              Next task
+            </v-btn>
+          </template>
+        </v-alert>
       </v-col>
     </v-row>
     <v-row justify="center">
@@ -342,19 +355,6 @@ export default defineComponent({
         <task-progress :progress="currentTaskIndex" :total="tutorial?.screens.length ?? 0" />
       </v-col>
     </v-row>
-    <v-row justify="center">
-      <v-col cols="auto">
-        <v-btn
-          v-if="userAttempts > 1 && !answeredCorrectly && !answersRevealed"
-          @click="showAnswer"
-        >
-          Show answer
-        </v-btn>
-        <v-btn v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask">
-          Next task
-        </v-btn>
-      </v-col>
-    </v-row>
     <v-row v-if="hasCompletedAllTasks">
       <v-col>
         <tutorial-completion-card
@@ -368,8 +368,8 @@ export default defineComponent({
 <style scoped>
 .image-grid {
   display: grid;
-  grid-template-columns: 18vh 18vh;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: repeat(2, max(8rem, calc(30vh - 6rem)));
+  grid-template-rows: repeat(3, 1fr);
   grid-auto-flow: column;
 }
 </style>
