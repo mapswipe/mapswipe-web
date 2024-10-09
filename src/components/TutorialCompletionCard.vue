@@ -13,13 +13,13 @@ export default defineComponent({
       mdi-check-circle
     </v-icon>
     <v-card-title>
-      You're ready to start MapSwiping!
+      {{ $t('projectTutorial.completionTitle') }}
     </v-card-title>
     <v-card-text class="tutorial-completion-description">
-      You're now equipped with all you need to contribute to humanitarian mapping using the app. You can come back anytime for refresher.
+      {{ $t('projectTutorial.completionDescription') }}
     </v-card-text>
     <v-btn @click="$emit('onStartMappingClick')">
-      Start mapping
+      {{ $t('projectTutorial.startMapping') }}
     </v-btn>
   </v-card>
 </template>

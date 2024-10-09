@@ -95,14 +95,21 @@ export default defineComponent({
   <v-dialog v-model="dialog" height="calc(100% - 32px)" max-height="100vh" width="calc(100% - 32px)" max-width="1024" persistent>
     <v-card class="pa-2" height="100%">
       <v-tabs v-model="activeTab">
-        <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions"></v-tab>
+        <v-tab
+          :text="$t('projectInstructions.howToContribute')"
+          value="instructions"
+        />
         <v-tab
           v-for="(page, index) in informationPages"
           :text="page.title"
           :value="index"
           :key="page.pageNumber"
-        ></v-tab>
-        <v-tab v:if="hasTutorialSlot" value="tutorial">Tutorial</v-tab>
+        />
+        <v-tab
+          v:if="hasTutorialSlot"
+          value="tutorial"
+          :text="$t('projectInstructions.tutorial')"
+        />
       </v-tabs>
       <v-divider />
       <v-tabs-window v-model="activeTab" style="height: 100%; overflow-y: auto">

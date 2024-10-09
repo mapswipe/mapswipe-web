@@ -317,10 +317,10 @@ export default defineComponent({
               v-if="userAttempts > 1 && !answeredCorrectly && !answersRevealed"
               @click="showAnswer"
             >
-              Show answer
+              {{ $t('projectTutorial.showAnswer') }}
             </v-btn>
             <v-btn v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask">
-              Next task
+              {{ $t('projectTutorial.nextTask') }}
             </v-btn>
           </template>
         </v-alert>

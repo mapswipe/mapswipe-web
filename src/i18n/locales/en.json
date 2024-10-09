@@ -155,7 +155,8 @@
     "toggleOpacityInstruction": "For a clearer view of the underlying imagery, toggle the opacity of the overlay",
     "useButtonsToNavigate": "Use buttons to navigate",
     "whereIamTitle": "Where am I mapping?",
-    "whereIamInstruction": "Open a map of where you are currently contributing"
+    "whereIamInstruction": "Open a map of where you are currently contributing",
+    "tutorial": "Tutorial"
   },
   "findProjectInstructions": {
     "classifyTitle": "Click or tap to classify",
@@ -202,5 +203,12 @@
     "drawNewFeature": "Draw new features",
     "modifyFeature": "Modify features",
     "deleteFeature": "Delete features"
+  },
+  "projectTutorial": {
+    "showAnswer": "Show answer",
+    "nextTask": "Next task",
+    "completionTitle": "You're ready to start MapSwiping!",
+    "completionDescription": "You're now equipped with all you need to contribute to humanitarian mapping using the app. You can come back anytime for refresher.",
+    "startMapping": "Start mapping"
   }
 }
