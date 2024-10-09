@@ -1,4 +1,4 @@
-const iconLookup = {
+const iconLookup: Record<string, string> = {
   'add-outline': 'mdi-plus',
   'alert-outline': 'mdi-exclamation',
   'ban-outline': 'mdi-cancel',
@@ -27,7 +27,7 @@ const iconLookup = {
   'warning-outline': 'mdi-alert-outline',
 }
 
-const matchIcon = (icon) => {
+const matchIcon = (icon: string) => {
   const mdiIcon = iconLookup[icon]
   return mdiIcon
 }
