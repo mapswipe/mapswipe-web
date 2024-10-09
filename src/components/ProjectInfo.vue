@@ -106,7 +106,7 @@ export default defineComponent({
           :key="page.pageNumber"
         />
         <v-tab
-          v:if="hasTutorialSlot"
+          v-if="hasTutorialSlot"
           value="tutorial"
           :text="$t('projectInstructions.tutorial')"
         />
