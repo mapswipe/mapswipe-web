@@ -23,6 +23,10 @@ const projectTypes = {
     name: 'Digitize',
     component: 'digitizeProject',
   },
+  '7': {
+    name: 'Street',
+    component: 'streetProject',
+  },
 }
 
 export default projectTypes
