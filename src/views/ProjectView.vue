@@ -23,6 +23,7 @@ import FindProject from '@/components/FindProject.vue'
 import MediaProject from '@/components/MediaProject.vue'
 import ValidateProject from '@/components/ValidateProject.vue'
 import DigitizeProject from '@/components/DigitizeProject.vue'
+import StreetProject from '@/components/StreetProject.vue'
 import projectTypes from '@/config/projectTypes'
 
 export default defineComponent({
@@ -33,6 +34,7 @@ export default defineComponent({
     mediaProject: MediaProject,
     validateProject: ValidateProject,
     digitizeProject: DigitizeProject,
+    streetProject: StreetProject,
   },
   data() {
     return {
