@@ -1,4 +1,6 @@
 <script lang="ts">
+import { Viewer } from 'mapillary-js'
+import 'mapillary-js/dist/mapillary.css'
 import { defineComponent } from 'vue'
 // import createInformationPages from '@/utils/createInformationPages'
 import OptionButtons from './OptionButtons.vue'
@@ -79,6 +81,7 @@ export default defineComponent({
       startTime: null,
       taskId: undefined,
       taskIndex: 0,
+      viewer: null,
     }
   },
   inject: {
@@ -100,6 +103,7 @@ export default defineComponent({
       if (!this.taskIndex <= 0) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
+        this.viewer.moveTo(this.taskId)
       }
     },
     /* 
@@ -111,10 +115,22 @@ export default defineComponent({
     */
     forward() {
       if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
-        this.imageLoaded = false
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
+        this.viewer.moveTo(this.taskId)
       }
+    },
+    initialiseViewer(imageId) {
+      this.viewer = new Viewer({
+        accessToken: import.meta.env.VITE_MAPILLARY_API_KEY,
+        component: { cover: false },
+        container: 'mapillary',
+        imageId: imageId,
+      })
+
+      this.viewer.deactivateComponent('direction')
+      this.viewer.deactivateComponent('sequence')
+      this.viewer.deactivateComponent('keyboard')
     },
     isAnswered() {
       const result = this.results[this.taskId]
@@ -127,6 +143,9 @@ export default defineComponent({
     this.taskId = this.tasks[this.taskIndex].taskId
     this.$emit('created')
     this.logMappingStarted(this.project.projectType)
+  },
+  mounted() {
+    this.initialiseViewer(this.taskId)
   },
 })
 </script>
@@ -148,12 +167,11 @@ export default defineComponent({
     </project-info-->
   </project-header>
   <v-container
+    id="mapillary"
     class="ma-0 pa-0"
     v-touch="{ left: () => forward(), right: () => back() }"
-    style="position: relative"
-  >
-    {{ taskId }}
-  </v-container>
+    style="position: relative; height: calc(100vh - 375px)"
+  />
   <option-buttons
     v-if="taskId"
     :options="options"
@@ -183,7 +201,7 @@ export default defineComponent({
       :title="$t('mediaProject.moveRight')"
       icon="mdi-chevron-right"
       color="secondary"
-      :disabled="!isImageLoaded || !isAnswered() || taskIndex + 1 === tasks.length"
+      :disabled="!isAnswered() || taskIndex + 1 === tasks.length"
       @click="forward"
       v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
