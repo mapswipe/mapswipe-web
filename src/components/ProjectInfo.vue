@@ -2,13 +2,25 @@
 import { defineComponent } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
+type TabType = number | string
+
 export default defineComponent({
   components: {
     VueMarkdown,
   },
   props: {
     informationPages: {
-      type: Array,
+      // FIXME: move type to common types
+      type: Array<{
+        pageNumber: number
+        title: string
+        blocks: {
+          blockNumber: number
+          blockType: 'text' | 'image'
+          textDescription?: string
+          image?: string
+        }[]
+      }>,
       required: false,
     },
     manualUrl: {
@@ -20,15 +32,25 @@ export default defineComponent({
       default: false,
     },
   },
-  data: () => ({
+  data: (): {
+    activeTab: TabType | null
+    dialog: boolean
+  } => ({
     activeTab: null,
     dialog: false,
   }),
   computed: {
+    hasTutorialSlot() {
+      return !!this.$slots.tutorial
+    },
     tabs() {
-      const tabs = this.informationPages
-        ? Array.from({ length: this.informationPages.length }, (v, i) => i).concat(['instructions'])
-        : ['instructions']
+      const tabs: TabType[] = ['instructions']
+      if (this.informationPages && this.informationPages.length > 0) {
+        tabs.push(...Array.from(new Array(this.informationPages?.length ?? 0).keys()))
+      }
+      if (this.hasTutorialSlot) {
+        tabs.push('tutorial')
+      }
       return tabs
     },
   },
@@ -38,14 +60,23 @@ export default defineComponent({
       this.dialog = !this.dialog
     },
     back() {
+      if (this.activeTab === null) {
+        return
+      }
+
       const currentTabIndex = this.tabs.indexOf(this.activeTab)
       if (currentTabIndex > 0) this.activeTab = this.tabs[currentTabIndex - 1]
     },
     forward() {
+      if (this.activeTab === null) {
+        return
+      }
+
       const currentTabIndex = this.tabs.indexOf(this.activeTab)
       if (currentTabIndex < this.tabs.length - 1) this.activeTab = this.tabs[currentTabIndex + 1]
     },
   },
+  emits: ['toggleDialog'],
   created() {
     if (this.first) this.toggleDialog()
   },
@@ -59,20 +90,31 @@ export default defineComponent({
     color="primary"
     @click="toggleDialog()"
   />
-  <v-dialog v-model="dialog" width="80vw" max-width="1024">
-    <v-card v-click-outside="toggleDialog" class="pa-3">
-      <v-tabs v-model="activeTab">
+  <v-dialog
+    v-model="dialog"
+    height="calc(100% - 32px)"
+    max-height="100vh"
+    width="calc(100% - 32px)"
+    max-width="1024"
+    persistent
+  >
+    <v-card class="pa-2" height="100%">
+      <v-tabs v-model="activeTab" style="flex-shrink: 0">
+        <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions" />
         <v-tab
           v-for="(page, index) in informationPages"
           :text="page.title"
           :value="index"
           :key="page.pageNumber"
-        ></v-tab>
-        <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions"></v-tab>
+        />
+        <v-tab v-if="hasTutorialSlot" value="tutorial" :text="$t('projectInstructions.tutorial')" />
       </v-tabs>
-
-      <v-window v-model="activeTab" style="height: 70vh; overflow-y: auto">
-        <v-window-item
+      <v-divider />
+      <v-tabs-window v-model="activeTab" style="flex-grow: 1; overflow-y: auto">
+        <v-tabs-window-item value="instructions">
+          <slot name="instructions"></slot>
+        </v-tabs-window-item>
+        <v-tabs-window-item
           v-for="(page, index) in informationPages"
           :value="index"
           :key="page.pageNumber"
@@ -83,7 +125,7 @@ export default defineComponent({
           >
             <v-card-text v-if="block.blockType === 'text'" class="text-justify">
               <vue-markdown
-                :source="block.textDescription.replaceAll('\\n', '\n')"
+                :source="block.textDescription?.replaceAll('\\n', '\n')"
                 :options="{ typographer: true }"
               />
             </v-card-text>
@@ -94,12 +136,13 @@ export default defineComponent({
               class="mx-auto"
             />
           </span>
-        </v-window-item>
-        <v-window-item value="instructions">
-          <slot name="instructions"></slot>
-        </v-window-item>
-      </v-window>
-      <v-card-actions class="justify-end">
+        </v-tabs-window-item>
+        <v-tabs-window-item value="tutorial">
+          <slot name="tutorial"></slot>
+        </v-tabs-window-item>
+      </v-tabs-window>
+      <v-divider />
+      <v-card-actions>
         <v-btn
           :title="$t('findProjectInstructions.moveLeft')"
           icon="mdi-chevron-left"
@@ -127,7 +170,7 @@ export default defineComponent({
           prepend-icon="mdi-help-circle"
           >{{ $t('findProjectInstructions.moreInfo') }}</v-btn
         >
-        <v-btn v-if="activeTab == 'instructions'" color="primary" @click="toggleDialog()">{{
+        <v-btn color="primary" @click="toggleDialog()">{{
           $t('findProjectInstructions.close')
         }}</v-btn>
       </v-card-actions>

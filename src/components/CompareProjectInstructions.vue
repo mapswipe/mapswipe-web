@@ -1,5 +1,6 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { type PropType, defineComponent } from 'vue'
+import { type Option } from '@/components/OptionButtons.vue'
 
 export default defineComponent({
   props: {
@@ -12,7 +13,11 @@ export default defineComponent({
       require: false,
     },
     options: {
-      type: Array,
+      type: Array as PropType<Option[]>,
+      required: true,
+    },
+    verificationNumber: {
+      type: Number,
       required: true,
     },
   },
@@ -70,6 +75,14 @@ export default defineComponent({
         </v-col>
         <v-col>{{ $t('projectInstructions.seenAll') }}</v-col>
       </v-row>
+    </div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.dontWorry') }}</div>
+    <div class="text-p">
+      {{
+        $t('projectInstructions.everyTaskIsViewedBy', {
+          verificationNumber: this.verificationNumber,
+        })
+      }}.
     </div>
     <div class="text-h6 mt-10">{{ $t('projectInstructions.imageCredits') }}</div>
     <div class="text-p">{{ attribution }}</div>

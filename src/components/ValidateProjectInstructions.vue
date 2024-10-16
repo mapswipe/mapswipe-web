@@ -11,6 +11,10 @@ export default defineComponent({
       type: Array,
       required: true,
     },
+    verificationNumber: {
+      type: Number,
+      required: true,
+    },
   },
 })
 </script>
@@ -83,6 +87,14 @@ export default defineComponent({
         </v-col>
         <v-col>{{ $t('validateProjectInstructions.seenAll') }}</v-col>
       </v-row>
+    </div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.dontWorry') }}</div>
+    <div class="text-p">
+      {{
+        $t('projectInstructions.everyTaskIsViewedBy', {
+          verificationNumber: this.verificationNumber,
+        })
+      }}.
     </div>
   </v-card-text>
 </template>

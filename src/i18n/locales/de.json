@@ -144,6 +144,8 @@
   "projectInstructions": {
     "classifyTitle": "Gib deine Antwort",
     "classifyInstruction": "Benutze Buttons, um deine Antwort zu geben",
+    "dontWorry": "Keine Sorge, wenn du unsicher bist",
+    "everyTaskIsViewedBy": "Jede Aufgabe wird von mindestens {verificationNumber} MapSwipern gesehen. Es ist daher OK, wenn du mal etwas übersiehst",
     "howToContribute": "Wie kann ich beitragen?",
     "imageCredits": "Bildnachweis",
     "move": "Zurück und weiter bewegen",
@@ -203,5 +205,16 @@
     "drawNewFeature": "Neue Objekte einzeichnen",
     "modifyFeature": "Objekte bearbeiten",
     "deleteFeature": "Objekte löschen"
+  },
+  "projectTutorial": {
+    "showAnswer": "Antwort zeigen",
+    "nextTask": "Nächste Aufgabe",
+    "completionTitle": "Du bist bereit zum MapSwipen!",
+    "completionDescription": "Du hast jetzt alles was du brauchst, um mit der App einen Beitrag zur humanitären Kartierung zu leisten. Du kannst jederzeit für eine Auffrischung zurückkommen.",
+    "startMapping": "Beginnen"
+  },
+  "imageTile": {
+    "failureMessage": "Bild konnte nicht geladen werden!",
+    "notAvailableMessage": "Bild nicht verfügbar!"
   }
 }

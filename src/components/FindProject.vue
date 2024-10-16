@@ -1,10 +1,10 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 import buildTasks from '@/utils/buildTasks'
 import createInformationPages from '@/utils/createInformationPages'
 import FindProjectInstructions from '@/components/FindProjectInstructions.vue'
-import ImageTile from '@/components/ImageTile.vue'
-import MagnifyImageTile from '@/components/MagnifyImageTile.vue'
+import FindProjectTutorial from '@/components/FindProjectTutorial.vue'
+import FindProjectTask, { type Option } from '@/components/FindProjectTask.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
 import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
@@ -13,8 +13,8 @@ import TileMap from '@/components/TileMap.vue'
 export default defineComponent({
   components: {
     findProjectInstructions: FindProjectInstructions,
-    imageTile: ImageTile,
-    magnifyImageTile: MagnifyImageTile,
+    findProjectTutorial: FindProjectTutorial,
+    findProjectTask: FindProjectTask,
     projectHeader: ProjectHeader,
     projectInfo: ProjectInfo,
     tileMap: TileMap,
@@ -31,7 +31,7 @@ export default defineComponent({
       default: false,
     },
     options: {
-      type: Array,
+      type: Array as PropType<Option[]>,
       default() {
         return [
           { color: '', label: 'no', value: 0 },
@@ -61,11 +61,9 @@ export default defineComponent({
       containerWidth: 1,
       endReached: false,
       maxTileSize: 1,
-      overlay: true,
       page: [],
       results: {},
       selectedTaskIds: [],
-      selectOverlay: true,
       startTime: null,
       taskIndex: 0,
       transparent: false,
@@ -86,6 +84,16 @@ export default defineComponent({
     },
   },
   computed: {
+    optionMap() {
+      return this.options.reduce(
+        (acc, val) => {
+          acc[val.value] = val
+
+          return acc
+        },
+        {} as Record<number, Option>,
+      )
+    },
     allTilesSelected() {
       return this.selectedTaskIds.length === this.page.flat().length
     },
@@ -167,7 +175,7 @@ export default defineComponent({
         this.updatePage()
       }
     },
-    bumpResult(taskId, currentOptionIndex) {
+    bumpResult(taskId: string, currentOptionIndex: number) {
       if (currentOptionIndex < this.options.length - 1) {
         this.results[taskId] = this.options[currentOptionIndex + 1].value
       } else {
@@ -232,7 +240,7 @@ export default defineComponent({
     handleSelectAll() {
       this.selectedTaskIds = this.allTilesSelected ? [] : this.page.flat().map((t) => t.taskId)
     },
-    handleTileClicked(taskId) {
+    handleTileClicked(taskId: string) {
       const currentResult = this.results[taskId]
       const currentOptionIndex = this.options.findIndex((option) => option.value == currentResult)
 
@@ -243,12 +251,11 @@ export default defineComponent({
       }
       this.updatePage()
     },
-    handleTileSelected(e, taskId) {
-      e.preventDefault()
-      if (this.selectedTaskIds.includes(taskId)) {
-        this.selectedTaskIds = this.selectedTaskIds.filter((t) => t != taskId)
-      } else {
+    handleTileSelected(newValue: boolean, taskId: string) {
+      if (newValue) {
         this.selectedTaskIds.push(taskId)
+      } else {
+        this.selectedTaskIds = this.selectedTaskIds.filter((t) => t != taskId)
       }
     },
     fastBack() {
@@ -321,6 +328,7 @@ export default defineComponent({
           .sort((a, b) => parseInt(a.taskX) > parseInt(b.taskX))
         this.page.push(row)
       }
+
       if (this.processedTasks.length <= this.tasksPerPage) {
         this.endReached = true
         this.taskIndex = this.processedTasks.length
@@ -331,6 +339,7 @@ export default defineComponent({
   mounted() {
     this.onResize()
   },
+  emits: ['created'],
   created() {
     this.$emit('created')
     this.logMappingStarted(this.project.projectType)
@@ -360,6 +369,7 @@ export default defineComponent({
     />
     <tile-map :page="page" :zoomLevel="project.zoomLevel" :key="columnsPerPage" />
     <project-info
+      ref="projectInfo"
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
@@ -371,6 +381,14 @@ export default defineComponent({
           :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
           :instructionMessage="instructionMessage"
           :options="options"
+          :verificationNumber="project.verificationNumber"
+        />
+      </template>
+      <template #tutorial>
+        <find-project-tutorial
+          :tutorial="tutorial"
+          :options="options"
+          @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />
       </template>
     </project-info>
@@ -385,61 +403,17 @@ export default defineComponent({
   >
     <v-row v-for="(row, index) in page" :key="index" justify="center" no-gutters>
       <div v-for="task in row" :key="task.taskId" :width="tileSize" class="mx-0 px-0">
-        <v-hover v-slot="{ isHovering, props }">
-          <v-card
-            v-bind="props"
-            color="white"
-            :disabled="tilesInSelection && !selectedTaskIds.includes(task.taskId)"
-            @click.stop="handleTileClicked(task.taskId)"
-            @contextmenu="($event) => handleTileSelected($event, task.taskId)"
-            variant="outlined"
-            rounded="0"
-            :height="tileSize"
-            :width="tileSize"
-          >
-            <v-overlay
-              v-model="overlay"
-              @update:modelValue="overlay = true"
-              :opacity="task.index == 0 ? 0 : 0.5"
-              :style="getOverlayBorder(task.taskId)"
-              :scrim="task.color"
-              class="justify-center align-center"
-              contained
-            >
-              <h2 v-show="isHovering">{{ task.label }}</h2>
-            </v-overlay>
-            <v-overlay
-              v-model="overlay"
-              @update:modelValue="overlay = true"
-              opacity="0"
-              class="justify-end align-start"
-              contained
-            >
-              <magnify-image-tile
-                :iconSize="iconSize"
-                :isHovering="isHovering"
-                :task="task"
-                :transparent="transparent"
-                @tileClicked="handleTileClicked(task.taskId)"
-              />
-              <v-btn
-                v-show="isHovering"
-                color="neutral"
-                style="opacity: 0.6"
-                @click.stop="handleTileSelected($event, task.taskId)"
-                class="mr-2 mt-2"
-                :icon="getCheckboxIcon(task.taskId)"
-                :size="iconSize"
-              />
-            </v-overlay>
-            <image-tile
-              :url="task.url"
-              :urlB="task.urlB"
-              :spinner="true"
-              :opacityB="transparent ? 0.3 : 1"
-            />
-          </v-card>
-        </v-hover>
+        <find-project-task
+          :task="task"
+          :tilesInSelection="tilesInSelection"
+          :selected="selectedTaskIds.includes(task.taskId)"
+          :transparent="transparent"
+          :optionMap="optionMap"
+          :tileSize="tileSize"
+          :value="results[task.taskId]"
+          @updateValue="handleTileClicked"
+          @updateSelected="handleTileSelected"
+        />
       </div>
     </v-row>
   </v-container>
