@@ -44,16 +44,13 @@ export default defineComponent({
     </template>
     <template v-slot:error>
       <v-row class="fill-height ma-0 image-failed" align="center" justify="center">
-        {{$t('imageTile.failureMessage')}}
+        {{ $t('imageTile.failureMessage') }}
       </v-row>
     </template>
     <image-tile v-if="!!urlB" :url="urlB" :spinner="spinner" :opacity="opacityB" />
   </v-img>
-  <div
-    class="image-not-available"
-    v-if="!url"
-  >
-    {{$t('imageTile.notAvailableMessage')}}
+  <div class="image-not-available" v-if="!url">
+    {{ $t('imageTile.notAvailableMessage') }}
   </div>
 </template>
 
