@@ -77,6 +77,7 @@ export default defineComponent({
   data() {
     return {
       arrowKeys: true,
+      isLoading: true,
       results: {},
       startTime: null,
       taskId: undefined,
@@ -114,7 +115,7 @@ export default defineComponent({
     },
     */
     forward() {
-      if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
+      if (!this.isLoading && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
         this.viewer.moveTo(this.taskId)
@@ -131,6 +132,7 @@ export default defineComponent({
       this.viewer.deactivateComponent('direction')
       this.viewer.deactivateComponent('sequence')
       this.viewer.deactivateComponent('keyboard')
+      this.viewer.on('dataloading', (e) => (this.isLoading = e.loading))
     },
     isAnswered() {
       const result = this.results[this.taskId]
@@ -174,6 +176,7 @@ export default defineComponent({
   />
   <option-buttons
     v-if="taskId"
+    :disabled="isLoading"
     :options="options"
     :result="results[taskId]"
     :taskId="taskId"
@@ -201,7 +204,7 @@ export default defineComponent({
       :title="$t('mediaProject.moveRight')"
       icon="mdi-chevron-right"
       color="secondary"
-      :disabled="!isAnswered() || taskIndex + 1 === tasks.length"
+      :disabled="isLoading || !isAnswered() || taskIndex + 1 === tasks.length"
       @click="forward"
       v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"

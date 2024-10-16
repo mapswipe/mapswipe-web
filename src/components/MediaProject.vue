@@ -93,7 +93,7 @@ export default defineComponent({
     },
     back() {
       if (!this.taskIndex <= 0) {
-        this.imageLoaded = false
+        this.isImageLoaded = false
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
       }
@@ -105,7 +105,7 @@ export default defineComponent({
     },
     forward() {
       if (this.isImageLoaded && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
-        this.imageLoaded = false
+        this.isImageLoaded = false
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
       }
@@ -170,6 +170,7 @@ export default defineComponent({
   </v-container>
   <option-buttons
     v-if="taskId"
+    :disabled="!isImageLoaded"
     :options="options"
     :result="results[taskId]"
     :taskId="taskId"
