@@ -1,25 +1,83 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
+
 import createInformationPages from '@/utils/createInformationPages'
 import OptionButtons from '@/components/OptionButtons.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
 import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import TileMap from '@/components/TileMap.vue'
-import ImageTile from '@/components/ImageTile.vue'
 import CompareProjectInstructions from '@/components/CompareProjectInstructions.vue'
+import CompareProjectTutorial, { type Tutorial } from '@/components/CompareProjectTutorial.vue'
+import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue'
+import { type Option } from '@/components/OptionButtons.vue'
+import { isDefined } from '@/utils/common'
+
+// NOTE: is only for compare project
+interface ProjectCompareType {
+  projectType: string
+  projectTopic: string
+  name: string
+  zoomLevel: number
+  manualUrl?: string
+  tileServer: {
+    credits: string
+  }
+  tileServerB: {
+    credits: string
+  }
+  credits: string
+  lookFor: string
+}
+
+const defaultOptions: Option[] = [
+  {
+    description: "I don't see any change between the two images.",
+    iconColor: '',
+    title: 'No change',
+    mdiIcon: 'mdi-equal',
+    shortkey: 1,
+    value: 0,
+  },
+  {
+    description: 'There is change between the two images.',
+    iconColor: 'green',
+    title: 'Change',
+    mdiIcon: 'mdi-not-equal-variant',
+    shortkey: 2,
+    value: 1,
+  },
+  {
+    description: 'I am not sure.',
+    iconColor: 'orange',
+    title: 'Not sure',
+    mdiIcon: 'mdi-head-question',
+    shortkey: 3,
+    value: 2,
+  },
+  {
+    description: 'The imagery is bad or clouded.',
+    iconColor: 'red',
+    title: 'Bad imagery',
+    mdiIcon: 'mdi-weather-cloudy',
+    shortkey: 4,
+    value: 3,
+  },
+]
 
 export default defineComponent({
   components: {
     compareProjectInstructions: CompareProjectInstructions,
+    compareProjectTutorial: CompareProjectTutorial,
+    compareProjectTask: CompareProjectTask,
     taskProgress: TaskProgress,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
     projectInfo: ProjectInfo,
-    imageTile: ImageTile,
     tileMap: TileMap,
   },
   props: {
+    // FIXME: this prop is not used
     group: {
       type: Object,
       required: true,
@@ -29,58 +87,35 @@ export default defineComponent({
       default: false,
     },
     options: {
-      type: Array,
+      type: Array as PropType<Option[]>,
       default() {
-        return [
-          {
-            description: "I don't see any change between the two images.",
-            iconColor: '',
-            title: 'No change',
-            mdiIcon: 'mdi-equal',
-            shortkey: 1,
-            value: 0,
-          },
-          {
-            description: 'There is change between the two images.',
-            iconColor: 'green',
-            title: 'Change',
-            mdiIcon: 'mdi-not-equal-variant',
-            shortkey: 2,
-            value: 1,
-          },
-          {
-            description: 'I am not sure.',
-            iconColor: 'orange',
-            title: 'Not sure',
-            mdiIcon: 'mdi-head-question',
-            shortkey: 3,
-            value: 2,
-          },
-          {
-            description: 'The imagery is bad or clouded.',
-            iconColor: 'red',
-            title: 'Bad imagery',
-            mdiIcon: 'mdi-weather-cloudy',
-            shortkey: 4,
-            value: 3,
-          },
-        ]
+        return defaultOptions
       },
     },
     project: {
-      type: Object,
+      type: Object as PropType<ProjectCompareType>,
       required: true,
     },
     tasks: {
-      type: Array,
+      type: Array as PropType<Task[]>,
       required: true,
     },
     tutorial: {
-      type: Object,
-      require: false,
+      type: Object as PropType<Tutorial>,
+      required: false,
     },
   },
-  data() {
+  data(): {
+    allAnswered: boolean
+    arrowKeys: boolean
+    overlay: boolean
+    results: Record<string, number | undefined>
+    startTime: string | null
+    task: object
+    taskId: string | undefined
+    taskIndex: number
+    transparent: boolean
+  } {
     return {
       allAnswered: false,
       arrowKeys: true,
@@ -93,6 +128,8 @@ export default defineComponent({
       transparent: false,
     }
   },
+  // NOTE: These are not typesafe.
+  // We can use the inject method on setup and add explicity type
   inject: {
     logMappingStarted: 'logMappingStarted',
     saveResults: 'saveResults',
@@ -110,11 +147,13 @@ export default defineComponent({
     },
   },
   methods: {
-    addResult(value) {
-      this.results[this.taskId] = value
+    addResult(value: number | undefined) {
+      if (isDefined(this.taskId)) {
+        this.results[this.taskId] = value
+      }
     },
     back() {
-      if (!this.taskIndex <= 0) {
+      if (this.taskIndex > 0) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
       }
@@ -131,11 +170,15 @@ export default defineComponent({
       }
     },
     isAnswered() {
+      if (!this.taskId) {
+        return false
+      }
       const result = this.results[this.taskId]
       const defined = result !== undefined
       return defined
     },
   },
+  emits: ['created'],
   created() {
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId
@@ -149,6 +192,7 @@ export default defineComponent({
   <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
     <tile-map :page="[tasks[taskIndex]]" :zoomLevel="project.zoomLevel" />
     <project-info
+      ref="projectInfo"
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
@@ -159,67 +203,21 @@ export default defineComponent({
           :attribution="attribution"
           :instructionMessage="instructionMessage"
           :options="options"
+          :verificationNumber="project.verificationNumber"
+        />
+      </template>
+      <template #tutorial>
+        <compare-project-tutorial
+          :tutorial="tutorial"
+          :options="options"
+          @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />
       </template>
     </project-info>
   </project-header>
-  <v-container class="pa-0" v-touch="{ left: () => forward(), right: () => back() }">
-    <v-row>
-      <v-col cols="12" md="6" align="center">
-        <v-hover v-slot="{ isHovering, props }">
-          <v-card
-            :max-width="$vuetify.display.smAndDown ? '35vh' : '80vh'"
-            v-bind="props"
-            color="white"
-            variant="outlined"
-            rounded="0"
-          >
-            <v-overlay
-              v-model="overlay"
-              @update:modelValue="overlay = true"
-              opacity="0"
-              class="justify-center align-center"
-              contained
-            >
-              <h2 v-show="isHovering">{{ $t('compareProject.before') }}</h2>
-            </v-overlay>
-            <image-tile
-              :url="tasks[taskIndex].url"
-              :spinner="true"
-              :maxSize="$vuetify.display.smAndDown ? '35vh' : '65vh'"
-            />
-          </v-card>
-        </v-hover>
-      </v-col>
-      <v-col cols="12" md="6" align="center">
-        <v-hover v-slot="{ isHovering, props }">
-          <v-card
-            :max-width="$vuetify.display.smAndDown ? '35vh' : '65vh'"
-            v-bind="props"
-            color="white"
-            variant="outlined"
-            rounded="0"
-          >
-            <v-overlay
-              v-model="overlay"
-              @update:modelValue="overlay = true"
-              opacity="0"
-              class="justify-center align-center"
-              contained
-            >
-              <h2 v-show="isHovering">{{ $t('compareProject.after') }}</h2>
-            </v-overlay>
-            <image-tile
-              :url="tasks[taskIndex].urlB"
-              :spinner="true"
-              :maxSize="$vuetify.display.smAndDown ? '35vh' : '80vh'"
-            />
-          </v-card>
-        </v-hover>
-      </v-col>
-    </v-row>
+  <v-container v-touch="{ left: () => forward(), right: () => back() }">
+    <compare-project-task :task="tasks?.[taskIndex]" />
   </v-container>
-
   <option-buttons
     v-if="taskId"
     :options="options"
@@ -256,7 +254,7 @@ export default defineComponent({
     />
     <v-spacer />
     <template #extension>
-      <task-progress :progress="taskIndex + isAnswered()" :total="tasks.length" />
+      <task-progress :progress="taskIndex + (isAnswered() ? 1 : 0)" :total="tasks.length" />
     </template>
   </v-toolbar>
 </template>

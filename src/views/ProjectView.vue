@@ -10,8 +10,6 @@ import {
   getTasksRef,
   logAnalyticsEvent,
 } from '@/firebase'
-import { inflate } from 'pako'
-import { decode } from 'base-64'
 import { mapStores } from 'pinia'
 import { i18nRoute } from '@/i18n/translation'
 import { useCurrentUserStore } from '@/stores/currentUser'
@@ -25,6 +23,7 @@ import ValidateProject from '@/components/ValidateProject.vue'
 import DigitizeProject from '@/components/DigitizeProject.vue'
 import StreetProject from '@/components/StreetProject.vue'
 import projectTypes from '@/config/projectTypes'
+import { decompressTasks } from '@/utils/tasks'
 
 export default defineComponent({
   components: {
@@ -164,9 +163,8 @@ export default defineComponent({
     },
     bindTasks() {
       onValue(getTasksRef(this.projectId, this.group?.groupId), (snapshot) => {
-        const data = snapshot.val() || []
-        const tasks = typeof data == 'string' ? this.decompressTasks(data) : data
-        this.tasks = tasks
+        const data = snapshot.val()
+        this.tasks = decompressTasks(data)
       })
     },
     bindTutorial() {
@@ -189,15 +187,6 @@ export default defineComponent({
     continueMapping() {
       this.nextDialog = false
       this.mode = 'contribute'
-    },
-    decompressTasks(tasks) {
-      const strTasks = decode(tasks)
-      const charTasks = strTasks.split('').map(function (x) {
-        return x.charCodeAt(0)
-      })
-      const binaryTasks = new Uint8Array(charTasks)
-      const expandedTasks = inflate(binaryTasks, { to: 'string' })
-      return JSON.parse(expandedTasks)
     },
     i18nRoute,
     leaveProject() {
