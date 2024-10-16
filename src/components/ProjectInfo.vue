@@ -99,7 +99,7 @@ export default defineComponent({
     persistent
   >
     <v-card class="pa-2" height="100%">
-      <v-tabs v-model="activeTab">
+      <v-tabs v-model="activeTab" style="flex-shrink: 0">
         <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions" />
         <v-tab
           v-for="(page, index) in informationPages"
@@ -110,7 +110,7 @@ export default defineComponent({
         <v-tab v-if="hasTutorialSlot" value="tutorial" :text="$t('projectInstructions.tutorial')" />
       </v-tabs>
       <v-divider />
-      <v-tabs-window v-model="activeTab" style="height: 100%; overflow-y: auto">
+      <v-tabs-window v-model="activeTab" style="flex-grow: 1; overflow-y: auto">
         <v-tabs-window-item value="instructions">
           <slot name="instructions"></slot>
         </v-tabs-window-item>
