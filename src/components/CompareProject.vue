@@ -113,7 +113,7 @@ export default defineComponent({
     startTime: string | null
     task: object
     taskId: string | undefined
-    taskIndex: 0
+    taskIndex: number
     transparent: boolean
   } {
     return {
@@ -178,6 +178,7 @@ export default defineComponent({
       return defined
     },
   },
+  emits: ['created'],
   created() {
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId

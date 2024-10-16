@@ -212,5 +212,9 @@
     "completionTitle": "You're ready to start MapSwiping!",
     "completionDescription": "You're now equipped with all you need to contribute to humanitarian mapping using the app. You can come back anytime for refresher.",
     "startMapping": "Start mapping"
+  },
+  "imageTile": {
+    "failureMessage": "Failed to load image!",
+    "notAvailableMessage": "Image not available!"
   }
 }

@@ -76,7 +76,6 @@ export default defineComponent({
             <h2 v-show="isHovering">{{ $t('compareProject.after') }}</h2>
           </v-overlay>
           <image-tile
-            v-if="task.urlB"
             :url="task.urlB"
             :spinner="true"
             :maxSize="$vuetify.display.smAndDown ? '35vh' : '80vh'"

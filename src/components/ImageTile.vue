@@ -5,11 +5,9 @@ export default defineComponent({
   props: {
     url: {
       type: String,
-      required: true,
     },
     urlB: {
       type: String,
-      require: false,
     },
     spinner: {
       type: Boolean,
@@ -25,7 +23,6 @@ export default defineComponent({
     },
     maxSize: {
       type: String,
-      require: false,
     },
   },
 })
@@ -33,6 +30,7 @@ export default defineComponent({
 
 <template>
   <v-img
+    v-if="url"
     :src="url"
     aspect-ratio="1"
     :style="'opacity: ' + opacity"
@@ -44,8 +42,33 @@ export default defineComponent({
         <v-progress-circular color="primary" indeterminate />
       </v-row>
     </template>
-    <image-tile v-if="urlB" :url="urlB" :spinner="spinner" :opacity="opacityB" />
+    <template v-slot:error>
+      <v-row class="fill-height ma-0 image-failed" align="center" justify="center">
+        {{$t('imageTile.failureMessage')}}
+      </v-row>
+    </template>
+    <image-tile v-if="!!urlB" :url="urlB" :spinner="spinner" :opacity="opacityB" />
   </v-img>
+  <div
+    class="image-not-available"
+    v-if="!url"
+  >
+    {{$t('imageTile.notAvailableMessage')}}
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.image-not-available {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  aspect-ratio: 1;
+  background-color: #a1a1a1;
+  color: rgba(255, 255, 255, 0.6);
+}
+.image-failed {
+  color: rgba(255, 255, 255, 0.6);
+  background-color: #a1a1a1;
+}
+</style>
