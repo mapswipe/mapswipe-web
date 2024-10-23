@@ -267,7 +267,7 @@ export default defineComponent({
       :load-tiles-while-animating="true"
       :load-tiles-while-interacting="true"
       :style="{ cursor: mapCursor, height: 'calc(100vh - 375px)' }"
-      @click="deleteFeature"
+      @click="interaction === 'delete' ? deleteFeature() : () => true"
       @rendercomplete.once="fitView(1200, 300)"
       @pointermove="pointerMove"
       @pointerdrag="pointerDrag"
