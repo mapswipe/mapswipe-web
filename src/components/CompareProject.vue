@@ -33,7 +33,7 @@ interface ProjectCompareType {
 const defaultOptions: Option[] = [
   {
     description: "I don't see any change between the two images.",
-    iconColor: '',
+    iconColor: '#adadad',
     title: 'No change',
     mdiIcon: 'mdi-equal',
     shortkey: 1,
@@ -41,7 +41,7 @@ const defaultOptions: Option[] = [
   },
   {
     description: 'There is change between the two images.',
-    iconColor: 'green',
+    iconColor: '#bbcb7d',
     title: 'Change',
     mdiIcon: 'mdi-not-equal-variant',
     shortkey: 2,
@@ -57,7 +57,7 @@ const defaultOptions: Option[] = [
   },
   {
     description: 'The imagery is bad or clouded.',
-    iconColor: 'red',
+    iconColor: '#fd5054',
     title: 'Bad imagery',
     mdiIcon: 'mdi-weather-cloudy',
     shortkey: 4,

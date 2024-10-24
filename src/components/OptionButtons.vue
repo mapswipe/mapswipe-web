@@ -19,6 +19,10 @@ export interface Option {
 
 export default defineComponent({
   props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     options: {
       type: Array as PropType<Option[]>,
       required: true,
@@ -80,21 +84,22 @@ export default defineComponent({
 <template>
   <v-toolbar color="white" density="compact" class="pt-1">
     <v-spacer />
+    <!--TODO: add text labels-->
     <v-btn
       v-for="(option, optionIndex) in options"
       class="mx-2 text-caption"
       @click="handleOptionButtonClicked(option)"
       v-shortkey="[option.shortkey]"
       @shortkey="handleOptionButtonClicked(option)"
+      :disabled="disabled"
       :title="[option.title, option.description].filter(Boolean).join(': ')"
       :text="'(' + option.shortkey + ') ' + option.title"
       :key="optionIndex"
       :value="option.value"
       :color="option.iconColor"
-      :prepend-icon="option.mdiIcon"
-      :variant="isOptionSelected(option) ? 'tonal' : 'plain'"
-      width="6rem"
-      stacked
+      :icon="option.mdiIcon"
+      :variant="isOptionSelected(option) ? 'flat' : 'outlined'"
+      size="small"
     />
     <v-spacer />
     <v-dialog v-model="subOptionsDialog" width="unset">
