@@ -1,17 +1,17 @@
 <script lang="ts">
-import { Viewer } from 'mapillary-js'
-import 'mapillary-js/dist/mapillary.css'
-import { defineComponent } from 'vue'
 // import createInformationPages from '@/utils/createInformationPages'
+import StreetProjectTask from './StreetProjectTask.vue'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
 // import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 // import StreetProjectInstructions from './StreetProjectInstructions.vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   components: {
     // streetProjectInstructions: StreetProjectInstructions,
+    streetProjectTask: StreetProjectTask,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
     // projectInfo: ProjectInfo,
@@ -82,7 +82,6 @@ export default defineComponent({
       startTime: null,
       taskId: undefined,
       taskIndex: 0,
-      viewer: null,
     }
   },
   inject: {
@@ -96,7 +95,6 @@ export default defineComponent({
     },
   },
   methods: {
-    // TODO: add geometry to result value?
     addResult(value) {
       this.results[this.taskId] = value
     },
@@ -104,35 +102,13 @@ export default defineComponent({
       if (!this.taskIndex <= 0) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
-        this.viewer.moveTo(this.taskId)
       }
     },
-    /* 
-    createInformationPages,
-    // fallback information pages for media projects tbd (could be similar to find projects)
-    createFallbackInformationPages() {
-      return undefined
-    },
-    */
     forward() {
       if (!this.isLoading && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
-        this.viewer.moveTo(this.taskId)
       }
-    },
-    initialiseViewer(imageId) {
-      this.viewer = new Viewer({
-        accessToken: import.meta.env.VITE_MAPILLARY_API_KEY,
-        component: { cover: false },
-        container: 'mapillary',
-        imageId: imageId,
-      })
-
-      this.viewer.deactivateComponent('direction')
-      this.viewer.deactivateComponent('sequence')
-      this.viewer.deactivateComponent('keyboard')
-      this.viewer.on('dataloading', (e) => (this.isLoading = e.loading))
     },
     isAnswered() {
       const result = this.results[this.taskId]
@@ -145,9 +121,6 @@ export default defineComponent({
     this.taskId = this.tasks[this.taskIndex].taskId
     this.$emit('created')
     this.logMappingStarted(this.project.projectType)
-  },
-  mounted() {
-    this.initialiseViewer(this.taskId)
   },
 })
 </script>
@@ -168,12 +141,7 @@ export default defineComponent({
       </template>
     </project-info-->
   </project-header>
-  <v-container
-    id="mapillary"
-    class="ma-0 pa-0"
-    v-touch="{ left: () => forward(), right: () => back() }"
-    style="position: relative; height: calc(100vh - 375px)"
-  />
+  <street-project-task :taskId="taskId" @dataloading="(e) => (isLoading = e.loading)" />
   <option-buttons
     v-if="taskId"
     :disabled="isLoading"
