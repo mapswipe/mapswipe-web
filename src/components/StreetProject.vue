@@ -1,20 +1,20 @@
 <script lang="ts">
-// import createInformationPages from '@/utils/createInformationPages'
+import createInformationPages from '@/utils/createInformationPages'
 import StreetProjectTask from './StreetProjectTask.vue'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
-// import ProjectInfo from './ProjectInfo.vue'
+import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
-// import StreetProjectInstructions from './StreetProjectInstructions.vue'
+import StreetProjectInstructions from './StreetProjectInstructions.vue'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
   components: {
-    // streetProjectInstructions: StreetProjectInstructions,
+    streetProjectInstructions: StreetProjectInstructions,
     streetProjectTask: StreetProjectTask,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
-    // projectInfo: ProjectInfo,
+    projectInfo: ProjectInfo,
     taskProgress: TaskProgress,
   },
   props: {
@@ -22,12 +22,10 @@ export default defineComponent({
       type: Object,
       required: true,
     },
-    /*
     first: {
       type: Boolean,
       default: false,
     },
-    */
     options: {
       type: Array,
       options: {
@@ -67,12 +65,10 @@ export default defineComponent({
       type: Array,
       required: true,
     },
-    /*
     tutorial: {
       type: Object,
-      require: false,
+      required: false,
     },
-    */
   },
   data() {
     return {
@@ -104,6 +100,11 @@ export default defineComponent({
         this.taskId = this.tasks[this.taskIndex].taskId
       }
     },
+    createInformationPages,
+    // fallback information pages for street projects tbd
+    createFallbackInformationPages() {
+      return undefined
+    },
     forward() {
       if (!this.isLoading && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
@@ -127,19 +128,16 @@ export default defineComponent({
 
 <template>
   <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
-    <!--project-info
+    <project-info
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <street-project-instructions
-          :instructionMessage="instructionMessage"
-          :options="options"
-        />
+        <street-project-instructions :instructionMessage="instructionMessage" :options="options" />
       </template>
-    </project-info-->
+    </project-info>
   </project-header>
   <street-project-task :taskId="taskId" @dataloading="(e) => (isLoading = e.loading)" />
   <option-buttons
@@ -153,7 +151,7 @@ export default defineComponent({
   <v-toolbar color="white" extension-height="20" density="compact" extended>
     <v-spacer />
     <v-btn
-      :title="$t('mediaProject.moveLeft')"
+      :title="$t('streetProject.moveLeft')"
       icon="mdi-chevron-left"
       color="secondary"
       :disabled="taskIndex <= 0"
@@ -169,7 +167,7 @@ export default defineComponent({
       @click="saveResults(results, startTime)"
     />
     <v-btn
-      :title="$t('mediaProject.moveRight')"
+      :title="$t('streetProject.moveRight')"
       icon="mdi-chevron-right"
       color="secondary"
       :disabled="isLoading || !isAnswered() || taskIndex + 1 === tasks.length"

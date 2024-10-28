@@ -200,6 +200,10 @@
     "moveLeft": "Back",
     "moveRight": "Forward"
   },
+  "streetProject": {
+    "moveLeft": "Back",
+    "moveRight": "Forward"
+  },
   "digitizeProjectInstructions": {
     "switchMode": "Switch editing mode",
     "drawNewFeature": "Draw new features",
