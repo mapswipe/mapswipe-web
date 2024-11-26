@@ -163,13 +163,7 @@ export default defineComponent({
       </v-row>
     </div>
     <div class="text-h6 mt-10">{{ $t('projectInstructions.dontWorry') }}</div>
-    <div class="text-p">
-      {{
-        $t('projectInstructions.everyTaskIsViewedBy', {
-          verificationNumber: this.verificationNumber,
-        })
-      }}.
-    </div>
+    <div class="text-p">{{ $t('projectInstructions.everyTaskIsViewedBy') }}.</div>
     <div class="text-h6 mt-10">{{ $t('projectInstructions.imageCredits') }}</div>
     <div class="text-p">{{ attribution }}</div>
   </v-card-text>
