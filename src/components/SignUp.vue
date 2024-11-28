@@ -89,7 +89,7 @@ export default defineComponent({
               set(ref(db, `/v2/users/${userId}/groupContributionCount`), 0),
               set(ref(db, `/v2/users/${userId}/projectContributionCount`), 0),
               set(ref(db, `/v2/users/${userId}/taskContributionCount`), 0),
-              set(ref(db, `/v2/users/${userId}/taskContributionCount`), this.displayName),
+              set(ref(db, `/v2/users/${userId}/username`), this.displayName),
             ])
           })
           .then(() => {
