@@ -28,33 +28,30 @@ export default defineComponent({
     },
     options: {
       type: Array,
-      options: {
-        type: Array,
-        default() {
-          return [
-            {
-              mdiIcon: 'mdi-check-bold',
-              iconColor: '#bbcb7d',
-              shortkey: 1,
-              title: 'Yes',
-              value: 1,
-            },
-            {
-              mdiIcon: 'mdi-close-thick',
-              iconColor: '#fd5054',
-              shortkey: 2,
-              title: 'No',
-              value: 0,
-            },
-            {
-              mdiIcon: 'mdi-minus-thick',
-              iconColor: '#adadad',
-              title: 'Not sure',
-              shortkey: 3,
-              value: 2,
-            },
-          ]
-        },
+      default() {
+        return [
+          {
+            mdiIcon: 'mdi-check-bold',
+            iconColor: '#bbcb7d',
+            shortkey: 1,
+            title: 'Yes',
+            value: 1,
+          },
+          {
+            mdiIcon: 'mdi-close-thick',
+            iconColor: '#fd5054',
+            shortkey: 2,
+            title: 'No',
+            value: 0,
+          },
+          {
+            mdiIcon: 'mdi-minus-thick',
+            iconColor: '#adadad',
+            title: 'Not sure',
+            shortkey: 3,
+            value: 2,
+          },
+        ]
       },
     },
     project: {
