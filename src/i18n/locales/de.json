@@ -200,6 +200,10 @@
     "moveLeft": "Zurück",
     "moveRight": "Weiter"
   },
+  "streetProject": {
+    "moveLeft": "Zurück",
+    "moveRight": "Weiter"
+  },
   "digitizeProjectInstructions": {
     "switchMode": "Editiermodus umschalten",
     "drawNewFeature": "Neue Objekte einzeichnen",
