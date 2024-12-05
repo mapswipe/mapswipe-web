@@ -27,6 +27,7 @@ export default defineComponent({
         component: { cover: false },
         container: 'mapillary',
         imageId: imageId,
+        renderMode: 0, // Letterbox
       })
 
       this.viewer.deactivateComponent('direction')
