@@ -17,7 +17,7 @@ export default defineComponent({
   },
   watch: {
     taskId(newTaskId) {
-      this.viewer.moveTo(newTaskId)
+      this.viewer.moveTo(newTaskId).then(() => this.resetView())
     },
   },
   methods: {
@@ -33,6 +33,10 @@ export default defineComponent({
       this.viewer.deactivateComponent('sequence')
       this.viewer.deactivateComponent('keyboard')
       this.viewer.on('dataloading', (e) => this.$emit('dataloading', e))
+    },
+    resetView() {
+      this.viewer.setCenter([0.5, 0.5])
+      this.viewer.setZoom(0)
     },
   },
   mounted() {
