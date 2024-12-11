@@ -364,15 +364,12 @@ export default defineComponent({
           :containerId="'mapillary_tutorial'"
           @dataloading="handleDataLoading"
         />
+        <option-buttons
+          v-if="true"
+          :disabled="false"
+          :options="options"
+          :taskId="taskId ? taskId.toString() : 'defaultTaskId'"/>
       </v-col>
-      huuhuuuuuuuuuu
-      <option-buttons
-        v-if="taskId"
-        :disabled="isLoading"
-        :options="options"
-        :taskId="taskId"
-        @addResult="addResult"
-      />
       <v-toolbar color="white" extension-height="20" density="compact" extended>
         <v-spacer />
         <v-btn
@@ -383,13 +380,6 @@ export default defineComponent({
           @click="back"
           v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
           @shortkey="back"
-        />
-        <v-btn
-          :title="$t('projectView.saveResults')"
-          icon="mdi-content-save"
-          color="primary"
-          :disabled="Object.keys(results).length < tasks.length"
-          @click="saveResults(results, startTime)"
         />
         <v-btn
           :title="$t('streetProject.moveRight')"
