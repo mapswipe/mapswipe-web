@@ -127,7 +127,6 @@ export default defineComponent({
       return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
-      console.log("results",this.results)
       if (this.tasks.length === 0) {
         return false
       }
@@ -140,8 +139,8 @@ export default defineComponent({
         return false
       }
 
-      const hasWrongAnswer = this.userAnswer !== this.results[this.currentTaskIndex]
-
+      const hasWrongAnswer = this.userAnswer !== this.results[this.tasks[this.currentTaskIndex]?.taskId]
+      console.log("hasWrongAnswer",hasWrongAnswer)
       return !hasWrongAnswer
     },
     alertContent() {
@@ -216,11 +215,8 @@ export default defineComponent({
             const data = snapshot.val()
             this.tasks = decompressTasks(data)
             if (this.tasks && this.tutorial?.answers) {
-              // Iterate over the tasks
               this.tasks.forEach((task, index) => {
-                // Check if there's an answer for this task in the `answers` array
                 if (this.tutorial.answers[index] !== undefined) {
-                  // Assign the correct answer to the task based on taskId
                   this.results[task.taskId] = this.tutorial.answers[index];
                 }
               });
