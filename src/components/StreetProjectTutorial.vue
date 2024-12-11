@@ -144,7 +144,7 @@ export default defineComponent({
       return !hasWrongAnswer
     },
     alertContent() {
-
+      console.log("currentScreen",this.currentScreen)
       if (!this.currentScreen) {
         return undefined
       }
@@ -189,6 +189,8 @@ export default defineComponent({
   methods: {
     addResult(value) {
       this.userAnswer = value
+
+      this.updateResult(value)
     },
     fetchTutorialGroups() {
       if (this.tutorial?.projectId) {
