@@ -71,7 +71,7 @@ export default defineComponent({
       userAttempts: 0,
       answersRevealed: false,
       taskId: undefined,
-      isLoading: true,
+      isLoading: false,
     }
   },
   computed: {
@@ -95,7 +95,7 @@ export default defineComponent({
         )
     },
     instructionMessage() {
-      console.log("Here3",this.tutorial)
+      console.log("results",this.results)
       const test = this.optionMap
       const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
       return message
@@ -115,11 +115,15 @@ export default defineComponent({
       return this.tasks.length !== 0
     },
     hasCompletedAllTasks() {
+      console.log("taskId",this.currentTaskIndex)
+      console.log("hasTasks",this.hasTasks)
       if (!this.hasTasks) {
         return false
       }
 
       const maxIndex = this.tutorial?.screens.length ?? 1
+      console.log("maxIndex",maxIndex)
+      console.log(this.currentTaskIndex === maxIndex)
       return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
@@ -376,7 +380,7 @@ export default defineComponent({
           :title="$t('streetProject.moveLeft')"
           icon="mdi-chevron-left"
           color="secondary"
-          :disabled="taskIndex <= 0"
+          :disabled="currentTaskIndex <= 0"
           @click="back"
           v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
           @shortkey="back"
@@ -385,7 +389,7 @@ export default defineComponent({
           :title="$t('streetProject.moveRight')"
           icon="mdi-chevron-right"
           color="secondary"
-          :disabled="!isLoading"
+          :disabled="isLoading || hasCompletedAllTasks"
           @click="nextTask"
           v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
           @shortkey="nextTask"
@@ -413,7 +417,6 @@ export default defineComponent({
 
     <!-- Completion Card when All Tasks Are Done -->
     <v-row v-if="hasCompletedAllTasks">
-      Hello
       <v-col>
         <tutorial-completion-card @on-start-mapping-click="$emit('tutorialComplete')" />
       </v-col>
