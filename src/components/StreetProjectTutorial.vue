@@ -140,7 +140,6 @@ export default defineComponent({
       }
 
       const hasWrongAnswer = this.userAnswer !== this.results[this.tasks[this.currentTaskIndex]?.taskId]
-      console.log("hasWrongAnswer",hasWrongAnswer)
       return !hasWrongAnswer
     },
     alertContent() {
@@ -390,7 +389,7 @@ export default defineComponent({
           :title="$t('streetProject.moveRight')"
           icon="mdi-chevron-right"
           color="secondary"
-          :disabled="isLoading || hasCompletedAllTasks"
+          :disabled="isLoading || !answersRevealed && !answeredCorrectly || hasCompletedAllTasks"
           @click="nextTask"
           v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
           @shortkey="nextTask"
