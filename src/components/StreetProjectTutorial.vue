@@ -59,7 +59,7 @@ export default defineComponent({
     tasks: Task[]
     currentTaskIndex: number
     results: Record<string, number>
-    selectedTasks: Record<string, boolean>
+    userAnswer: number
     userAttempts: number
     answersRevealed: boolean
   } {
@@ -67,7 +67,7 @@ export default defineComponent({
       tasks: [],
       currentTaskIndex: 0,
       results: {},
-      selectedTasks: {},
+      userAnswer: -999,
       userAttempts: 0,
       answersRevealed: false,
       taskId: undefined,
@@ -127,6 +127,7 @@ export default defineComponent({
       return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
+      console.log("results",this.results)
       if (this.tasks.length === 0) {
         return false
       }
@@ -139,9 +140,7 @@ export default defineComponent({
         return false
       }
 
-      const hasWrongAnswer = this.taskList.some(
-        ({ taskId, referenceAnswer }) => referenceAnswer !== this.results[taskId],
-      )
+      const hasWrongAnswer = this.userAnswer !== this.results[this.currentTaskIndex]
 
       return !hasWrongAnswer
     },
@@ -189,6 +188,9 @@ export default defineComponent({
     },
   },
   methods: {
+    addResult(value) {
+      this.userAnswer = value
+    },
     fetchTutorialGroups() {
       if (this.tutorial?.projectId) {
         onValue(
@@ -207,22 +209,22 @@ export default defineComponent({
       }
     },
     fetchTutorialProject(groupId: string | undefined) {
-      console.log("Here",this.options)
       if (this.tutorial?.projectId && groupId) {
         onValue(
           getTasksRef(this.tutorial.projectId, groupId),
           (snapshot) => {
             const data = snapshot.val()
             this.tasks = decompressTasks(data)
-            this.results = this.tasks.reduce(
-              (acc, val) => {
-                // Fill all the result with initial value
-                acc[val.taskId] = this.options[0].value
-
-                return acc
-              },
-              {} as Record<string, number>,
-            )
+            if (this.tasks && this.tutorial?.answers) {
+              // Iterate over the tasks
+              this.tasks.forEach((task, index) => {
+                // Check if there's an answer for this task in the `answers` array
+                if (this.tutorial.answers[index] !== undefined) {
+                  // Assign the correct answer to the task based on taskId
+                  this.results[task.taskId] = this.tutorial.answers[index];
+                }
+              });
+            }
           },
           (error) => {
             console.error('Error fetching tasks for the tutorial', error)
@@ -242,7 +244,7 @@ export default defineComponent({
           return
         }
 
-        this.selectedTasks = {}
+        this.userAnswer = -999
         this.currentTaskIndex += 1
         this.userAttempts = 0
         this.answersRevealed = false
@@ -372,7 +374,8 @@ export default defineComponent({
           v-if="true"
           :disabled="false"
           :options="options"
-          :taskId="taskId ? taskId.toString() : 'defaultTaskId'"/>
+          :taskId="taskId ? taskId.toString() : 'defaultTaskId'"
+          @addResult="addResult"/>
       </v-col>
       <v-toolbar color="white" extension-height="20" density="compact" extended>
         <v-spacer />
