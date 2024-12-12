@@ -65,7 +65,7 @@ export default defineComponent({
       tasks: [],
       currentTaskIndex: 0,
       results: {},
-      userAnswer: -999,
+      userAnswer: undefined,
       userAttempts: 0,
       answersRevealed: false,
       isLoading: false,
@@ -73,7 +73,6 @@ export default defineComponent({
   },
   computed: {
     optionMap() {
-      console.log("Here2",this.options)
       const maxOptionIndex = this.options.length - 1
 
       return this.options
@@ -92,8 +91,6 @@ export default defineComponent({
         )
     },
     instructionMessage() {
-      console.log("results",this.results)
-      const test = this.optionMap
       const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
       return message
     },
@@ -117,8 +114,6 @@ export default defineComponent({
       }
 
       const maxIndex = this.tutorial?.screens.length ?? 1
-      console.log("maxIndex",maxIndex)
-      console.log(this.currentTaskIndex === maxIndex)
       return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
@@ -235,7 +230,7 @@ export default defineComponent({
           return
         }
 
-        this.userAnswer = -999
+        this.userAnswer = undefined
         this.currentTaskIndex += 1
         this.userAttempts = 0
         this.answersRevealed = false
@@ -319,6 +314,13 @@ export default defineComponent({
       </v-col>
     </v-row>
 
+    <!-- Loading Spinner if No Tasks Are Available -->
+    <v-row v-if="!hasTasks" justify="center">
+      <v-col cols="auto">
+        <v-progress-circular indeterminate />
+      </v-col>
+    </v-row>
+
     <!-- Task Grid (Replaced with StreetTask component) -->
     <v-row justify="center">
       <v-col cols="auto">
@@ -364,12 +366,6 @@ export default defineComponent({
       </v-toolbar>
     </v-row>
 
-    <!-- Loading Spinner if No Tasks Are Available -->
-    <v-row v-if="!hasTasks" justify="center">
-      <v-col cols="auto">
-        <v-progress-circular indeterminate />
-      </v-col>
-    </v-row>
 
     <!-- Task Progress Display -->
     <v-row v-if="hasTasks && !hasCompletedAllTasks">
