@@ -204,10 +204,11 @@ export default defineComponent({
           (snapshot) => {
             const data = snapshot.val()
             this.tasks = decompressTasks(data)
-            if (this.tasks && this.tutorial?.answers) {
+            if (this.tasks) {
               this.tasks.forEach((task, index) => {
-                if (this.tutorial.answers[index] !== undefined) {
-                  this.results[task.taskId] = this.tutorial.answers[index];
+                console.log(task)
+                if (task.referenceAnswer !== undefined) {
+                  this.results[task.taskId] = task.referenceAnswer;
                 }
               });
             }
