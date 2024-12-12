@@ -2,13 +2,11 @@
 import { defineComponent, type PropType } from 'vue'
 import { goOnline, onValue } from 'firebase/database'
 import { db, getTasksRef, getGroupsRef } from '@/firebase'
-import { Viewer } from 'mapillary-js'
 
 import { decompressTasks } from '@/utils/tasks'
 import matchIcon from '@/utils/matchIcon'
 
 import TaskProgress from '@/components/TaskProgress.vue'
-import OptionButtons from './OptionButtons.vue'
 import TutorialStreetProjectTask, { type Option } from '@/components/StreetProjectTask.vue'
 import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import { isDefined } from '@/utils/common'
@@ -70,7 +68,6 @@ export default defineComponent({
       userAnswer: -999,
       userAttempts: 0,
       answersRevealed: false,
-      taskId: undefined,
       isLoading: false,
     }
   },
@@ -115,8 +112,6 @@ export default defineComponent({
       return this.tasks.length !== 0
     },
     hasCompletedAllTasks() {
-      console.log("taskId",this.currentTaskIndex)
-      console.log("hasTasks",this.hasTasks)
       if (!this.hasTasks) {
         return false
       }
@@ -143,7 +138,6 @@ export default defineComponent({
       return !hasWrongAnswer
     },
     alertContent() {
-      console.log("currentScreen",this.currentScreen)
       if (!this.currentScreen) {
         return undefined
       }
@@ -258,34 +252,11 @@ export default defineComponent({
 
       return newValue
     },
-    setResult(taskId: string, newValue: number) {
-      this.results[taskId] = newValue
-    },
     updateResult(taskId: string) {
       if (!this.answersRevealed) {
         this.userAttempts += 1
         const newValue = this.getNextValueForTask(taskId)
         this.results[taskId] = newValue
-      }
-    },
-    handleTileClicked(taskId: string) {
-      const selectedTaskKeys = Object.keys(this.selectedTasks).filter(
-        (taskKey) => !!this.selectedTasks[taskKey],
-      )
-
-      const hasSomeSelectedItem = selectedTaskKeys.length > 0
-      const isTaskFromSelectedItem =
-        selectedTaskKeys.findIndex((taskKey) => taskKey === taskId) !== -1
-
-      if (hasSomeSelectedItem) {
-        if (isTaskFromSelectedItem) {
-          const newValue = this.getNextValueForTask(taskId)
-          selectedTaskKeys.forEach((taskKey) => {
-            this.setResult(taskKey, newValue)
-          })
-        }
-      } else {
-        this.updateResult(taskId)
       }
     },
     handleTileSelected(newValue: boolean, taskId: string) {
@@ -350,14 +321,6 @@ export default defineComponent({
 
     <!-- Task Grid (Replaced with StreetTask component) -->
     <v-row justify="center">
-      <v-container
-        :id="`mapillary_tutorial`"
-        :key="888464808378923"
-        :taskId="888464808378923"
-        :option-map="optionMap"
-        class="ma-0 pa-0"
-        style="position: relative; height: calc(100vh - 375px)"
-      />
       <v-col cols="auto">
         <tutorial-street-project-task
           v-for="task in taskList"
@@ -423,11 +386,3 @@ export default defineComponent({
     </v-row>
   </v-container>
 </template>
-
-<style scoped>
-.test {
-
-  position: relative;
-  height: calc(100vh - 375px)
-}
-</style>
