@@ -202,7 +202,8 @@
   },
   "streetProject": {
     "moveLeft": "Zurück",
-    "moveRight": "Weiter"
+    "moveRight": "Weiter",
+    "lookFor": "Suche {lookFor}"
   },
   "digitizeProjectInstructions": {
     "switchMode": "Editiermodus umschalten",

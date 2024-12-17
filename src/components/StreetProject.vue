@@ -83,7 +83,7 @@ export default defineComponent({
   },
   computed: {
     instructionMessage() {
-      const message = this.project?.lookFor
+      const message = this.$t('streetProject.lookFor', { lookFor: this.project?.lookFor })
       return message
     },
   },
