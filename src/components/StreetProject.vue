@@ -1,17 +1,21 @@
 <script lang="ts">
 import createInformationPages from '@/utils/createInformationPages'
 import StreetProjectTask from './StreetProjectTask.vue'
+import StreetProjectTutorial from '@/components/StreetProjectTutorial.vue'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
 import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import StreetProjectInstructions from './StreetProjectInstructions.vue'
 import { defineComponent } from 'vue'
+import findProjectTutorial from '@/components/FindProjectTutorial.vue'
 
 export default defineComponent({
   components: {
+    findProjectTutorial,
     streetProjectInstructions: StreetProjectInstructions,
     streetProjectTask: StreetProjectTask,
+    streetProjectTutorial: StreetProjectTutorial,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
     projectInfo: ProjectInfo,
@@ -98,9 +102,45 @@ export default defineComponent({
       }
     },
     createInformationPages,
-    // fallback information pages for street projects tbd
-    createFallbackInformationPages() {
-      return undefined
+    createFallbackInformationPages(tutorial) {
+      if (tutorial.exampleImage1 && tutorial.exampleImage2 && tutorial.lookFor) {
+        return [
+          {
+            blocks: [
+              {
+                blockNumber: 1,
+                blockType: 'text',
+                textDescription: `You are looking for ${tutorial.lookFor}.`,
+              },
+              {
+                blockNumber: 2,
+                blockType: 'text',
+                textDescription: 'From the ground, it looks like this:',
+              },
+              {
+                blockNumber: 3,
+                blockType: 'image',
+                image: tutorial.exampleImage1,
+              },
+              {
+                blockNumber: 4,
+                blockType: 'text',
+                textDescription:
+                  'But the images you will see will show it from above, and it looks like this:',
+              },
+              {
+                blockNumber: 5,
+                blockType: 'image',
+                image: tutorial.exampleImage2,
+              },
+            ],
+            pageNumber: 1,
+            title: 'What to look for',
+          },
+        ]
+      } else {
+        return undefined
+      }
     },
     forward() {
       if (!this.isLoading && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
@@ -133,6 +173,13 @@ export default defineComponent({
     >
       <template #instructions>
         <street-project-instructions :instructionMessage="instructionMessage" :options="options" />
+      </template>
+      <template #tutorial>
+        <street-project-tutorial
+          :tutorial="tutorial"
+          :options="options"
+          @tutorialComplete="$refs.projectInfo?.toggleDialog"
+        />
       </template>
     </project-info>
   </project-header>

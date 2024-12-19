@@ -1,18 +1,59 @@
 <script lang="ts">
 import { Viewer } from 'mapillary-js'
 import 'mapillary-js/dist/mapillary.css'
-import { defineComponent } from 'vue'
+import { type CSSProperties, defineComponent, type PropType } from 'vue'
+import { isDefined } from '@/utils/common'
+
+
+export interface Option {
+  color: string
+  label: string
+  value: number
+}
 
 export default defineComponent({
   props: {
+    containerId: {
+      type: String,
+      default: 'mapillary',
+      required: true,
+    },
     taskId: {
       type: String,
       required: true,
+    },
+    optionMap: {
+      type: Object as PropType<Record<number, Option>>,
+      required: false,
     },
   },
   data() {
     return {
       viewer: null,
+    }
+  },
+  computed:{
+    overlayStyle() {
+      const style: CSSProperties = {}
+
+      if (this.selected) {
+        style.border = `20px solid #fff`
+      } else {
+        style.border = 'unset'
+      }
+
+      if (isDefined(this.value)) {
+        style.backgroundColor = this.optionMap[this.value]?.color
+      }
+
+      return style
+    },
+    overlayLabel() {
+      if (!isDefined(this.value)) {
+        return undefined
+      }
+
+      return this.optionMap[this.value].label
     }
   },
   watch: {
@@ -25,7 +66,7 @@ export default defineComponent({
       this.viewer = new Viewer({
         accessToken: import.meta.env.VITE_MAPILLARY_API_KEY,
         component: { cover: false },
-        container: 'mapillary',
+        container: this.containerId,
         imageId: imageId,
         renderMode: 0, // Letterbox
       })
@@ -48,7 +89,7 @@ export default defineComponent({
 
 <template>
   <v-container
-    id="mapillary"
+    :id="`${containerId}`"
     class="ma-0 pa-0"
     style="position: relative; height: calc(100vh - 375px)"
   />
