@@ -1,17 +1,20 @@
 <script lang="ts">
 import createInformationPages from '@/utils/createInformationPages'
 import StreetProjectTask from './StreetProjectTask.vue'
+import StreetProjectTutorial from '@/components/StreetProjectTutorial.vue'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
 import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import StreetProjectInstructions from './StreetProjectInstructions.vue'
 import { defineComponent } from 'vue'
+import findProjectTutorial from '@/components/FindProjectTutorial.vue'
 
 export default defineComponent({
   components: {
     streetProjectInstructions: StreetProjectInstructions,
     streetProjectTask: StreetProjectTask,
+    streetProjectTutorial: StreetProjectTutorial,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
     projectInfo: ProjectInfo,
@@ -98,7 +101,7 @@ export default defineComponent({
       }
     },
     createInformationPages,
-    // fallback information pages for street projects tbd
+    // currently no fallback information pages defined, same here
     createFallbackInformationPages() {
       return undefined
     },
@@ -126,6 +129,7 @@ export default defineComponent({
 <template>
   <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
     <project-info
+      ref="projectInfo"
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
@@ -133,6 +137,13 @@ export default defineComponent({
     >
       <template #instructions>
         <street-project-instructions :instructionMessage="instructionMessage" :options="options" />
+      </template>
+      <template #tutorial>
+        <street-project-tutorial
+          :tutorial="tutorial"
+          :options="options"
+          @tutorialComplete="$refs.projectInfo?.toggleDialog"
+        />
       </template>
     </project-info>
   </project-header>
