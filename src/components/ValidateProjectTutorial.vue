@@ -75,7 +75,9 @@ export default defineComponent({
   },
   computed: {
     instructionMessage() {
-      const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
+      const message = this.$t('validateProject.doesTheShapeOutline', {
+        feature: this.tutorial?.lookFor,
+      })
       return message
     },
     currentScreen() {

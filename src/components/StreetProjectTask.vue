@@ -1,9 +1,7 @@
 <script lang="ts">
 import { Viewer } from 'mapillary-js'
 import 'mapillary-js/dist/mapillary.css'
-import { type CSSProperties, defineComponent, type PropType } from 'vue'
-import { isDefined } from '@/utils/common'
-
+import { defineComponent } from 'vue'
 
 export interface Option {
   color: string
@@ -22,38 +20,10 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    optionMap: {
-      type: Object as PropType<Record<number, Option>>,
-      required: false,
-    },
   },
   data() {
     return {
       viewer: null,
-    }
-  },
-  computed:{
-    overlayStyle() {
-      const style: CSSProperties = {}
-
-      if (this.selected) {
-        style.border = `20px solid #fff`
-      } else {
-        style.border = 'unset'
-      }
-
-      if (isDefined(this.value)) {
-        style.backgroundColor = this.optionMap[this.value]?.color
-      }
-
-      return style
-    },
-    overlayLabel() {
-      if (!isDefined(this.value)) {
-        return undefined
-      }
-
-      return this.optionMap[this.value].label
     }
   },
   watch: {

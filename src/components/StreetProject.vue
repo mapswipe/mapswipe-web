@@ -12,7 +12,6 @@ import findProjectTutorial from '@/components/FindProjectTutorial.vue'
 
 export default defineComponent({
   components: {
-    findProjectTutorial,
     streetProjectInstructions: StreetProjectInstructions,
     streetProjectTask: StreetProjectTask,
     streetProjectTutorial: StreetProjectTutorial,
@@ -102,45 +101,9 @@ export default defineComponent({
       }
     },
     createInformationPages,
-    createFallbackInformationPages(tutorial) {
-      if (tutorial.exampleImage1 && tutorial.exampleImage2 && tutorial.lookFor) {
-        return [
-          {
-            blocks: [
-              {
-                blockNumber: 1,
-                blockType: 'text',
-                textDescription: `You are looking for ${tutorial.lookFor}.`,
-              },
-              {
-                blockNumber: 2,
-                blockType: 'text',
-                textDescription: 'From the ground, it looks like this:',
-              },
-              {
-                blockNumber: 3,
-                blockType: 'image',
-                image: tutorial.exampleImage1,
-              },
-              {
-                blockNumber: 4,
-                blockType: 'text',
-                textDescription:
-                  'But the images you will see will show it from above, and it looks like this:',
-              },
-              {
-                blockNumber: 5,
-                blockType: 'image',
-                image: tutorial.exampleImage2,
-              },
-            ],
-            pageNumber: 1,
-            title: 'What to look for',
-          },
-        ]
-      } else {
-        return undefined
-      }
+    // currently no fallback information pages defined, same here
+    createFallbackInformationPages() {
+      return undefined
     },
     forward() {
       if (!this.isLoading && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
@@ -166,6 +129,7 @@ export default defineComponent({
 <template>
   <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
     <project-info
+      ref="projectInfo"
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"

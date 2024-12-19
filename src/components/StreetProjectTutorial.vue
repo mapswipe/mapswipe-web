@@ -2,20 +2,23 @@
 import { defineComponent, type PropType } from 'vue'
 import { goOnline, onValue } from 'firebase/database'
 import { db, getTasksRef, getGroupsRef } from '@/firebase'
-
 import { decompressTasks } from '@/utils/tasks'
 import matchIcon from '@/utils/matchIcon'
-
+import OptionButtons from '@/components/OptionButtons.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
-import TutorialStreetProjectTask, { type Option } from '@/components/StreetProjectTask.vue'
+import StreetProjectTask from '@/components/StreetProjectTask.vue'
 import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import { isDefined } from '@/utils/common'
-import optionButtons from '@/components/OptionButtons.vue'
 
-
-interface MappedOption extends Option {
-  nextOptionKey: number
+interface Option {
+  title: string
+  description: string
+  iconColor: string
+  mdiIcon: string
+  shortKey: number
+  value: number
 }
+
 interface Task {
   taskId: string
   screen: number
@@ -28,7 +31,7 @@ interface Screen {
   description: string
 }
 
-export interface Tutorial {
+interface Tutorial {
   projectId: string
   name: string
   lookFor?: string
@@ -41,69 +44,42 @@ export interface Tutorial {
 
 export default defineComponent({
   components: {
-    optionButtons,
+    StreetProjectTask,
+    OptionButtons,
     TaskProgress,
-    TutorialStreetProjectTask,
     TutorialCompletionCard,
   },
   props: {
     tutorial: Object as PropType<Tutorial>,
-    options: {
-      type: Array as PropType<Option[]>,
-      required: true,
-    },
+    options: Array as PropType<Option[]>,
   },
   data(): {
     tasks: Task[]
     currentTaskIndex: number
     results: Record<string, number>
-    userAnswer: number
     userAttempts: number
     answersRevealed: boolean
+    isLoading: boolean
   } {
     return {
       tasks: [],
       currentTaskIndex: 0,
       results: {},
-      userAnswer: undefined,
       userAttempts: 0,
       answersRevealed: false,
       isLoading: false,
     }
   },
   computed: {
-    optionMap() {
-      const maxOptionIndex = this.options.length - 1
-
-      return this.options
-        .map((option, index) => ({
-          ...option,
-          nextOptionKey:
-            index === maxOptionIndex ? this.options[0].value : this.options[index + 1].value,
-        }))
-        .reduce(
-          (acc, val) => {
-            acc[val.value] = val
-
-            return acc
-          },
-          {} as Record<number, MappedOption>,
-        )
-    },
     instructionMessage() {
-      const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
+      const message = this.$t('streetProject.lookFor', { lookFor: this.tutorial?.lookFor })
       return message
     },
     currentScreen() {
-      // NOTE: this should be extracted from the `screen` property of current task
       return this.tutorial?.screens[this.currentTaskIndex]
     },
-    taskList() {
-      if (!this.tasks) {
-        return []
-      }
-
-      return this.tasks.filter(({ screen }) => screen === this.currentTaskIndex + 1)
+    task() {
+      return this.tasks?.[this.currentTaskIndex]
     },
     hasTasks() {
       return this.tasks.length !== 0
@@ -113,11 +89,11 @@ export default defineComponent({
         return false
       }
 
-      const maxIndex = this.tutorial?.screens.length ?? 1
+      const maxIndex = this.tasks.length
       return this.currentTaskIndex === maxIndex
     },
     answeredCorrectly() {
-      if (this.tasks.length === 0) {
+      if (!this.hasTasks) {
         return false
       }
 
@@ -125,12 +101,8 @@ export default defineComponent({
         return true
       }
 
-      if (!this.taskList || this.taskList.length === 0) {
-        return false
-      }
-
-      const hasWrongAnswer = this.userAnswer !== this.results[this.tasks[this.currentTaskIndex]?.taskId]
-      return !hasWrongAnswer
+      const result = this.results[this.task?.taskId]
+      return isDefined(result) && result === this.task?.referenceAnswer
     },
     alertContent() {
       if (!this.currentScreen) {
@@ -138,7 +110,8 @@ export default defineComponent({
       }
 
       const { instructions, success, hint } = this.currentScreen
-      if (!this.answersRevealed && this.answeredCorrectly && success) {
+
+      if (this.answeredCorrectly && success) {
         const icon = success.icon
 
         return {
@@ -149,7 +122,7 @@ export default defineComponent({
         }
       }
 
-      if (this.answersRevealed && hint) {
+      if (this.userAttempts > 0 && hint) {
         const icon = hint.icon
 
         return {
@@ -175,11 +148,6 @@ export default defineComponent({
     },
   },
   methods: {
-    addResult(value) {
-      this.userAnswer = value
-
-      this.updateResult(value)
-    },
     fetchTutorialGroups() {
       if (this.tutorial?.projectId) {
         onValue(
@@ -204,14 +172,6 @@ export default defineComponent({
           (snapshot) => {
             const data = snapshot.val()
             this.tasks = decompressTasks(data)
-            if (this.tasks) {
-              this.tasks.forEach((task, index) => {
-                console.log(task)
-                if (task.referenceAnswer !== undefined) {
-                  this.results[task.taskId] = task.referenceAnswer;
-                }
-              });
-            }
           },
           (error) => {
             console.error('Error fetching tasks for the tutorial', error)
@@ -220,56 +180,28 @@ export default defineComponent({
         )
       }
     },
-    back() {
-      if (!this.currentTaskIndex <= 0) {
-        this.currentTaskIndex -= 1
-      }
-    },
     nextTask() {
       if (!this.hasCompletedAllTasks) {
-        if (this.hasCompletedAllTasks) {
-          return
-        }
-
-        this.userAnswer = undefined
         this.currentTaskIndex += 1
         this.userAttempts = 0
         this.answersRevealed = false
       }
     },
-    getNextValueForTask(taskId: string) {
-      const currentResult = this.results[taskId]
-
-      if (!isDefined(currentResult)) {
-        return this.options[0].value
-      }
-
-      const newValue = this.optionMap[this.optionMap[currentResult].nextOptionKey].value
-
-      return newValue
-    },
-    updateResult(taskId: string) {
+    addResult(value: number) {
       if (!this.answersRevealed) {
         this.userAttempts += 1
-        const newValue = this.getNextValueForTask(taskId)
-        this.results[taskId] = newValue
+        this.results[this.task.taskId] = value
       }
-    },
-    handleTileSelected(newValue: boolean, taskId: string) {
-      this.selectedTasks[taskId] = newValue
     },
     showAnswer() {
       this.answersRevealed = true
-      this.taskList.forEach((task) => {
-        this.results[task.taskId] = task.referenceAnswer
-      })
+      this.results[this.task.taskId] = this.task?.referenceAnswer
     },
   },
   emits: ['tutorialComplete'],
   mounted() {
     goOnline(db)
     this.fetchTutorialGroups()
-    // this.fetchTutorialProject();
   },
 })
 </script>
@@ -314,68 +246,39 @@ export default defineComponent({
         </v-alert>
       </v-col>
     </v-row>
-
-    <!-- Loading Spinner if No Tasks Are Available -->
+    <v-row justify="center">
+      <v-col>
+        <street-project-task
+          v-if="tasks[currentTaskIndex] && tutorial"
+          :key="task.taskId"
+          :taskId="task.taskId"
+          :containerId="'mapillary_tutorial'"
+          @dataloading="(e) => (isLoading = e.loading)"
+        />
+      </v-col>
+    </v-row>
+    <v-row v-if="options">
+      <v-col>
+        <option-buttons
+          v-if="task?.taskId"
+          :disabled="isLoading"
+          :options="options"
+          :result="results[task.taskId]"
+          :taskId="task.taskId"
+          @addResult="addResult"
+        />
+      </v-col>
+    </v-row>
     <v-row v-if="!hasTasks" justify="center">
       <v-col cols="auto">
         <v-progress-circular indeterminate />
       </v-col>
     </v-row>
-
-    <!-- Task Grid (Replaced with StreetTask component) -->
-    <v-row justify="center">
-      <v-col cols="auto">
-        <tutorial-street-project-task
-          v-for="task in taskList"
-          :key="task.taskId"
-          :taskId="task.taskId"
-          :option-map="optionMap"
-          :containerId="'mapillary_tutorial'"
-          @dataloading="handleDataLoading"
-        />
-        <option-buttons
-          v-if="true"
-          :disabled="false"
-          :options="options"
-          :taskId="taskId ? taskId.toString() : 'defaultTaskId'"
-          @addResult="addResult"/>
-      </v-col>
-      <v-toolbar color="white" extension-height="20" density="compact" extended>
-        <v-spacer />
-        <v-btn
-          :title="$t('streetProject.moveLeft')"
-          icon="mdi-chevron-left"
-          color="secondary"
-          :disabled="currentTaskIndex <= 0"
-          @click="back"
-          v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
-          @shortkey="back"
-        />
-        <v-btn
-          :title="$t('streetProject.moveRight')"
-          icon="mdi-chevron-right"
-          color="secondary"
-          :disabled="isLoading || !answersRevealed && !answeredCorrectly || hasCompletedAllTasks"
-          @click="nextTask"
-          v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
-          @shortkey="nextTask"
-        />
-        <v-spacer />
-<!--        <template #extension>-->
-<!--          <task-progress :progress="taskIndex + isAnswered()" :total="tasks.length" />-->
-<!--        </template>-->
-      </v-toolbar>
-    </v-row>
-
-
-    <!-- Task Progress Display -->
     <v-row v-if="hasTasks && !hasCompletedAllTasks">
       <v-col>
-        <task-progress :progress="currentTaskIndex" :total="tutorial?.screens.length ?? 0" />
+        <task-progress :progress="currentTaskIndex" :total="tasks?.length ?? 0" />
       </v-col>
     </v-row>
-
-    <!-- Completion Card when All Tasks Are Done -->
     <v-row v-if="hasCompletedAllTasks">
       <v-col>
         <tutorial-completion-card @on-start-mapping-click="$emit('tutorialComplete')" />
