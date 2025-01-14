@@ -3,8 +3,19 @@ import { Viewer } from 'mapillary-js'
 import 'mapillary-js/dist/mapillary.css'
 import { defineComponent } from 'vue'
 
+export interface Option {
+  color: string
+  label: string
+  value: number
+}
+
 export default defineComponent({
   props: {
+    containerId: {
+      type: String,
+      default: 'mapillary',
+      required: true,
+    },
     taskId: {
       type: String,
       required: true,
@@ -25,7 +36,7 @@ export default defineComponent({
       this.viewer = new Viewer({
         accessToken: import.meta.env.VITE_MAPILLARY_API_KEY,
         component: { cover: false },
-        container: 'mapillary',
+        container: this.containerId,
         imageId: imageId,
         renderMode: 0, // Letterbox
       })
@@ -48,7 +59,7 @@ export default defineComponent({
 
 <template>
   <v-container
-    id="mapillary"
+    :id="`${containerId}`"
     class="ma-0 pa-0"
     style="position: relative; height: calc(100vh - 375px)"
   />
