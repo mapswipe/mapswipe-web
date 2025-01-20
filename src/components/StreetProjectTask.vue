@@ -34,6 +34,7 @@ export default defineComponent({
       this.viewer.deactivateComponent('sequence')
       this.viewer.deactivateComponent('keyboard')
       this.viewer.on('dataloading', (e) => this.$emit('dataloading', e))
+      this.viewer.on('image', (e) => this.$emit('image', e))
     },
     resetView() {
       this.viewer.setCenter([0.5, 0.5])

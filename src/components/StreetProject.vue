@@ -70,6 +70,7 @@ export default defineComponent({
   data() {
     return {
       arrowKeys: true,
+      currentImageId: undefined,
       isLoading: true,
       results: {},
       startTime: null,
@@ -125,6 +126,7 @@ export default defineComponent({
 
 <template>
   <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
+    {{ group.groupId }} {{ taskId }}
     <project-info
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
@@ -136,10 +138,14 @@ export default defineComponent({
       </template>
     </project-info>
   </project-header>
-  <street-project-task :taskId="taskId" @dataloading="(e) => (isLoading = e.loading)" />
+  <street-project-task
+    :taskId="taskId"
+    @dataloading="(e) => (isLoading = e.loading)"
+    @image="(e) => (currentImageId = e.image.id)"
+  />
   <option-buttons
     v-if="taskId"
-    :disabled="isLoading"
+    :disabled="isLoading || taskId != currentImageId"
     :options="options"
     :result="results[taskId]"
     :taskId="taskId"
