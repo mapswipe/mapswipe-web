@@ -39,6 +39,8 @@
     "invalidEmail": "E-mail invalid",
     "minChar": "Minimum {number} characters",
     "noAccountYet": "Don't have an account yet?",
+    "noUppercase": "Your username cannot contain uppercase letters.",
+    "noSpace": "Your username cannot contain space.",
     "password": "Password",
     "passwordMatch": "Password does not match",
     "passwordResetEmailSent": "Password reset e-mail sent",
