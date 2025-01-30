@@ -12,12 +12,13 @@ export default defineComponent({
   },
   data() {
     return {
+      imageError: false,
       viewer: null,
     }
   },
   watch: {
     taskId(newTaskId) {
-      this.viewer.moveTo(newTaskId).then(() => this.resetView())
+      this.moveViewer(newTaskId)
     },
   },
   methods: {
@@ -26,7 +27,6 @@ export default defineComponent({
         accessToken: import.meta.env.VITE_MAPILLARY_API_KEY,
         component: { cover: false },
         container: 'mapillary',
-        imageId: imageId,
         renderMode: 0, // Letterbox
       })
 
@@ -34,6 +34,20 @@ export default defineComponent({
       this.viewer.deactivateComponent('sequence')
       this.viewer.deactivateComponent('keyboard')
       this.viewer.on('dataloading', (e) => this.$emit('dataloading', e))
+
+      this.moveViewer(imageId)
+    },
+    moveViewer(imageId) {
+      this.viewer.moveTo(imageId).then(
+        () => {
+          this.imageError = false
+          this.resetView()
+        },
+        () => {
+          this.imageError = true
+          this.$emit('imageError', imageId)
+        },
+      )
     },
     resetView() {
       this.viewer.setCenter([0.5, 0.5])
@@ -49,9 +63,13 @@ export default defineComponent({
 <template>
   <v-container
     id="mapillary"
-    class="ma-0 pa-0"
+    :class="'ma-0 pa-0' + (imageError ? ' error' : '')"
     style="position: relative; height: calc(100vh - 375px)"
   />
 </template>
 
-<style scoped></style>
+<style scoped>
+#mapillary.error {
+  filter: opacity(20%) brightness(0%);
+}
+</style>

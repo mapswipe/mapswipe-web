@@ -205,7 +205,8 @@
   "streetProject": {
     "moveLeft": "Précédent",
     "moveRight": "Suivant",
-    "lookFor": "Rechercher {lookFor}"
+    "lookFor": "Rechercher {lookFor}",
+    "couldNotLoadImage": "Désolé, nous n'avons pas pu charger cette image. Veuillez continuer avec la tâche suivante."
   },
   "digitizeProjectInstructions": {
     "switchMode": "Activer/désactiver le mode Édition",

@@ -205,7 +205,8 @@
   "streetProject": {
     "moveLeft": "Back",
     "moveRight": "Forward",
-    "lookFor": "Look for {lookFor}"
+    "lookFor": "Look for {lookFor}",
+    "couldNotLoadImage": "Sorry, we could not load this image. Please proceed to the next task."
   },
   "digitizeProjectInstructions": {
     "switchMode": "Switch editing mode",
