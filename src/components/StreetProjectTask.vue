@@ -57,6 +57,9 @@ export default defineComponent({
   mounted() {
     this.initialiseViewer(this.taskId)
   },
+  unmounted() {
+    this.viewer.remove()
+  },
 })
 </script>
 
