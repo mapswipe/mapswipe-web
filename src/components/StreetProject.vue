@@ -94,7 +94,7 @@ export default defineComponent({
       this.results[this.taskId] = value
     },
     back() {
-      if (!this.taskIndex <= 0) {
+      if (!this.isLoading && !this.taskIndex <= 0) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
         this.errorLoading = false
@@ -168,7 +168,7 @@ export default defineComponent({
       :title="$t('streetProject.moveLeft')"
       icon="mdi-chevron-left"
       color="secondary"
-      :disabled="taskIndex <= 0"
+      :disabled="isLoading || taskIndex <= 0"
       @click="back"
       v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
