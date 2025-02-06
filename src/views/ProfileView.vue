@@ -325,6 +325,8 @@ export default defineComponent({
               :rules="[
                 (v) => !!v || $t('authView.required'),
                 (v) => v.length >= 4 || $t('authView.minChar', { number: '4' }),
+                (v) => v === v.toLowerCase() || this.$t('authView.noUppercase'),
+                (v) => v === v.replace(/\s+/g, '') || this.$t('authView.noSpace'),
               ]"
             />
           </v-form>

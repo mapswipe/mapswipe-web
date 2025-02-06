@@ -74,6 +74,7 @@ export default defineComponent({
     return {
       arrowKeys: true,
       isLoading: true,
+      errorLoading: false,
       results: {},
       startTime: null,
       taskId: undefined,
@@ -83,10 +84,11 @@ export default defineComponent({
   inject: {
     logMappingStarted: 'logMappingStarted',
     saveResults: 'saveResults',
+    showSnackbar: 'showSnackbar',
   },
   computed: {
     instructionMessage() {
-      const message = this.project?.lookFor
+      const message = this.$t('streetProject.lookFor', { lookFor: this.project?.lookFor })
       return message
     },
   },
@@ -95,9 +97,10 @@ export default defineComponent({
       this.results[this.taskId] = value
     },
     back() {
-      if (!this.taskIndex <= 0) {
+      if (!this.isLoading && !this.taskIndex <= 0) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
+        this.errorLoading = false
       }
     },
     createInformationPages,
@@ -106,10 +109,20 @@ export default defineComponent({
       return undefined
     },
     forward() {
-      if (!this.isLoading && this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
+      if (
+        !this.isLoading &&
+        (this.isAnswered() || this.errorLoading) &&
+        this.taskIndex + 1 < this.tasks.length
+      ) {
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
+        this.errorLoading = false
       }
+    },
+    handleImageError(taskId) {
+      this.errorLoading = true
+      this.addResult(null)
+      this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error')
     },
     isAnswered() {
       const result = this.results[this.taskId]
@@ -147,10 +160,14 @@ export default defineComponent({
       </template>
     </project-info>
   </project-header>
-  <street-project-task :taskId="taskId" @dataloading="(e) => (isLoading = e.loading)" />
+  <street-project-task
+    :taskId="taskId"
+    @dataloading="(e) => (isLoading = e.loading)"
+    @imageError="handleImageError(taskId)"
+  />
   <option-buttons
     v-if="taskId"
-    :disabled="isLoading"
+    :disabled="isLoading || errorLoading"
     :options="options"
     :result="results[taskId]"
     :taskId="taskId"
@@ -162,7 +179,7 @@ export default defineComponent({
       :title="$t('streetProject.moveLeft')"
       icon="mdi-chevron-left"
       color="secondary"
-      :disabled="taskIndex <= 0"
+      :disabled="isLoading || taskIndex <= 0"
       @click="back"
       v-shortkey.once="[arrowKeys ? 'arrowleft' : '']"
       @shortkey="back"
@@ -178,7 +195,7 @@ export default defineComponent({
       :title="$t('streetProject.moveRight')"
       icon="mdi-chevron-right"
       color="secondary"
-      :disabled="isLoading || !isAnswered() || taskIndex + 1 === tasks.length"
+      :disabled="isLoading || !(isAnswered() || errorLoading) || taskIndex + 1 === tasks.length"
       @click="forward"
       v-shortkey.once="[arrowKeys ? 'arrowright' : '']"
       @shortkey="forward"
