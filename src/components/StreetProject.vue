@@ -8,7 +8,6 @@ import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import StreetProjectInstructions from './StreetProjectInstructions.vue'
 import { defineComponent } from 'vue'
-import findProjectTutorial from '@/components/FindProjectTutorial.vue'
 
 export default defineComponent({
   components: {
@@ -119,7 +118,7 @@ export default defineComponent({
         this.errorLoading = false
       }
     },
-    handleImageError(taskId) {
+    handleImageError() {
       this.errorLoading = true
       this.addResult(null)
       this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error')
