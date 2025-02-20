@@ -72,11 +72,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-container
-    :id="`${containerId}`"
-    :class="'ma-0 pa-0' + (imageError ? ' error' : '')"
-    style="position: relative; height: calc(100vh - 375px)"
-  />
+  <v-container :id="`${containerId}`" :class="'ma-0 pa-0' + (imageError ? ' error' : '')" />
 </template>
 
 <style scoped>
