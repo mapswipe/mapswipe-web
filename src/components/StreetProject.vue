@@ -1,6 +1,7 @@
 <script lang="ts">
 import createInformationPages from '@/utils/createInformationPages'
 import StreetProjectTask from './StreetProjectTask.vue'
+import StreetProjectTutorial from '@/components/StreetProjectTutorial.vue'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
 import ProjectInfo from './ProjectInfo.vue'
@@ -12,6 +13,7 @@ export default defineComponent({
   components: {
     streetProjectInstructions: StreetProjectInstructions,
     streetProjectTask: StreetProjectTask,
+    streetProjectTutorial: StreetProjectTutorial,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
     projectInfo: ProjectInfo,
@@ -101,7 +103,7 @@ export default defineComponent({
       }
     },
     createInformationPages,
-    // fallback information pages for street projects tbd
+    // currently no fallback information pages defined, same here
     createFallbackInformationPages() {
       return undefined
     },
@@ -116,7 +118,7 @@ export default defineComponent({
         this.errorLoading = false
       }
     },
-    handleImageError(taskId) {
+    handleImageError() {
       this.errorLoading = true
       this.addResult(null)
       this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error')
@@ -139,6 +141,7 @@ export default defineComponent({
 <template>
   <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
     <project-info
+      ref="projectInfo"
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
       :manualUrl="project?.manualUrl"
@@ -147,12 +150,20 @@ export default defineComponent({
       <template #instructions>
         <street-project-instructions :instructionMessage="instructionMessage" :options="options" />
       </template>
+      <template #tutorial>
+        <street-project-tutorial
+          :tutorial="tutorial"
+          :options="options"
+          @tutorialComplete="$refs.projectInfo?.toggleDialog"
+        />
+      </template>
     </project-info>
   </project-header>
   <street-project-task
     :taskId="taskId"
     @dataloading="(e) => (isLoading = e.loading)"
     @imageError="handleImageError(taskId)"
+    style="position: relative; height: calc(100vh - 375px)"
   />
   <option-buttons
     v-if="taskId"

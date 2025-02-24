@@ -90,14 +90,7 @@ export default defineComponent({
     color="primary"
     @click="toggleDialog()"
   />
-  <v-dialog
-    v-model="dialog"
-    height="calc(100% - 32px)"
-    max-height="100vh"
-    width="calc(100% - 32px)"
-    max-width="1024"
-    persistent
-  >
+  <v-dialog v-model="dialog" transition="dialog-bottom-transition" fullscreen persistent>
     <v-card class="pa-2" height="100%">
       <v-tabs v-model="activeTab" style="flex-shrink: 0">
         <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions" />
