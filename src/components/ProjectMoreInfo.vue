@@ -35,7 +35,12 @@ export default defineComponent({
     </template>
     <template v-slot:default="{ isActive }">
       <v-card>
-        <v-img :src="projectImage" @error="() => (projectImage = fallbackImage)" />
+        <v-img
+          :src="projectImage"
+          @error="() => (projectImage = fallbackImage)"
+          max-height="50vh"
+          cover
+        />
         <v-card-title>{{ project.projectTopic }}</v-card-title>
         <v-card-text>
           <v-icon>mdi-pound</v-icon>
