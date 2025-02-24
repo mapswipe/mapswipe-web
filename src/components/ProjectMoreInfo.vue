@@ -29,7 +29,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-dialog max-width="1000">
+  <v-dialog max-width="1000" scrollable>
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn color="primary" v-bind="activatorProps">{{ $t('projectsView.contribute') }}</v-btn>
     </template>
@@ -51,8 +51,7 @@ export default defineComponent({
           <br />
           <v-icon>mdi-domain</v-icon>
           {{ project.requestingOrganisation || $t('projectsView.unknown') }}
-        </v-card-text>
-        <v-card-text>
+          <br /><br />
           <vue-markdown
             :source="project.projectDetails.replaceAll('\\n', '\n')"
             :options="{ typographer: true }"
