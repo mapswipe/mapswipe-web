@@ -29,13 +29,18 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-dialog max-width="1000">
+  <v-dialog max-width="1000" scrollable>
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn color="primary" v-bind="activatorProps">{{ $t('projectsView.contribute') }}</v-btn>
     </template>
     <template v-slot:default="{ isActive }">
       <v-card>
-        <v-img :src="projectImage" @error="() => (projectImage = fallbackImage)" />
+        <v-img
+          :src="projectImage"
+          @error="() => (projectImage = fallbackImage)"
+          max-height="50vh"
+          cover
+        />
         <v-card-title>{{ project.projectTopic }}</v-card-title>
         <v-card-text>
           <v-icon>mdi-pound</v-icon>
@@ -46,8 +51,7 @@ export default defineComponent({
           <br />
           <v-icon>mdi-domain</v-icon>
           {{ project.requestingOrganisation || $t('projectsView.unknown') }}
-        </v-card-text>
-        <v-card-text>
+          <br /><br />
           <vue-markdown
             :source="project.projectDetails.replaceAll('\\n', '\n')"
             :options="{ typographer: true }"

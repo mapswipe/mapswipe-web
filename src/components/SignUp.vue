@@ -24,6 +24,8 @@ export default defineComponent({
       rules: {
         min4: (v) => v.length >= 4 || this.$t('authView.minChar', { number: '4' }),
         min6: (v) => v.length >= 6 || this.$t('authView.minChar', { number: '6' }),
+        noUppercase: (v) => v === v.toLowerCase() || this.$t('authView.noUppercase'),
+        noSpace: (v) => v === v.replace(/\s+/g, '') || this.$t('authView.noSpace'),
         passwordMatch: () =>
           this.password === this.confirmPassword || this.$t('authView.passwordMatch'),
         required: (value) => !!value || this.$t('authView.required'),
@@ -89,7 +91,7 @@ export default defineComponent({
               set(ref(db, `/v2/users/${userId}/groupContributionCount`), 0),
               set(ref(db, `/v2/users/${userId}/projectContributionCount`), 0),
               set(ref(db, `/v2/users/${userId}/taskContributionCount`), 0),
-              set(ref(db, `/v2/users/${userId}/taskContributionCount`), this.displayName),
+              set(ref(db, `/v2/users/${userId}/username`), this.displayName),
             ])
           })
           .then(() => {
@@ -136,7 +138,7 @@ export default defineComponent({
           v-model="displayName"
           :label="$t('authView.displayName') + '*'"
           ref="displayName"
-          :rules="[rules.required, rules.min4]"
+          :rules="[rules.required, rules.min4, rules.noUppercase, rules.noSpace]"
           type="name"
           placeholder="name"
           autocomplete="name"

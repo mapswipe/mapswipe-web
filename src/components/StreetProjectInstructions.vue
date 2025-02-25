@@ -7,12 +7,12 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    attribution: {
+      type: String,
+      require: false,
+    },
     options: {
       type: Array,
-      required: true,
-    },
-    verificationNumber: {
-      type: Number,
       required: true,
     },
   },
@@ -23,7 +23,7 @@ export default defineComponent({
   <v-card-text>
     <div class="text-h6">{{ $t('projectInstructions.classifyTitle') }}</div>
     <div class="text-p">
-      {{ instructionMessage }} {{ $t('projectInstructions.classifyInstruction') }}.
+      {{ instructionMessage }}. {{ $t('projectInstructions.classifyInstruction') }}.
     </div>
 
     <v-row v-for="(option, optionIndex) in options" :key="optionIndex" align="center" dense>
@@ -40,33 +40,6 @@ export default defineComponent({
       </v-col>
       <v-col>{{ [option.title, option.description].filter(Boolean).join(': ') }}</v-col>
     </v-row>
-
-    <div class="text-h6 mt-10">{{ $t('projectInstructions.toggleOpacityTitle') }}</div>
-    <div class="text-p mt-2">
-      <v-row align="center" dense>
-        <v-col cols="auto" class="mr-4">
-          <v-btn color="primary" icon="mdi-eye" size="small" variant="text"> </v-btn>
-        </v-col>
-        <v-col>{{ $t('projectInstructions.toggleOpacityInstruction') }}.</v-col>
-      </v-row>
-    </div>
-
-    <div class="text-h6 mt-10">{{ $t('projectInstructions.resetTitle') }}</div>
-    <div class="text-p mt-2">
-      <v-row align="center" dense>
-        <v-col cols="auto" class="mr-4">
-          <v-btn
-            :title="$t('tileMap.resetView')"
-            color="primary"
-            icon="mdi-fit-to-screen-outline"
-            size="small"
-            variant="text"
-          >
-          </v-btn>
-        </v-col>
-        <v-col>{{ $t('projectInstructions.resetInstruction') }}</v-col>
-      </v-row>
-    </div>
 
     <div class="text-h6 mt-10">{{ $t('projectInstructions.useButtonsToNavigate') }}</div>
     <div class="text-p mt-2">
@@ -85,11 +58,9 @@ export default defineComponent({
         <v-col cols="auto" class="mr-4">
           <v-btn icon="mdi-content-save" color="primary" variant="text" />
         </v-col>
-        <v-col>{{ $t('validateProjectInstructions.seenAll') }}</v-col>
+        <v-col>{{ $t('projectInstructions.seenAll') }}</v-col>
       </v-row>
     </div>
-    <div class="text-h6 mt-10">{{ $t('projectInstructions.dontWorry') }}</div>
-    <div class="text-p">{{ $t('projectInstructions.everyTaskIsViewedBy') }}.</div>
   </v-card-text>
 </template>
 

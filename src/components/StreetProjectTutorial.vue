@@ -2,11 +2,11 @@
 import { defineComponent, type PropType } from 'vue'
 import { goOnline, onValue } from 'firebase/database'
 import { db, getTasksRef, getGroupsRef } from '@/firebase'
+import { decompressTasks } from '@/utils/tasks'
 import matchIcon from '@/utils/matchIcon'
 import OptionButtons from '@/components/OptionButtons.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
-import { decompressTasks } from '@/utils/tasks'
-import ValidateProjectTask, { type Project } from './ValidateProjectTask.vue'
+import StreetProjectTask from '@/components/StreetProjectTask.vue'
 import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import { isDefined } from '@/utils/common'
 
@@ -20,14 +20,9 @@ interface Option {
 }
 
 interface Task {
-  geojson: object
-  geometry: string
-  properties: {
-    reference: number
-    screen: number
-  }
-  screen: number
   taskId: string
+  screen: number
+  referenceAnswer: number
 }
 
 interface Screen {
@@ -36,7 +31,7 @@ interface Screen {
   description: string
 }
 
-interface Tutorial extends Project {
+interface Tutorial {
   projectId: string
   name: string
   lookFor?: string
@@ -49,10 +44,10 @@ interface Tutorial extends Project {
 
 export default defineComponent({
   components: {
-    validateProjectTask: ValidateProjectTask,
-    optionButtons: OptionButtons,
-    taskProgress: TaskProgress,
-    tutorialCompletionCard: TutorialCompletionCard,
+    StreetProjectTask,
+    OptionButtons,
+    TaskProgress,
+    TutorialCompletionCard,
   },
   props: {
     tutorial: Object as PropType<Tutorial>,
@@ -64,6 +59,7 @@ export default defineComponent({
     results: Record<string, number>
     userAttempts: number
     answersRevealed: boolean
+    isLoading: boolean
   } {
     return {
       tasks: [],
@@ -71,13 +67,12 @@ export default defineComponent({
       results: {},
       userAttempts: 0,
       answersRevealed: false,
+      isLoading: false,
     }
   },
   computed: {
     instructionMessage() {
-      const message = this.$t('validateProject.doesTheShapeOutline', {
-        feature: this.tutorial?.lookFor,
-      })
+      const message = this.$t('streetProject.lookFor', { lookFor: this.tutorial?.lookFor })
       return message
     },
     currentScreen() {
@@ -107,7 +102,7 @@ export default defineComponent({
       }
 
       const result = this.results[this.task?.taskId]
-      return isDefined(result) && result === this.task?.properties.reference
+      return isDefined(result) && result === this.task?.referenceAnswer
     },
     alertContent() {
       if (!this.currentScreen) {
@@ -156,6 +151,7 @@ export default defineComponent({
     fetchTutorialGroups() {
       if (this.tutorial?.projectId) {
         onValue(
+          // FIXME: verify group id
           getGroupsRef(this.tutorial.projectId),
           (snapshot) => {
             const data = snapshot.val()
@@ -199,7 +195,7 @@ export default defineComponent({
     },
     showAnswer() {
       this.answersRevealed = true
-      this.results[this.task.taskId] = this.task.properties?.reference
+      this.results[this.task.taskId] = this.task?.referenceAnswer
     },
   },
   emits: ['tutorialComplete'],
@@ -212,6 +208,7 @@ export default defineComponent({
 
 <template>
   <v-container>
+    <!-- Instruction Message for the Tutorial -->
     <v-row v-if="!hasCompletedAllTasks">
       <v-col>
         <div>
@@ -219,6 +216,8 @@ export default defineComponent({
         </div>
       </v-col>
     </v-row>
+
+    <!-- Alert Content (Success/Hint/Instruction) -->
     <v-row v-if="alertContent">
       <v-col>
         <v-alert
@@ -232,12 +231,14 @@ export default defineComponent({
           :icon="alertContent.icon"
         >
           <template #append>
+            <!-- Show Answer Button -->
             <v-btn
               v-if="userAttempts > 1 && !answeredCorrectly && !answersRevealed"
               @click="showAnswer"
             >
               {{ $t('projectTutorial.showAnswer') }}
             </v-btn>
+            <!-- Next Task Button -->
             <v-btn v-if="!hasCompletedAllTasks && answeredCorrectly" @click="nextTask">
               {{ $t('projectTutorial.nextTask') }}
             </v-btn>
@@ -245,13 +246,15 @@ export default defineComponent({
         </v-alert>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row justify="center">
       <v-col>
-        <validate-project-task
+        <street-project-task
           v-if="tasks[currentTaskIndex] && tutorial"
-          :task="tasks[currentTaskIndex]"
-          :project="tutorial"
-          compact
+          :key="task.taskId"
+          :taskId="task.taskId"
+          :containerId="'mapillary_tutorial'"
+          @dataloading="(e) => (isLoading = e.loading)"
+          style="position: relative; height: calc(100vh - 425px)"
         />
       </v-col>
     </v-row>
@@ -259,6 +262,7 @@ export default defineComponent({
       <v-col>
         <option-buttons
           v-if="task?.taskId"
+          :disabled="isLoading"
           :options="options"
           :result="results[task.taskId]"
           :taskId="task.taskId"
@@ -283,5 +287,3 @@ export default defineComponent({
     </v-row>
   </v-container>
 </template>
-
-<style scoped></style>

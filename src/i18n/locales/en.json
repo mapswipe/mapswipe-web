@@ -39,6 +39,8 @@
     "invalidEmail": "E-mail invalid",
     "minChar": "Minimum {number} characters",
     "noAccountYet": "Don't have an account yet?",
+    "noUppercase": "Your username cannot contain uppercase letters.",
+    "noSpace": "Your username cannot contain space.",
     "password": "Password",
     "passwordMatch": "Password does not match",
     "passwordResetEmailSent": "Password reset e-mail sent",
@@ -145,7 +147,7 @@
     "classifyTitle": "Provide your answer",
     "classifyInstruction": "Use buttons to provide your answers",
     "dontWorry": "Don't worry if you are not sure",
-    "everyTaskIsViewedBy": "Every tasks is viewed by at least {verificationNumber} MapSwipers, so it's ok if you think you missed something",
+    "everyTaskIsViewedBy": "Every task is viewed by several MapSwipers, so it's ok if you think you missed something",
     "howToContribute": "How to Contribute?",
     "imageCredits": "Image credits",
     "move": "Move back and forward",
@@ -199,6 +201,12 @@
   "mediaProject": {
     "moveLeft": "Back",
     "moveRight": "Forward"
+  },
+  "streetProject": {
+    "moveLeft": "Back",
+    "moveRight": "Forward",
+    "lookFor": "Look for {lookFor}",
+    "couldNotLoadImage": "Sorry, we could not load this image. Please proceed to the next task."
   },
   "digitizeProjectInstructions": {
     "switchMode": "Switch editing mode",

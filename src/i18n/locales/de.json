@@ -39,6 +39,8 @@
     "invalidEmail": "E-Mail ungültig",
     "minChar": "Minimum {number} Zeichen",
     "noAccountYet": "Du hast noch kein Konto?",
+    "noUppercase": "Dein Nutzername darf keine Großbuchstaben enthalten.",
+    "noSpace": "Dein Nutzername darf keine Leerzeichen enthalten.",
     "password": "Passwort",
     "passwordMatch": "Passwort stimmt nicht überein",
     "passwordResetEmailSent": "E-Mail zum Zurücksetzen des Passworts versandt",
@@ -145,7 +147,7 @@
     "classifyTitle": "Gib deine Antwort",
     "classifyInstruction": "Benutze Buttons, um deine Antwort zu geben",
     "dontWorry": "Keine Sorge, wenn du unsicher bist",
-    "everyTaskIsViewedBy": "Jede Aufgabe wird von mindestens {verificationNumber} MapSwipern gesehen. Es ist daher OK, wenn du mal etwas übersiehst",
+    "everyTaskIsViewedBy": "Jede Aufgabe wird von mehreren MapSwipern gesehen. Es ist daher OK, wenn du mal etwas übersiehst",
     "howToContribute": "Wie kann ich beitragen?",
     "imageCredits": "Bildnachweis",
     "move": "Zurück und weiter bewegen",
@@ -199,6 +201,12 @@
   "mediaProject": {
     "moveLeft": "Zurück",
     "moveRight": "Weiter"
+  },
+  "streetProject": {
+    "moveLeft": "Zurück",
+    "moveRight": "Weiter",
+    "lookFor": "Suche {lookFor}",
+    "couldNotLoadImage": "Leider konnten wir dieses Bild nicht laden. Bitte mache mit der nächsten Aufgabe weiter."
   },
   "digitizeProjectInstructions": {
     "switchMode": "Editiermodus umschalten",

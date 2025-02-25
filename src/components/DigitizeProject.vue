@@ -38,7 +38,7 @@ export default defineComponent({
     },
     tutorial: {
       type: Object,
-      require: false,
+      required: false,
     },
   },
   data() {

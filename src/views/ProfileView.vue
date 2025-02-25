@@ -263,9 +263,6 @@ export default defineComponent({
           <v-hover v-slot="{ isHovering, props }">
             <v-card v-bind="props" :elevation="isHovering ? 3 : 1" width="350" tile>
               <v-card-title>{{ selectedUserGroup.name }}</v-card-title>
-              <v-card-text>
-                <span v-if="selectedUserGroup">{{ selectedUserGroup.description }}</span>
-              </v-card-text>
               <v-card-actions>
                 <v-btn
                   v-if="selectedUserGroup && getGroupStatsUrl(selectedUserGroup.groupId)"
@@ -295,7 +292,6 @@ export default defineComponent({
           <v-hover v-slot="{ isHovering, props }">
             <v-card v-bind="props" :elevation="isHovering ? 3 : 1" width="350" tile>
               <v-card-title>{{ userGroup.name }}</v-card-title>
-              <v-card-text>{{ userGroup.description }}</v-card-text>
               <v-card-actions>
                 <v-btn
                   v-if="getGroupStatsUrl(userGroup.groupId)"
@@ -329,6 +325,8 @@ export default defineComponent({
               :rules="[
                 (v) => !!v || $t('authView.required'),
                 (v) => v.length >= 4 || $t('authView.minChar', { number: '4' }),
+                (v) => v === v.toLowerCase() || this.$t('authView.noUppercase'),
+                (v) => v === v.replace(/\s+/g, '') || this.$t('authView.noSpace'),
               ]"
             />
           </v-form>
