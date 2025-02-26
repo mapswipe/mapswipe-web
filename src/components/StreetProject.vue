@@ -34,6 +34,7 @@ export default defineComponent({
         return [
           {
             mdiIcon: 'mdi-check-bold',
+            description: 'the object you are looking for is in the image.',
             iconColor: '#bbcb7d',
             shortkey: 1,
             title: 'Yes',
@@ -41,6 +42,7 @@ export default defineComponent({
           },
           {
             mdiIcon: 'mdi-close-thick',
+            description: 'the object you are looking for is NOT in the image.',
             iconColor: '#fd5054',
             shortkey: 2,
             title: 'No',
@@ -48,6 +50,7 @@ export default defineComponent({
           },
           {
             mdiIcon: 'mdi-minus-thick',
+            description: "if you're not sure or there is bad imagery.",
             iconColor: '#adadad',
             title: 'Not sure',
             shortkey: 3,
