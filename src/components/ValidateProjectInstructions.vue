@@ -11,10 +11,6 @@ export default defineComponent({
       type: Array,
       required: true,
     },
-    verificationNumber: {
-      type: Number,
-      required: true,
-    },
   },
 })
 </script>
