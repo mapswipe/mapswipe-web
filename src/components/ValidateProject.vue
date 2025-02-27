@@ -192,11 +192,7 @@ export default defineComponent({
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <validate-project-instructions
-          :mission="mission"
-          :options="options"
-          :verificationNumber="project.verificationNumber"
-        />
+        <validate-project-instructions :mission="mission" :options="options" />
       </template>
       <template #tutorial>
         <validate-project-tutorial

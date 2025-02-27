@@ -203,7 +203,6 @@ export default defineComponent({
           :attribution="attribution"
           :mission="mission"
           :options="options"
-          :verificationNumber="project.verificationNumber"
         />
       </template>
       <template #tutorial>
