@@ -7,7 +7,7 @@ export default defineComponent({
       type: String,
       required: false,
     },
-    instructionMessage: {
+    mission: {
       type: String,
       required: true,
     },
@@ -17,7 +17,7 @@ export default defineComponent({
 
 <template>
   <v-card-text>
-    <div class="text-p">{{ instructionMessage }}.</div>
+    <div class="text-p">{{ mission }}.</div>
     <div class="text-h6 mt-10">{{ $t('digitizeProjectInstructions.switchMode') }}</div>
     <div class="text-p mt-2">
       <v-row align="center" dense>

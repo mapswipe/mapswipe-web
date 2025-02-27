@@ -113,9 +113,8 @@ export default defineComponent({
       const columnsPerPage = this.clamp(rounded, 1, this.totalColumns)
       return columnsPerPage
     },
-    instructionMessage() {
-      const verb = this.project.tileServerB ? 'findProject.compare' : 'findProject.lookFor'
-      const message = this.$t(verb, { lookFor: this.project.lookFor })
+    mission() {
+      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
     forwardDisabled() {
@@ -348,7 +347,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
+  <project-header :mission="mission" :title="project.projectTopic">
     <v-chip v-if="tilesInSelection" color="primary" :ripple="false">
       {{ selectedTaskIds.length }}
       <span class="hidden-md-and-down">&nbsp;{{ $t('findProject.selected') }}</span>
@@ -379,7 +378,7 @@ export default defineComponent({
         <find-project-instructions
           :attribution="attribution"
           :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
-          :instructionMessage="instructionMessage"
+          :mission="mission"
           :options="options"
           :verificationNumber="project.verificationNumber"
         />

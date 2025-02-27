@@ -74,7 +74,7 @@ export default defineComponent({
     }
   },
   computed: {
-    instructionMessage() {
+    mission() {
       const message = this.$t('validateProject.doesTheShapeOutline', {
         feature: this.tutorial?.lookFor,
       })
@@ -215,7 +215,7 @@ export default defineComponent({
     <v-row v-if="!hasCompletedAllTasks">
       <v-col>
         <div>
-          {{ instructionMessage }}
+          {{ mission }}
         </div>
       </v-col>
     </v-row>

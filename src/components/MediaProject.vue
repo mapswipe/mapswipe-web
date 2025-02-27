@@ -67,7 +67,7 @@ export default defineComponent({
       const attribution = this.project?.mediaCredits || ''
       return attribution
     },
-    instructionMessage() {
+    mission() {
       const message = this.project?.lookFor
       return message
     },
@@ -129,7 +129,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
+  <project-header :mission="mission" :title="project?.projectTopic">
     <project-info
       :first="first"
       :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
@@ -139,7 +139,7 @@ export default defineComponent({
       <template #instructions>
         <media-project-instructions
           :attribution="attribution"
-          :instructionMessage="instructionMessage"
+          :mission="mission"
           :options="options"
         />
       </template>

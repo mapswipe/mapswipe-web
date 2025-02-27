@@ -76,7 +76,7 @@ export default defineComponent({
     geometryFunction() {
       return this.project.drawType === 'Box' ? createBox() : undefined
     },
-    instructionMessage() {
+    mission() {
       const message = this.$t('digitizeProject.draw', { lookFor: this.project.lookFor })
       return message
     },
@@ -211,7 +211,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
+  <project-header :mission="mission" :title="project.projectTopic">
     <v-btn-toggle v-model="interaction" variant="outlined" mandatory divided>
       <v-btn
         :title="$t('digitizeProject.draw', { lookFor: this.project.lookFor })"
@@ -254,10 +254,7 @@ export default defineComponent({
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <digitize-project-instructions
-          :drawType="drawType"
-          :instructionMessage="instructionMessage"
-        />
+        <digitize-project-instructions :drawType="drawType" :mission="mission" />
       </template>
     </project-info>
   </project-header>
