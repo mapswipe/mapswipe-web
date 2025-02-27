@@ -141,8 +141,8 @@ export default defineComponent({
       if (tileServerB) attribution.push(tileServerB.credits)
       return attribution.join('; ')
     },
-    instructionMessage() {
-      const message = this.$t('compareProject.lookForChange', { lookFor: this.project?.lookFor })
+    mission() {
+      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
   },
@@ -189,7 +189,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
+  <project-header :mission="mission" :title="project.projectTopic">
     <tile-map :page="[tasks[taskIndex]]" :zoomLevel="project.zoomLevel" />
     <project-info
       ref="projectInfo"
@@ -201,7 +201,7 @@ export default defineComponent({
       <template #instructions>
         <compare-project-instructions
           :attribution="attribution"
-          :instructionMessage="instructionMessage"
+          :mission="mission"
           :options="options"
           :verificationNumber="project.verificationNumber"
         />

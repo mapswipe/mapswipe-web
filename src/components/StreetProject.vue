@@ -89,8 +89,8 @@ export default defineComponent({
     showSnackbar: 'showSnackbar',
   },
   computed: {
-    instructionMessage() {
-      const message = this.$t('streetProject.lookFor', { lookFor: this.project?.lookFor })
+    mission() {
+      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
   },
@@ -142,7 +142,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
+  <project-header :mission="mission" :title="project?.projectTopic">
     <project-info
       ref="projectInfo"
       :first="first"
@@ -151,7 +151,7 @@ export default defineComponent({
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <street-project-instructions :instructionMessage="instructionMessage" :options="options" />
+        <street-project-instructions :mission="mission" :options="options" />
       </template>
       <template #tutorial>
         <street-project-tutorial

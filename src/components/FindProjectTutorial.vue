@@ -88,8 +88,8 @@ export default defineComponent({
           {} as Record<number, MappedOption>,
         )
     },
-    instructionMessage() {
-      const message = this.$t('compareProject.lookForChange', { lookFor: this.tutorial?.lookFor })
+    mission() {
+      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
     currentScreen() {
@@ -295,7 +295,7 @@ export default defineComponent({
     <v-row v-if="!hasCompletedAllTasks">
       <v-col>
         <div>
-          {{ instructionMessage }}
+          {{ mission }}
         </div>
       </v-col>
     </v-row>

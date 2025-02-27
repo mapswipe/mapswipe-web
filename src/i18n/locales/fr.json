@@ -124,7 +124,8 @@
     "seeAllProjects": "Voir tous les projets",
     "continueMapping": "Continuer à cartographier",
     "noTasksAvailable": "Pas de tâches disponibles",
-    "goBackToProjects": "Bien joué, {user} ! Il ne vous reste plus rien à faire ici. Veuillez aller voir nos autres projets."
+    "goBackToProjects": "Bien joué, {user} ! Il ne vous reste plus rien à faire ici. Veuillez aller voir nos autres projets.",
+    "youAreLookingFor": "Vous recherchez des {lookFor}"
   },
   "findProject": {
     "selected": "sélectionné",
@@ -133,9 +134,7 @@
     "toggleOpacity": "Activer/désactiver l'opacité",
     "moveRight": "Déplacer à droite d'une colonne | Déplacer à droite de {n} colonnes",
     "moveLeft": "Déplacer à gauche d'une colonne | Déplacer à gauche de {n} colonnes",
-    "removedFromSelection": "Un carré enlevé de la sélection | {n} carrés enlevé de la sélection",
-    "lookFor": "Recherche de {lookFor}",
-    "compare": "Comparer {lookFor}"
+    "removedFromSelection": "Un carré enlevé de la sélection | {n} carrés enlevé de la sélection"
   },
   "tileMap": {
     "whereAmI": "Où suis-je ?",
@@ -188,8 +187,7 @@
   },
   "compareProject": {
     "before": "Avant",
-    "after": "Après",
-    "lookForChange": "Recherchez une différence de {lookFor}"
+    "after": "Après"
   },
   "digitizeProject": {
     "moveLeft": "Retour à l'élément précédent",
@@ -205,7 +203,6 @@
   "streetProject": {
     "moveLeft": "Précédent",
     "moveRight": "Suivant",
-    "lookFor": "Rechercher {lookFor}",
     "couldNotLoadImage": "Désolé, nous n'avons pas pu charger cette image. Veuillez continuer avec la tâche suivante."
   },
   "digitizeProjectInstructions": {

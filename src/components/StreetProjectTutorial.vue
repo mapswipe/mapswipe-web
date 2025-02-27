@@ -71,8 +71,8 @@ export default defineComponent({
     }
   },
   computed: {
-    instructionMessage() {
-      const message = this.$t('streetProject.lookFor', { lookFor: this.tutorial?.lookFor })
+    mission() {
+      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
     currentScreen() {
@@ -212,7 +212,7 @@ export default defineComponent({
     <v-row v-if="!hasCompletedAllTasks">
       <v-col>
         <div>
-          {{ instructionMessage }}
+          {{ mission }}
         </div>
       </v-col>
     </v-row>

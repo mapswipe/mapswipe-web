@@ -124,7 +124,8 @@
     "seeAllProjects": "See all projects",
     "continueMapping": "Continue mapping",
     "noTasksAvailable": "No tasks available",
-    "goBackToProjects": "Well done,  {user}!  There is nothing left to do for you here. Please have a look at our other projects."
+    "goBackToProjects": "Well done,  {user}!  There is nothing left to do for you here. Please have a look at our other projects.",
+    "youAreLookingFor": "You are looking for: {lookFor}"
   },
   "findProject": {
     "selected": "selected",
@@ -133,9 +134,7 @@
     "toggleOpacity": "Toggle opacity",
     "moveRight": "Move right by one column | Move right by {n} columns",
     "moveLeft": "Move left by one column | Move left by {n} columns",
-    "removedFromSelection": "One tile removed from selection | {n} tiles removed from selection",
-    "lookFor": "Look for {lookFor}",
-    "compare": "Compare {lookFor}"
+    "removedFromSelection": "One tile removed from selection | {n} tiles removed from selection"
   },
   "tileMap": {
     "whereAmI": "Where am I?",
@@ -188,8 +187,7 @@
   },
   "compareProject": {
     "before": "Before",
-    "after": "After",
-    "lookForChange": "Look for {lookFor} change"
+    "after": "After"
   },
   "digitizeProject": {
     "moveLeft": "Back to previous feature",
@@ -205,7 +203,6 @@
   "streetProject": {
     "moveLeft": "Back",
     "moveRight": "Forward",
-    "lookFor": "Look for {lookFor}",
     "couldNotLoadImage": "Sorry, we could not load this image. Please proceed to the next task."
   },
   "digitizeProjectInstructions": {
