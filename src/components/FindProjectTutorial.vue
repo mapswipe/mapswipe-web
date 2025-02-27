@@ -89,7 +89,7 @@ export default defineComponent({
         )
     },
     mission() {
-      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
+      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.tutorial.lookFor })
       return message
     },
     currentScreen() {
