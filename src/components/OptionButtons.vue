@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import { isDefined } from '@/utils/common'
+import { truncate } from 'fs'
 
 export interface Option {
   shortkey?: number
@@ -72,35 +73,55 @@ export default defineComponent({
       const isOptionSelected = isDefined(this.result) && values.includes(this.result)
       return isOptionSelected
     },
+    isOptionNotSelected(option: Option) {
+      const isOptionNotSelected = isDefined(this.result) && !this.isOptionSelected(option)
+      return isOptionNotSelected
+    },
     resetSelectedSubOption() {
       const resultIsSubOption =
         isDefined(this.result) && !this.options.map((o) => o.value).includes(this.result)
       this.selectedSubOptionValue = resultIsSubOption ? this.result : undefined
     },
+    trimTitle(title){
+      return title.length > 9 ? title.substring(0, 9) + '...' : title;
+    },
   },
 })
 </script>
-
 <template>
-  <v-toolbar color="white" density="compact" class="pt-1">
+  <v-toolbar color="white" density="default" class="pt-1">
     <v-spacer />
-    <!--TODO: add text labels-->
-    <v-btn
+    <v-sheet
       v-for="(option, optionIndex) in options"
-      class="mx-2 text-caption"
-      @click="handleOptionButtonClicked(option)"
-      v-shortkey="[option.shortkey]"
-      @shortkey="handleOptionButtonClicked(option)"
-      :disabled="disabled"
-      :title="[option.title, option.description].filter(Boolean).join(': ')"
-      :text="'(' + option.shortkey + ') ' + option.title"
       :key="optionIndex"
-      :value="option.value"
-      :color="option.iconColor"
-      :icon="option.mdiIcon"
-      :variant="isOptionSelected(option) ? 'flat' : 'outlined'"
-      size="small"
-    />
+      class="mx-5"
+    >
+      <v-row>
+        <v-btn
+          class="mx-2 text-caption"
+          @click="handleOptionButtonClicked(option)"
+          v-shortkey="[option.shortkey]"
+          @shortkey="handleOptionButtonClicked(option)"
+          :disabled="disabled"
+          :title="[`(${option.shortkey}) ` + option.title, option.description].filter(Boolean).join(': ')"
+          :key="optionIndex"
+          :value="option.value"
+          :color="isOptionNotSelected(option) ? 'grey':  option.iconColor"
+          :icon="option.mdiIcon"
+          :variant="'flat'"
+          size="small"
+        />
+      </v-row>
+      <v-row 
+        justify="center" 
+        class="text-caption text-truncate"
+        :style="{color: isOptionNotSelected(option) ? 'grey':  option.iconColor}" 
+      > 
+        <span :title="option.title">
+          {{ trimTitle(option.title) }}
+        </span>
+      </v-row>
+    </v-sheet>
     <v-spacer />
     <v-dialog v-model="subOptionsDialog" width="unset">
       <v-card>

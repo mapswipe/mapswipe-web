@@ -29,16 +29,15 @@ export default defineComponent({
     <v-row v-for="(option, optionIndex) in options" :key="optionIndex" align="center" dense>
       <v-col cols="auto" class="mr-4">
         <v-btn
-          class="mx-2 text-caption"
-          width="6rem"
-          :text="'(' + option.shortkey + ') ' + option.title"
+          class="mx-3 mt-4 text-caption"
+          width="3rem"
+          height="3rem"
           :color="option.iconColor"
-          :prepend-icon="option.mdiIcon"
-          variant="plain"
-          stacked
+          :icon="option.mdiIcon"
+          variant="flat"
         />
       </v-col>
-      <v-col>{{ [option.title, option.description].filter(Boolean).join(': ') }}</v-col>
+      <v-col class="mt-5">{{ [option.title, option.description].filter(Boolean).join(': ') }}</v-col>
     </v-row>
 
     <div class="text-h6 mt-10">{{ $t('projectInstructions.useButtonsToNavigate') }}</div>
