@@ -33,6 +33,7 @@ export default defineComponent({
   opacity: 0.4;
   width: 100%;
   height: 100%;
+  user-select: none;
 }
 
 .overlay-label {
@@ -45,5 +46,6 @@ export default defineComponent({
   text-align: center;
   color: white;
   text-shadow: 0 0 10px #000;
+  user-select: none;
 }
 </style>
