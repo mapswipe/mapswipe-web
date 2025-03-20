@@ -203,7 +203,7 @@
   "streetProject": {
     "moveLeft": "Back",
     "moveRight": "Forward",
-    "couldNotLoadImage": "Sorry, we could not load this image. Please proceed to the next task."
+    "couldNotLoadImage": "Sorry, we could not load this image."
   },
   "digitizeProjectInstructions": {
     "switchMode": "Switch editing mode",

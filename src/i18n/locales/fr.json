@@ -203,7 +203,7 @@
   "streetProject": {
     "moveLeft": "Précédent",
     "moveRight": "Suivant",
-    "couldNotLoadImage": "Désolé, nous n'avons pas pu charger cette image. Veuillez continuer avec la tâche suivante."
+    "couldNotLoadImage": "Désolé, nous n'avons pas pu charger cette image."
   },
   "digitizeProjectInstructions": {
     "switchMode": "Activer/désactiver le mode Édition",

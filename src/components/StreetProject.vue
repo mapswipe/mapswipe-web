@@ -112,8 +112,7 @@ export default defineComponent({
     },
     forward() {
       if (
-        !this.isLoading &&
-        (this.isAnswered() || this.errorLoading) &&
+        ((!this.isLoading && this.isAnswered()) || this.errorLoading) &&
         this.taskIndex + 1 < this.tasks.length
       ) {
         this.taskIndex++
@@ -124,7 +123,8 @@ export default defineComponent({
     handleImageError() {
       this.errorLoading = true
       this.addResult(null)
-      this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error')
+      this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error', 1200)
+      this.forward()
     },
     isAnswered() {
       const result = this.results[this.taskId]

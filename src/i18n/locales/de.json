@@ -203,7 +203,7 @@
   "streetProject": {
     "moveLeft": "Zurück",
     "moveRight": "Weiter",
-    "couldNotLoadImage": "Leider konnten wir dieses Bild nicht laden. Bitte mache mit der nächsten Aufgabe weiter."
+    "couldNotLoadImage": "Leider konnten wir dieses Bild nicht laden."
   },
   "digitizeProjectInstructions": {
     "switchMode": "Editiermodus umschalten",
