@@ -1,7 +1,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import OptionButton from '@/components/OptionButton.vue'
 
 export default defineComponent({
+  components: {
+    optionButton: OptionButton,
+  },
   props: {
     instructionMessage: {
       type: String,
@@ -27,17 +31,12 @@ export default defineComponent({
     </div>
 
     <v-row v-for="(option, optionIndex) in options" :key="optionIndex" align="center" dense>
-      <v-col cols="auto" class="mr-4">
-        <v-btn
-          class="mx-3 mt-4 text-caption"
-          width="3rem"
-          height="3rem"
-          :color="option.iconColor"
-          :icon="option.mdiIcon"
-          variant="flat"
-        />
+      <v-col cols="auto" class="mt-5 mr-4">
+        <option-button :option="option" :only-icon="true" />
       </v-col>
-      <v-col class="mt-5">{{ [option.title, option.description].filter(Boolean).join(': ') }}</v-col>
+      <v-col class="mt-5">{{
+        [option.title, option.description].filter(Boolean).join(': ')
+      }}</v-col>
     </v-row>
 
     <div class="text-h6 mt-10">{{ $t('projectInstructions.useButtonsToNavigate') }}</div>

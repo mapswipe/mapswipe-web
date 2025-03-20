@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import { isDefined } from '@/utils/common'
-import { truncate } from 'fs'
+import OptionButton from '@/components/OptionButton.vue'
 
 export interface Option {
   shortkey?: number
@@ -19,6 +19,9 @@ export interface Option {
 }
 
 export default defineComponent({
+  components: {
+    optionButton: OptionButton,
+  },
   props: {
     disabled: {
       type: Boolean,
@@ -82,46 +85,21 @@ export default defineComponent({
         isDefined(this.result) && !this.options.map((o) => o.value).includes(this.result)
       this.selectedSubOptionValue = resultIsSubOption ? this.result : undefined
     },
-    trimTitle(title){
-      return title.length > 9 ? title.substring(0, 9) + '...' : title;
-    },
   },
 })
 </script>
 <template>
   <v-toolbar color="white" density="default" class="pt-1">
     <v-spacer />
-    <v-sheet
+    <option-button
       v-for="(option, optionIndex) in options"
       :key="optionIndex"
-      class="mx-5"
-    >
-      <v-row>
-        <v-btn
-          class="mx-2 text-caption"
-          @click="handleOptionButtonClicked(option)"
-          v-shortkey="[option.shortkey]"
-          @shortkey="handleOptionButtonClicked(option)"
-          :disabled="disabled"
-          :title="[`(${option.shortkey}) ` + option.title, option.description].filter(Boolean).join(': ')"
-          :key="optionIndex"
-          :value="option.value"
-          :color="isOptionNotSelected(option) ? 'grey':  option.iconColor"
-          :icon="option.mdiIcon"
-          :variant="'flat'"
-          size="small"
-        />
-      </v-row>
-      <v-row 
-        justify="center" 
-        class="text-caption text-truncate"
-        :style="{color: isOptionNotSelected(option) ? 'grey':  option.iconColor}" 
-      > 
-        <span :title="option.title">
-          {{ trimTitle(option.title) }}
-        </span>
-      </v-row>
-    </v-sheet>
+      :option="option"
+      :disabled="disabled"
+      :is-selected="isOptionSelected(option)"
+      :is-not-selected="isOptionNotSelected(option)"
+      @option-click="handleOptionButtonClicked"
+    />
     <v-spacer />
     <v-dialog v-model="subOptionsDialog" width="unset">
       <v-card>
