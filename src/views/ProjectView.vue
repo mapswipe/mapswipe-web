@@ -22,6 +22,7 @@ import MediaProject from '@/components/MediaProject.vue'
 import ValidateProject from '@/components/ValidateProject.vue'
 import DigitizeProject from '@/components/DigitizeProject.vue'
 import StreetProject from '@/components/StreetProject.vue'
+import ConflationProject from '@/components/ConflationProject.vue'
 import projectTypes from '@/config/projectTypes'
 import { decompressTasks } from '@/utils/tasks'
 
@@ -34,6 +35,7 @@ export default defineComponent({
     validateProject: ValidateProject,
     digitizeProject: DigitizeProject,
     streetProject: StreetProject,
+    conflationProject: ConflationProject,
   },
   data() {
     return {
