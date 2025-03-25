@@ -9,13 +9,13 @@ import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import ValidateProjectInstructions from '@/components/ValidateProjectInstructions.vue'
 import ValidateProjectTutorial from '@/components/ValidateProjectTutorial.vue'
-import ValidateProjectTask from './ValidateProjectTask.vue'
+import ConflationProjectTask from './ConflationProjectTask.vue'
 
 export default defineComponent({
   components: {
     validateProjectInstructions: ValidateProjectInstructions,
     validateProjectTutorial: ValidateProjectTutorial,
-    validateProjectTask: ValidateProjectTask,
+    conflationProjectTask: ConflationProjectTask,
     taskProgress: TaskProgress,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
@@ -97,7 +97,7 @@ export default defineComponent({
       return colors
     },
     mission() {
-      const message = this.$t('validateProject.doesTheShapeOutline', {
+      const message = this.$t('conflationProject.doesTheShapeOutline', {
         feature: this.project?.lookFor,
       })
       return message
@@ -174,7 +174,7 @@ export default defineComponent({
 <template>
   <project-header :mission="mission" :title="project.projectTopic">
     <v-btn
-      :title="$t('findProject.toggleOpacity')"
+      :title="$t('conflationProject.toggleOpacity')"
       :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
       @click="transparent = !transparent"
       color="primary"
@@ -182,7 +182,7 @@ export default defineComponent({
     <v-btn
       :title="$t('tileMap.resetView')"
       icon="mdi-fit-to-screen-outline"
-      @click="$refs['validate-project-task']?.fitView()"
+      @click="$refs['conflation-project-task']?.fitView()"
       color="primary"
     />
     <project-info
@@ -205,8 +205,8 @@ export default defineComponent({
     </project-info>
   </project-header>
   <v-container class="ma-0 pa-0">
-    <validate-project-task
-      ref="validate-project-task"
+    <conflation-project-task
+      ref="conflation-project-task"
       :task="tasks?.[taskIndex]"
       :project="project"
       :transparent="transparent"
@@ -222,7 +222,7 @@ export default defineComponent({
   <v-toolbar color="white" density="compact" extension-height="20" extended>
     <v-spacer />
     <v-btn
-      :title="$t('validateProject.moveLeft')"
+      :title="$t('conflationProject.moveLeft')"
       icon="mdi-chevron-left"
       color="secondary"
       :disabled="taskIndex <= 0"
@@ -238,7 +238,7 @@ export default defineComponent({
       @click="saveResults(results, startTime)"
     />
     <v-btn
-      :title="$t('validateProject.moveRight')"
+      :title="$t('conflationProject.moveRight')"
       icon="mdi-chevron-right"
       color="secondary"
       :disabled="!isAnswered() || taskIndex + 1 === tasks.length"
