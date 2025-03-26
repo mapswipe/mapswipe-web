@@ -44,7 +44,9 @@ export default defineComponent({
         v-shortkey="[option.shortkey]"
         @shortkey="handleOptionButtonClick"
         :disabled="disabled"
-        :title="[`(${option.shortkey}) ` + option.title, option.description].filter(Boolean).join(': ')"
+        :title="
+          [`(${option.shortkey}) ` + option.title, option.description].filter(Boolean).join(': ')
+        "
         :value="option.value"
         :color="isNotSelected ? 'grey' : option.iconColor"
         :icon="option.mdiIcon"

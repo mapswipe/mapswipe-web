@@ -34,21 +34,21 @@ export default defineComponent({
         return [
           {
             mdiIcon: 'mdi-check-bold',
-            iconColor: '#bbcb7d',
+            iconColor: '#388E3C',
             shortkey: 1,
             title: 'Yes',
             value: 1,
           },
           {
             mdiIcon: 'mdi-close-thick',
-            iconColor: '#fd5054',
+            iconColor: '#D32F2F',
             shortkey: 2,
             title: 'No',
             value: 0,
           },
           {
             mdiIcon: 'mdi-minus-thick',
-            iconColor: '#adadad',
+            iconColor: '#616161',
             title: 'Not sure',
             shortkey: 3,
             value: 2,
