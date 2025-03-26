@@ -3,7 +3,7 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   props: {
-    instructionMessage: {
+    mission: {
       type: String,
       required: false,
     },
@@ -20,7 +20,7 @@ export default defineComponent({
     <v-toolbar-title>
       <div class="text-caption">{{ title }}</div>
       <div style="font-size: 1rem">
-        <strong>{{ instructionMessage }}</strong>
+        <strong>{{ mission }}</strong>
       </div>
     </v-toolbar-title>
     <slot></slot>

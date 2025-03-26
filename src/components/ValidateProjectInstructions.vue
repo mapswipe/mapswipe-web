@@ -7,16 +7,12 @@ export default defineComponent({
     optionButton: OptionButton,
   },
   props: {
-    instructionMessage: {
+    mission: {
       type: String,
       required: true,
     },
     options: {
       type: Array,
-      required: true,
-    },
-    verificationNumber: {
-      type: Number,
       required: true,
     },
   },
@@ -26,9 +22,7 @@ export default defineComponent({
 <template>
   <v-card-text>
     <div class="text-h6">{{ $t('projectInstructions.classifyTitle') }}</div>
-    <div class="text-p">
-      {{ instructionMessage }} {{ $t('projectInstructions.classifyInstruction') }}.
-    </div>
+    <div class="text-p">{{ mission }} {{ $t('projectInstructions.classifyInstruction') }}.</div>
     <v-row v-for="(option, optionIndex) in options" :key="optionIndex" align="center" dense>
       <v-col cols="auto" class="mt-5 mr-4">
         <option-button :option="option" :only-icon="true" />

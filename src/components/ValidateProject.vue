@@ -96,7 +96,7 @@ export default defineComponent({
       const colors = theme
       return colors
     },
-    instructionMessage() {
+    mission() {
       const message = this.$t('validateProject.doesTheShapeOutline', {
         feature: this.project?.lookFor,
       })
@@ -171,7 +171,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project.projectTopic">
+  <project-header :mission="mission" :title="project.projectTopic">
     <v-btn
       :title="$t('findProject.toggleOpacity')"
       :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
@@ -192,11 +192,7 @@ export default defineComponent({
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <validate-project-instructions
-          :instructionMessage="instructionMessage"
-          :options="options"
-          :verificationNumber="project.verificationNumber"
-        />
+        <validate-project-instructions :mission="mission" :options="options" />
       </template>
       <template #tutorial>
         <validate-project-tutorial

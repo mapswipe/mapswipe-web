@@ -34,6 +34,7 @@ export default defineComponent({
         return [
           {
             mdiIcon: 'mdi-check-bold',
+            description: 'the object you are looking for is in the image.',
             iconColor: '#388E3C',
             shortkey: 1,
             title: 'Yes',
@@ -41,6 +42,7 @@ export default defineComponent({
           },
           {
             mdiIcon: 'mdi-close-thick',
+            description: 'the object you are looking for is NOT in the image.',
             iconColor: '#D32F2F',
             shortkey: 2,
             title: 'No',
@@ -48,6 +50,7 @@ export default defineComponent({
           },
           {
             mdiIcon: 'mdi-minus-thick',
+            description: "if you're not sure or there is bad imagery.",
             iconColor: '#616161',
             title: 'Not sure',
             shortkey: 3,
@@ -86,8 +89,8 @@ export default defineComponent({
     showSnackbar: 'showSnackbar',
   },
   computed: {
-    instructionMessage() {
-      const message = this.$t('streetProject.lookFor', { lookFor: this.project?.lookFor })
+    mission() {
+      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
   },
@@ -109,8 +112,7 @@ export default defineComponent({
     },
     forward() {
       if (
-        !this.isLoading &&
-        (this.isAnswered() || this.errorLoading) &&
+        ((!this.isLoading && this.isAnswered()) || this.errorLoading) &&
         this.taskIndex + 1 < this.tasks.length
       ) {
         this.taskIndex++
@@ -121,7 +123,8 @@ export default defineComponent({
     handleImageError() {
       this.errorLoading = true
       this.addResult(null)
-      this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error')
+      this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error', 1200)
+      this.forward()
     },
     isAnswered() {
       const result = this.results[this.taskId]
@@ -139,7 +142,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <project-header :instructionMessage="instructionMessage" :title="project?.projectTopic">
+  <project-header :mission="mission" :title="project?.projectTopic">
     <project-info
       ref="projectInfo"
       :first="first"
@@ -148,7 +151,7 @@ export default defineComponent({
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <street-project-instructions :instructionMessage="instructionMessage" :options="options" />
+        <street-project-instructions :mission="mission" :options="options" />
       </template>
       <template #tutorial>
         <street-project-tutorial

@@ -124,7 +124,8 @@
     "seeAllProjects": "Projekte anschauen",
     "continueMapping": "Fortfahren",
     "noTasksAvailable": "Keine Aufgaben verfügbar",
-    "goBackToProjects": "Gut gemacht, {user}! Hier gibt es nichts mehr für dich zu tun. Schau dir unsere anderen Projekte an."
+    "goBackToProjects": "Gut gemacht, {user}! Hier gibt es nichts mehr für dich zu tun. Schau dir unsere anderen Projekte an.",
+    "youAreLookingFor": "Du suchst: {lookFor}"
   },
   "findProject": {
     "selected": "ausgewählt",
@@ -133,9 +134,7 @@
     "toggleOpacity": "Transparenz umschalten",
     "moveRight": "Eine Spalte nach rechts | {n} Spalten nach rechts",
     "moveLeft": "Eine Spalte nach links | {n} Spalten nach links",
-    "removedFromSelection": "Eine Kachel aus der Auswahl entfernt |  {n} Kacheln aus der Auswahl entfernt",
-    "lookFor": "Suche {lookFor}",
-    "compare": "Vergleiche {lookFor}"
+    "removedFromSelection": "Eine Kachel aus der Auswahl entfernt |  {n} Kacheln aus der Auswahl entfernt"
   },
   "tileMap": {
     "whereAmI": "Wo bin ich?",
@@ -188,8 +187,7 @@
   },
   "compareProject": {
     "before": "Vorher",
-    "after": "Nachher",
-    "lookForChange": "Vergleiche {lookFor}"
+    "after": "Nachher"
   },
   "digitizeProject": {
     "moveLeft": "Zurück",
@@ -205,8 +203,7 @@
   "streetProject": {
     "moveLeft": "Zurück",
     "moveRight": "Weiter",
-    "lookFor": "Suche {lookFor}",
-    "couldNotLoadImage": "Leider konnten wir dieses Bild nicht laden. Bitte mache mit der nächsten Aufgabe weiter."
+    "couldNotLoadImage": "Leider konnten wir dieses Bild nicht laden."
   },
   "digitizeProjectInstructions": {
     "switchMode": "Editiermodus umschalten",

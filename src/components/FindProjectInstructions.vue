@@ -7,7 +7,7 @@ export default defineComponent({
     imageTile: ImageTile,
   },
   props: {
-    instructionMessage: {
+    mission: {
       type: String,
       required: true,
     },
@@ -21,10 +21,6 @@ export default defineComponent({
     },
     exampleTileUrls: {
       type: Array,
-      required: true,
-    },
-    verificationNumber: {
-      type: Number,
       required: true,
     },
   },
@@ -41,7 +37,7 @@ export default defineComponent({
   <v-card-text>
     <div class="text-h6">{{ $t('findProjectInstructions.classifyTitle') }}</div>
     <div class="text-p">
-      {{ instructionMessage }}. {{ $t('findProjectInstructions.classifyInstruction') }}.
+      {{ mission }}. {{ $t('findProjectInstructions.classifyInstruction') }}.
     </div>
     <v-row class="mt-2" dense>
       <v-col sm="auto" lg="auto" v-for="(option, index) in options" :key="index">

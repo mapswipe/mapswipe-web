@@ -36,6 +36,7 @@ export default defineComponent({
     :style="'opacity: ' + opacity"
     :max-height="maxSize"
     :max-width="maxSize"
+    style="user-select: none"
   >
     <template v-if="spinner" v-slot:placeholder>
       <v-row class="fill-height ma-0" align="center" justify="center">
