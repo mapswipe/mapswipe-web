@@ -1,11 +1,6 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import { goOnline, onValue } from 'firebase/database'
-import { db, getTasksRef, getGroupsRef } from '@/firebase'
-
-import { decompressTasks } from '@/utils/tasks'
 import matchIcon from '@/utils/matchIcon'
-
 import TaskProgress from '@/components/TaskProgress.vue'
 import FindProjectTask, { type Option } from '@/components/FindProjectTask.vue'
 import TutorialCompletionCard from './TutorialCompletionCard.vue'
@@ -51,9 +46,12 @@ export default defineComponent({
       type: Array as PropType<Option[]>,
       required: true,
     },
+    tasks: {
+      type: Array,
+      required: true,
+    },
   },
   data(): {
-    tasks: Task[]
     currentTaskIndex: number
     results: Record<string, number>
     selectedTasks: Record<string, boolean>
@@ -61,7 +59,6 @@ export default defineComponent({
     answersRevealed: boolean
   } {
     return {
-      tasks: [],
       currentTaskIndex: 0,
       results: {},
       selectedTasks: {},
@@ -177,46 +174,16 @@ export default defineComponent({
     },
   },
   methods: {
-    fetchTutorialGroups() {
-      if (this.tutorial?.projectId) {
-        onValue(
-          // FIXME: verify group id
-          getGroupsRef(this.tutorial.projectId),
-          (snapshot) => {
-            const data = snapshot.val()
-            const groupKeys = Object.keys(data)
-            this.fetchTutorialProject(groupKeys[0])
-          },
-          (error) => {
-            console.error('Error fetching tasks for the tutorial', error)
-          },
-          { onlyOnce: true },
-        )
-      }
-    },
-    fetchTutorialProject(groupId: string | undefined) {
-      if (this.tutorial?.projectId && groupId) {
-        onValue(
-          getTasksRef(this.tutorial.projectId, groupId),
-          (snapshot) => {
-            const data = snapshot.val()
-            this.tasks = decompressTasks(data)
-            this.results = this.tasks.reduce(
-              (acc, val) => {
-                // Fill all the result with initial value
-                acc[val.taskId] = this.options[0].value
+    fillResults() {
+      this.results = this.tasks.reduce(
+        (acc, val) => {
+          // Fill all the results with initial value
+          acc[val.taskId] = this.options[0].value
 
-                return acc
-              },
-              {} as Record<string, number>,
-            )
-          },
-          (error) => {
-            console.error('Error fetching tasks for the tutorial', error)
-          },
-          { onlyOnce: true },
-        )
-      }
+          return acc
+        },
+        {} as Record<string, number>,
+      )
     },
     nextTask() {
       if (!this.hasCompletedAllTasks) {
@@ -283,9 +250,7 @@ export default defineComponent({
   },
   emits: ['tutorialComplete'],
   mounted() {
-    goOnline(db)
-    this.fetchTutorialGroups()
-    // this.fetchTutorialProject();
+    this.fillResults()
   },
 })
 </script>

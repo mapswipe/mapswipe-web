@@ -73,6 +73,10 @@ export default defineComponent({
       type: Object,
       require: false,
     },
+    tutorialTasks: {
+      type: Array,
+      required: false,
+    },
   },
   data() {
     return {
@@ -197,6 +201,7 @@ export default defineComponent({
       <template #tutorial>
         <validate-project-tutorial
           :tutorial="tutorial"
+          :tasks="tutorialTasks"
           :options="options"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />

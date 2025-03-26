@@ -46,6 +46,7 @@ export default defineComponent({
       projectContributions: [],
       tasks: null,
       tutorial: null,
+      tutorialTasks: null,
       to: null,
     }
   },
@@ -171,6 +172,13 @@ export default defineComponent({
       onValue(getProjectRef(this.project?.tutorialId), (snapshot) => {
         const data = snapshot.val() || {}
         this.tutorial = data
+        this.bindTutorialTasks()
+      })
+    },
+    bindTutorialTasks() {
+      onValue(getTasksRef(this.tutorial?.projectId, '101'), (snapshot) => {
+        const data = snapshot.val()
+        this.tutorialTasks = decompressTasks(data)
       })
     },
     completeOptions(option, index) {
@@ -251,6 +259,7 @@ export default defineComponent({
       :project="project"
       :tasks="tasks"
       :tutorial="tutorial"
+      :tutorialTasks="tutorialTasks"
       @created="handleTaskComponentCreated"
     />
 

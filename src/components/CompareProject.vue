@@ -104,6 +104,10 @@ export default defineComponent({
       type: Object as PropType<Tutorial>,
       required: false,
     },
+    tutorialTasks: {
+      type: Array as PropType<Task[]>,
+      required: false,
+    },
   },
   data(): {
     allAnswered: boolean
@@ -208,6 +212,7 @@ export default defineComponent({
       <template #tutorial>
         <compare-project-tutorial
           :tutorial="tutorial"
+          :tasks="tutorialTasks"
           :options="options"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />
