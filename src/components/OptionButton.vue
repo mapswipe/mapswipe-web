@@ -48,7 +48,7 @@ export default defineComponent({
           [`(${option.shortkey}) ` + option.title, option.description].filter(Boolean).join(': ')
         "
         :value="option.value"
-        :color="isNotSelected ? 'grey' : option.iconColor"
+        :color="isNotSelected ? '#ccc' : option.iconColor"
         :icon="option.mdiIcon"
         :variant="'flat'"
         size="small"
@@ -57,7 +57,7 @@ export default defineComponent({
     <v-row
       justify="center"
       class="text-caption text-truncate"
-      :style="{ color: isNotSelected ? 'grey' : option.iconColor }"
+      :style="{ color: isNotSelected ? '#888' : option.iconColor }"
     >
       <span :title="option.title">
         {{ trimTitle(option.title) }}
