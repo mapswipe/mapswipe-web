@@ -163,7 +163,7 @@ export default defineComponent({
     :taskId="taskId"
     @dataloading="(e) => (isLoading = e.loading)"
     @imageError="handleImageError(taskId)"
-    style="position: relative; height: calc(100vh - 375px)"
+    style="position: relative; height: calc(100vh - 390px)"
   />
   <option-buttons
     v-if="taskId"

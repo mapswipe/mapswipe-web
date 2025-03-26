@@ -172,7 +172,7 @@ export default defineComponent({
       v-if="isImageTask"
       :src="tasks[taskIndex].media"
       @load="onImageLoad"
-      style="max-height: calc(100vh - 375px)"
+      style="max-height: calc(100vh - 390px)"
     >
       <template #placeholder>
         <div class="d-flex align-center justify-center fill-height">

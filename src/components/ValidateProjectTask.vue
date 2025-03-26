@@ -62,11 +62,11 @@ export default defineComponent({
   computed: {
     mapStyle() {
       if (this.compact) {
-        return { height: 'max(calc(70vh - 375px), 300px)' }
+        return { height: 'max(calc(70vh - 390px), 300px)' }
       }
 
       return {
-        height: 'max(calc(100vh - 375px), 600px)',
+        height: 'max(calc(100vh - 390px), 600px)',
       }
     },
     xyzUrl() {

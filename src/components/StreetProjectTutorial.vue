@@ -254,7 +254,7 @@ export default defineComponent({
           :taskId="task.taskId"
           :containerId="'mapillary_tutorial'"
           @dataloading="(e) => (isLoading = e.loading)"
-          style="position: relative; height: calc(100vh - 425px)"
+          style="position: relative; height: calc(70vh - 390px)"
         />
       </v-col>
     </v-row>

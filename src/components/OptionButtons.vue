@@ -89,7 +89,7 @@ export default defineComponent({
 })
 </script>
 <template>
-  <v-toolbar color="white" density="default" class="pt-1">
+  <v-toolbar color="white" height="64" class="pt-1">
     <v-spacer />
     <option-button
       v-for="(option, optionIndex) in options"
