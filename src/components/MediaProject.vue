@@ -28,9 +28,27 @@ export default defineComponent({
       type: Array,
       default() {
         return [
-          { mdiIcon: 'mdi-check', color: 'green', title: 'Yes', value: 1 },
-          { mdiIcon: 'mdi-cancel', color: 'red', title: 'No', value: 0 },
-          { mdiIcon: 'mdi-head-question', color: '', title: 'Maybe', value: 2 },
+          {
+            mdiIcon: 'mdi-check-bold',
+            iconColor: '#388E3C',
+            shortkey: 1,
+            title: 'Yes',
+            value: 1,
+          },
+          {
+            mdiIcon: 'mdi-close-thick',
+            iconColor: '#D32F2F',
+            shortkey: 2,
+            title: 'No',
+            value: 0,
+          },
+          {
+            mdiIcon: 'mdi-minus-thick',
+            iconColor: '#616161',
+            title: 'Not sure',
+            shortkey: 3,
+            value: 2,
+          },
         ]
       },
     },
