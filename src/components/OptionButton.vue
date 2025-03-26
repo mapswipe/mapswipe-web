@@ -36,7 +36,14 @@ export default defineComponent({
 })
 </script>
 <template>
-  <v-sheet class="mx-5" v-if="!onlyIcon">
+  <v-btn
+    v-if="onlyIcon"
+    :icon="option.mdiIcon"
+    :color="option.iconColor"
+    variant="flat"
+    size="small"
+  />
+  <v-sheet class="mx-5" v-else>
     <v-row>
       <v-btn
         class="mx-2 text-caption"
@@ -50,7 +57,7 @@ export default defineComponent({
         :value="option.value"
         :color="isNotSelected ? '#ccc' : option.iconColor"
         :icon="option.mdiIcon"
-        :variant="'flat'"
+        variant="flat"
         size="small"
       />
     </v-row>
@@ -64,12 +71,5 @@ export default defineComponent({
       </span>
     </v-row>
   </v-sheet>
-  <v-btn
-    v-if="onlyIcon"
-    :icon="option.mdiIcon"
-    :color="option.iconColor"
-    :variant="'flat'"
-    size="small"
-  />
 </template>
 <style scoped></style>
