@@ -47,7 +47,7 @@ export default defineComponent({
       required: true,
     },
     tasks: {
-      type: Array,
+      type: Array as PropType<Task[]>,
       required: true,
     },
   },
