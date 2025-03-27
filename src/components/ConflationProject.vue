@@ -10,6 +10,8 @@ import TaskProgress from '@/components/TaskProgress.vue'
 import ValidateProjectInstructions from '@/components/ValidateProjectInstructions.vue'
 import ValidateProjectTutorial from '@/components/ValidateProjectTutorial.vue'
 import ConflationProjectTask from './ConflationProjectTask.vue'
+import { GeoJSON } from 'ol/format'
+import { boundingExtent, extend } from 'ol/extent'
 
 export default defineComponent({
   components: {
@@ -102,6 +104,26 @@ export default defineComponent({
       })
       return message
     },
+    computeTaskExtent() {
+      const features = new Collection();
+      const geoJson = new GeoJSON();
+      const options = { dataProjection: 'EPSG:4326' };
+
+      this.tasks.forEach((geom) => {
+        const feature = geoJson.readFeature({ geometry: geom.geojson, type: "Feature" }, options);
+        features.push(feature);
+      });
+
+      let extent = boundingExtent([]);
+      features.forEach((feature) => {
+        const geometry = feature.getGeometry();
+        if (geometry) {
+          extend(extent, geometry.getExtent());
+        }
+      });
+      console.log("Extent:", extent);
+      return extent;
+    },
   },
   methods: {
     addResult(value) {
@@ -152,7 +174,6 @@ export default defineComponent({
       if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
-        console.log("heeee", this.taskFeatures)
       }
     },
     isAnswered() {
@@ -209,6 +230,7 @@ export default defineComponent({
       ref="conflation-project-task"
       :task="tasks?.[taskIndex]"
       :project="project"
+      :taskExtent="computeTaskExtent"
       :transparent="transparent"
     />
   </v-container>

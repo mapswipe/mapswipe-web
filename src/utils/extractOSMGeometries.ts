@@ -8,7 +8,7 @@ export async function extractGeometries(bbox: string, filter: string, time: stri
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams({
-          bboxes: "85.5189500685426793,27.6315268785445447,85.5210126584249792,27.6342666694473813",
+          bboxes: bbox,
           filter: "building=* and geometry:polygon",
           time: "2024-03-25",
       }),
@@ -20,7 +20,6 @@ export async function extractGeometries(bbox: string, filter: string, time: stri
 
     const data = await response.json();
 
-    console.log("data", data)
     return data.features.map((feature: any) => feature.geometry);
   } catch (error) {
     console.error("Error fetching geometries:", error);

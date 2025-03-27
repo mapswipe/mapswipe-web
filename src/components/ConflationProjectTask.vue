@@ -44,6 +44,10 @@ export default defineComponent({
     compact: {
       type: Boolean,
     },
+    taskExtent: {
+      type: Array,
+      required: true,
+    },
   },
   data(): {
     center: [number, number]
@@ -51,7 +55,6 @@ export default defineComponent({
     startTime: string | null
     currentTaskIndex: number
     zoom: number
-    extent: Array<number>
     osmFeatureCollection: Collection,
     osmLayer: any,
   } {
@@ -61,7 +64,6 @@ export default defineComponent({
       startTime: null,
       currentTaskIndex: 0,
       zoom: 3,
-      extent: null,
       osmFeatureCollection: new Collection(),
       osmLayer: null,
     }
@@ -94,7 +96,6 @@ export default defineComponent({
       return this.project.tileServer.maxZoom ?? 20
     },
     taskFeatures() {
-      console.log("Task features:", this.task.geojson);
       const features = new Collection()
       const geoJson = new GeoJSON()
 
@@ -107,8 +108,7 @@ export default defineComponent({
 
       const newFeature = geoJson.readFeature(feature, options)
       features.push(newFeature)
-      console.log("Task feature:", feature);
-      console.log("Task features added:", features);
+
       return features
     },
   },
@@ -133,22 +133,18 @@ export default defineComponent({
     },
   async fetchOSMFeatures() {
     try {
-      console.log("he")
       const geoJson = new GeoJSON();
-      const osmGeometries = await extractGeometries("bbox", "building=*", "2024-03-25");
-      console.log("OSM Geometries fetched:", osmGeometries);
+      const osmGeometries = await extractGeometries(this.taskExtent.toString(), "building=* and geoemtry:polygon", "2024-03-25");
       const options = {
         dataProjection: "EPSG:4326",
         featureProjection: "EPSG:3857",
       };
-
+      console.log("extent", this.taskExtent.toString())
       osmGeometries.forEach((osmGeom) => {
-        //console.log("OSM Geometry:", osmGeom);
         const osmFeature = geoJson.readFeature({ geometry: osmGeom, type: "Feature" }, options);
         this.osmFeatureCollection.push(osmFeature);
       });
 
-      console.log("OSM Features added:", this.osmFeatureCollection);
 
       // Add new vector layer dynamically to the map
       this.addOSMLayer();
@@ -160,7 +156,6 @@ export default defineComponent({
   addOSMLayer() {
 
     const map = (this.$refs.map as InstanceType<typeof OlMap>).map;
-    console.log("OSMLAYER", this.osmFeatureCollection)
     this.osmLayer = new VectorLayer({
       source: new VectorSource({
         features: toRaw(this.osmFeatureCollection),
@@ -172,10 +167,8 @@ export default defineComponent({
         }),
       }),
     });
-    console.log("OSMLAYER2", this.osmLayer)
     this.osmLayer.setZIndex(2);
     map.addLayer(this.osmLayer);
-    console.log("all done")
   }
 },
 })
