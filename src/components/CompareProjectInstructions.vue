@@ -1,8 +1,12 @@
 <script lang="ts">
 import { type PropType, defineComponent } from 'vue'
 import { type Option } from '@/components/OptionButtons.vue'
+import OptionButton from '@/components/OptionButton.vue'
 
 export default defineComponent({
+  components: {
+    optionButton: OptionButton,
+  },
   props: {
     mission: {
       type: String,
@@ -26,18 +30,12 @@ export default defineComponent({
     <div class="text-p">{{ mission }}. {{ $t('projectInstructions.classifyInstruction') }}.</div>
 
     <v-row v-for="(option, optionIndex) in options" :key="optionIndex" align="center" dense>
-      <v-col cols="auto" class="mr-4">
-        <v-btn
-          class="mx-2 text-caption"
-          width="6rem"
-          :text="'(' + option.shortkey + ') ' + option.title"
-          :color="option.iconColor"
-          :prepend-icon="option.mdiIcon"
-          variant="plain"
-          stacked
-        />
+      <v-col cols="auto" class="mt-5 mr-4">
+        <option-button :option="option" :only-icon="true" />
       </v-col>
-      <v-col>{{ [option.title, option.description].filter(Boolean).join(': ') }}</v-col>
+      <v-col class="mt-5">{{
+        [option.title, option.description].filter(Boolean).join(': ')
+      }}</v-col>
     </v-row>
 
     <div class="text-h6 mt-10">{{ $t('projectInstructions.whereIamTitle') }}</div>
