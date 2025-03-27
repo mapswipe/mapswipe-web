@@ -39,13 +39,14 @@ export default defineComponent({
     return {
       completedGroupId: null,
       group: null,
-      mode: 'contribute',
+      mode: 'prepare',
       mappingSpeed: 1,
       nextDialog: false,
       project: null,
       projectContributions: [],
       tasks: null,
       tutorial: null,
+      tutorialTasks: null,
       to: null,
     }
   },
@@ -125,7 +126,9 @@ export default defineComponent({
         const data = snapshot.val() || {}
         this.project = data
         if (this.project?.tutorialId) {
-          this.bindTutorial()
+          this.bindTutorial(this.project?.tutorialId)
+        } else {
+          this.mode = 'contribute'
         }
       })
     },
@@ -167,10 +170,18 @@ export default defineComponent({
         this.tasks = decompressTasks(data)
       })
     },
-    bindTutorial() {
-      onValue(getProjectRef(this.project?.tutorialId), (snapshot) => {
+    bindTutorial(tutorialId) {
+      onValue(getProjectRef(tutorialId), (snapshot) => {
         const data = snapshot.val() || {}
         this.tutorial = data
+        this.bindTutorialTasks(tutorialId)
+      })
+    },
+    bindTutorialTasks(tutorialId) {
+      onValue(getTasksRef(tutorialId, '101'), (snapshot) => {
+        const data = snapshot.val()
+        this.tutorialTasks = decompressTasks(data)
+        this.mode = 'contribute'
       })
     },
     completeOptions(option, index) {
@@ -251,6 +262,7 @@ export default defineComponent({
       :project="project"
       :tasks="tasks"
       :tutorial="tutorial"
+      :tutorialTasks="tutorialTasks"
       @created="handleTaskComponentCreated"
     />
 

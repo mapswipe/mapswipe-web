@@ -1,14 +1,11 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import { goOnline, onValue } from 'firebase/database'
-import { db, getTasksRef, getGroupsRef } from '@/firebase'
 import matchIcon from '@/utils/matchIcon'
 import OptionButtons from '@/components/OptionButtons.vue'
 import { type Option } from '@/components/OptionButtons.vue'
 import CompareProjectTask, { type Task } from '@/components/CompareProjectTask.vue'
 import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
-import { decompressTasks } from '@/utils/tasks'
 import { isDefined } from '@/utils/common'
 
 interface Screen {
@@ -41,16 +38,18 @@ export default defineComponent({
       type: Array as PropType<Option[]>,
       required: true,
     },
+    tasks: {
+      type: Array as PropType<Task[]>,
+      required: true,
+    },
   },
   data(): {
-    tasks: Task[]
     currentTaskIndex: number
     results: Record<string, number>
     userAttempts: number
     answersRevealed: boolean
   } {
     return {
-      tasks: [],
       currentTaskIndex: 0,
       results: {},
       userAttempts: 0,
@@ -136,37 +135,6 @@ export default defineComponent({
     },
   },
   methods: {
-    fetchTutorialGroups() {
-      if (this.tutorial?.projectId) {
-        onValue(
-          getGroupsRef(this.tutorial.projectId),
-          (snapshot) => {
-            const data = snapshot.val()
-            const groupKeys = Object.keys(data)
-            this.fetchTutorialProject(groupKeys[0])
-          },
-          (error) => {
-            console.error('Error fetching tasks for the tutorial', error)
-          },
-          { onlyOnce: true },
-        )
-      }
-    },
-    fetchTutorialProject(groupId: string | undefined) {
-      if (this.tutorial?.projectId && groupId) {
-        onValue(
-          getTasksRef(this.tutorial.projectId, groupId),
-          (snapshot) => {
-            const data = snapshot.val()
-            this.tasks = decompressTasks(data)
-          },
-          (error) => {
-            console.error('Error fetching tasks for the tutorial', error)
-          },
-          { onlyOnce: true },
-        )
-      }
-    },
     nextTask() {
       if (!this.hasCompletedAllTasks) {
         this.currentTaskIndex += 1
@@ -186,10 +154,6 @@ export default defineComponent({
     },
   },
   emits: ['tutorialComplete'],
-  mounted() {
-    goOnline(db)
-    this.fetchTutorialGroups()
-  },
 })
 </script>
 

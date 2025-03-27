@@ -51,7 +51,11 @@ export default defineComponent({
     },
     tutorial: {
       type: Object,
-      require: false,
+      required: false,
+    },
+    tutorialTasks: {
+      type: Array,
+      required: false,
     },
   },
   data() {
@@ -385,6 +389,7 @@ export default defineComponent({
       <template #tutorial>
         <find-project-tutorial
           :tutorial="tutorial"
+          :tasks="tutorialTasks"
           :options="options"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />
