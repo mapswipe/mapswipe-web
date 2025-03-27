@@ -6,7 +6,11 @@ import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components
 import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
 import { Collection } from 'ol'
 import { GeoJSON } from 'ol/format'
-import { type PropType, defineComponent } from 'vue'
+import { type PropType, defineComponent, toRaw } from 'vue'
+import {extractGeometries} from '@/utils/extractOSMGeometries'
+import VectorLayer from 'ol/layer/Vector'
+import VectorSource from 'ol/source/Vector'
+import { Stroke, Style } from 'ol/style'
 
 interface Task {
   taskId: string
@@ -47,6 +51,9 @@ export default defineComponent({
     startTime: string | null
     currentTaskIndex: number
     zoom: number
+    extent: Array<number>
+    osmFeatureCollection: Collection,
+    osmLayer: any,
   } {
     return {
       center: [0, 0],
@@ -54,7 +61,13 @@ export default defineComponent({
       startTime: null,
       currentTaskIndex: 0,
       zoom: 3,
+      extent: null,
+      osmFeatureCollection: new Collection(),
+      osmLayer: null,
     }
+  },
+  mounted() {
+    this.fetchOSMFeatures();
   },
   updated() {
     this.fitView()
@@ -81,6 +94,7 @@ export default defineComponent({
       return this.project.tileServer.maxZoom ?? 20
     },
     taskFeatures() {
+      console.log("Task features:", this.task.geojson);
       const features = new Collection()
       const geoJson = new GeoJSON()
 
@@ -93,7 +107,8 @@ export default defineComponent({
 
       const newFeature = geoJson.readFeature(feature, options)
       features.push(newFeature)
-
+      console.log("Task feature:", feature);
+      console.log("Task features added:", features);
       return features
     },
   },
@@ -116,7 +131,53 @@ export default defineComponent({
         }, delay)
       }
     },
+  async fetchOSMFeatures() {
+    try {
+      console.log("he")
+      const geoJson = new GeoJSON();
+      const osmGeometries = await extractGeometries("bbox", "building=*", "2024-03-25");
+      console.log("OSM Geometries fetched:", osmGeometries);
+      const options = {
+        dataProjection: "EPSG:4326",
+        featureProjection: "EPSG:3857",
+      };
+
+      osmGeometries.forEach((osmGeom) => {
+        //console.log("OSM Geometry:", osmGeom);
+        const osmFeature = geoJson.readFeature({ geometry: osmGeom, type: "Feature" }, options);
+        this.osmFeatureCollection.push(osmFeature);
+      });
+
+      console.log("OSM Features added:", this.osmFeatureCollection);
+
+      // Add new vector layer dynamically to the map
+      this.addOSMLayer();
+
+    } catch (error) {
+      console.error("Error fetching OSM features:", error);
+    }
   },
+  addOSMLayer() {
+
+    const map = (this.$refs.map as InstanceType<typeof OlMap>).map;
+    console.log("OSMLAYER", this.osmFeatureCollection)
+    this.osmLayer = new VectorLayer({
+      source: new VectorSource({
+        features: toRaw(this.osmFeatureCollection),
+      }),
+      style: new Style({
+        stroke: new Stroke({
+          color: "red",
+          width: 3,
+        }),
+      }),
+    });
+    console.log("OSMLAYER2", this.osmLayer)
+    this.osmLayer.setZIndex(2);
+    map.addLayer(this.osmLayer);
+    console.log("all done")
+  }
+},
 })
 </script>
 

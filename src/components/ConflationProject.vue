@@ -152,7 +152,7 @@ export default defineComponent({
       if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
-        console.log("heeee", this.tasks[this.taskIndex])
+        console.log("heeee", this.taskFeatures)
       }
     },
     isAnswered() {
