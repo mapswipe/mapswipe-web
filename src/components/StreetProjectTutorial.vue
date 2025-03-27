@@ -60,6 +60,7 @@ export default defineComponent({
     userAttempts: number
     answersRevealed: boolean
     isLoading: boolean
+    trigger: number
   } {
     return {
       currentTaskIndex: 0,
@@ -67,6 +68,8 @@ export default defineComponent({
       userAttempts: 0,
       answersRevealed: false,
       isLoading: false,
+      trigger: 0,
+      taskId: undefined,
     }
   },
   computed: {
@@ -76,9 +79,6 @@ export default defineComponent({
     },
     currentScreen() {
       return this.tutorial?.screens[this.currentTaskIndex]
-    },
-    task() {
-      return this.tasks?.[this.currentTaskIndex]
     },
     hasTasks() {
       return this.tasks.length !== 0
@@ -100,8 +100,8 @@ export default defineComponent({
         return true
       }
 
-      const result = this.results[this.task?.taskId]
-      return isDefined(result) && result === this.task?.referenceAnswer
+      const result = this.results[this.taskId]
+      return isDefined(result) && result === this.tasks?.[this.currentTaskIndex].referenceAnswer
     },
     alertContent() {
       if (!this.currentScreen) {
@@ -150,6 +150,7 @@ export default defineComponent({
     nextTask() {
       if (!this.hasCompletedAllTasks) {
         this.currentTaskIndex += 1
+        this.taskId = this.tasks[this.currentTaskIndex]?.taskId
         this.userAttempts = 0
         this.answersRevealed = false
       }
@@ -157,15 +158,18 @@ export default defineComponent({
     addResult(value: number) {
       if (!this.answersRevealed) {
         this.userAttempts += 1
-        this.results[this.task.taskId] = value
+        this.results[this.taskId] = value
       }
     },
     showAnswer() {
       this.answersRevealed = true
-      this.results[this.task.taskId] = this.task?.referenceAnswer
+      this.results[this.taskId] = this.tasks?.[this.currentTaskIndex].referenceAnswer
     },
   },
   emits: ['tutorialComplete'],
+  mounted() {
+    this.taskId = this.tasks?.[this.currentTaskIndex].taskId
+  },
 })
 </script>
 
@@ -212,9 +216,9 @@ export default defineComponent({
     <v-row justify="center">
       <v-col>
         <street-project-task
-          v-if="tasks[currentTaskIndex] && tutorial"
-          :key="task.taskId"
-          :taskId="task.taskId"
+          v-if="taskId && tutorial"
+          :key="taskId"
+          :taskId="taskId"
           :containerId="'mapillary_tutorial'"
           @dataloading="(e) => (isLoading = e.loading)"
           style="position: relative; height: calc(100vh - 425px)"
@@ -224,11 +228,11 @@ export default defineComponent({
     <v-row v-if="options">
       <v-col>
         <option-buttons
-          v-if="task?.taskId"
+          v-if="taskId"
           :disabled="isLoading"
           :options="options"
-          :result="results[task.taskId]"
-          :taskId="task.taskId"
+          :result="results[taskId]"
+          :taskId="taskId"
           @addResult="addResult"
         />
       </v-col>
