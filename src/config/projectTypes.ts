@@ -27,6 +27,10 @@ const projectTypes = {
     name: 'Street',
     component: 'streetProject',
   },
+  '8': {
+    name: 'Conflation',
+    component: 'conflationProject',
+  },
 }
 
 export default projectTypes
