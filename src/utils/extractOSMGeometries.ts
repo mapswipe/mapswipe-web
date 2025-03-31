@@ -11,6 +11,7 @@ export async function extractGeometries(bbox: string, filter: string, time: stri
         bboxes: bbox,
         filter: 'building=* and geometry:polygon',
         time: '2024-03-25',
+        clipGeometry: false,
       }),
     })
 

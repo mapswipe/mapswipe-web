@@ -105,6 +105,7 @@ export default defineComponent({
       return message
     },
     computeTaskExtent() {
+      /*
       const features = new Collection()
       const geoJson = new GeoJSON()
       const options = { dataProjection: 'EPSG:4326' }
@@ -121,7 +122,14 @@ export default defineComponent({
           extend(extent, geometry.getExtent())
         }
       })
-      console.log('Extent:', extent)
+      */
+      let extent = boundingExtent([])
+      const geoJson = new GeoJSON()
+      const options = { dataProjection: 'EPSG:4326' }
+      const task = this.tasks?.[this.taskIndex]
+      const feature = geoJson.readFeature({ geometry: task.geojson, type: 'Feature' }, options)
+      const geometry = feature.getGeometry()
+      extend(extent, geometry.getExtent())
       return extent
     },
   },
@@ -136,39 +144,9 @@ export default defineComponent({
       }
     },
     createInformationPages,
-    // fallback information pages of mobile app adapted to web app:
-    createFallbackInformationPages(tutorial) {
-      if (tutorial.lookFor) {
-        return [
-          {
-            blocks: [
-              {
-                blockNumber: 1,
-                blockType: 'text',
-                // web app displays shapes on a web map rather than on a single image
-                textDescription:
-                  "You'll see a shape on an interactive imagery map. Use the buttons to answer.",
-              },
-              {
-                blockNumber: 2,
-                blockType: 'text',
-                // instead of 'buildings', we get the feature of interest from Firebase (similar as in Find projects)
-                textDescription: `Does the shape outline a ${tutorial.lookFor}?`,
-              },
-              {
-                blockNumber: 3,
-                blockType: 'text',
-                textDescription:
-                  "Every time you select an option, you'll be shown a new shape and image.",
-              },
-            ],
-            pageNumber: 1,
-            title: 'What to look for',
-          },
-        ]
-      } else {
-        return undefined
-      }
+    // currently no fallback information pages defined, same here
+    createFallbackInformationPages() {
+      return undefined
     },
     forward() {
       if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {

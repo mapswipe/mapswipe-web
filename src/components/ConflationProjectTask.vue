@@ -53,6 +53,7 @@ export default defineComponent({
     zoom: number
     osmFeatureCollection: Collection
     osmLayer: any
+    ready: Boolean
   } {
     return {
       center: [0, 0],
@@ -62,13 +63,20 @@ export default defineComponent({
       zoom: 3,
       osmFeatureCollection: new Collection(),
       osmLayer: null,
+      ready: false,
     }
   },
   mounted() {
-    this.fetchOSMFeatures()
+    this.fetchOSMFeatures().then(() => {
+      this.ready = true
+      this.fitView()
+    })
   },
   updated() {
-    this.fitView()
+    this.fetchOSMFeatures().then(() => {
+      this.ready = true
+      this.fitView()
+    })
   },
   computed: {
     mapStyle() {
@@ -125,6 +133,8 @@ export default defineComponent({
     },
     async fetchOSMFeatures() {
       try {
+        this.ready = false
+        this.osmFeatureCollection.clear()
         const geoJson = new GeoJSON()
         const osmGeometries = await extractGeometries(
           this.taskExtent.toString(),
@@ -180,7 +190,7 @@ export default defineComponent({
     <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="4" :key="task.taskId">
       <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />
       <ol-style :key="transparent">
-        <ol-style-stroke :color="strokeColor('#0000ff')" :width="3" />
+        <ol-style-stroke :color="ready ? strokeColor('#0000ff') : '#0000'" :width="3" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>
@@ -191,7 +201,7 @@ export default defineComponent({
         ident="osmFeatureSource"
       />
       <ol-style :key="transparent">
-        <ol-style-stroke :color="strokeColor('#ff0000')" :width="3" />
+        <ol-style-stroke :color="ready ? strokeColor('#ff0000') : '#0000'" :width="3" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>
