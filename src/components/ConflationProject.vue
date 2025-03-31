@@ -39,7 +39,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-check-bold',
             description: `The shape does outline a building in the image`,
-            iconColor: '#bbcb7d',
+            iconColor: '#388E3C',
             shortkey: 1,
             title: 'Yes',
             value: 1,
@@ -47,7 +47,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-close-thick',
             description: `The shape doesn't match a building in the image`,
-            iconColor: '#fd5054',
+            iconColor: '#D32F2F',
             shortkey: 2,
             title: 'No',
             value: 0,
@@ -55,7 +55,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-minus-thick',
             description: `If you're not sure or there is cloud cover / bad imagery.`,
-            iconColor: '#adadad',
+            iconColor: '#616161',
             title: 'Not sure',
             shortkey: 3,
             value: 2,
@@ -105,24 +105,24 @@ export default defineComponent({
       return message
     },
     computeTaskExtent() {
-      const features = new Collection();
-      const geoJson = new GeoJSON();
-      const options = { dataProjection: 'EPSG:4326' };
+      const features = new Collection()
+      const geoJson = new GeoJSON()
+      const options = { dataProjection: 'EPSG:4326' }
 
       this.tasks.forEach((geom) => {
-        const feature = geoJson.readFeature({ geometry: geom.geojson, type: "Feature" }, options);
-        features.push(feature);
-      });
+        const feature = geoJson.readFeature({ geometry: geom.geojson, type: 'Feature' }, options)
+        features.push(feature)
+      })
 
-      let extent = boundingExtent([]);
+      let extent = boundingExtent([])
       features.forEach((feature) => {
-        const geometry = feature.getGeometry();
+        const geometry = feature.getGeometry()
         if (geometry) {
-          extend(extent, geometry.getExtent());
+          extend(extent, geometry.getExtent())
         }
-      });
-      console.log("Extent:", extent);
-      return extent;
+      })
+      console.log('Extent:', extent)
+      return extent
     },
   },
   methods: {
