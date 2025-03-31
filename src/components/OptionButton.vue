@@ -65,7 +65,7 @@ export default defineComponent({
       v-if="$vuetify.display.smAndUp"
       justify="center"
       class="text-caption text-truncate"
-      :style="{ color: isNotSelected ? '#888' : option.iconColor }"
+      :style="{ color: isNotSelected ? '#888' : '#222' }"
     >
       <span :title="option.title">
         {{ trimTitle(option.title) }}
