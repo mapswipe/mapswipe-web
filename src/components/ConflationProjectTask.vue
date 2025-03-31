@@ -1,16 +1,12 @@
 <script lang="ts">
-import { theme } from '@/plugins/vuetify'
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
 import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map'
 import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
 import { Collection } from 'ol'
 import { GeoJSON } from 'ol/format'
-import { type PropType, defineComponent, toRaw } from 'vue'
+import { type PropType, defineComponent } from 'vue'
 import { extractGeometries } from '@/utils/extractOSMGeometries'
-import VectorLayer from 'ol/layer/Vector'
-import VectorSource from 'ol/source/Vector'
-import { Stroke, Style } from 'ol/style'
 
 interface Task {
   taskId: string
@@ -87,10 +83,6 @@ export default defineComponent({
     xyzUrl() {
       return makeXyzUrl(this.project.tileServer)
     },
-    strokeColor() {
-      const color = hex2rgb(theme.light.accent, this.transparent ? 0.4 : 1)
-      return color
-    },
     maxZoom() {
       // return this.project.tileServer.maxZoom ?? 19;
       return this.project.tileServer.maxZoom ?? 20
@@ -148,28 +140,13 @@ export default defineComponent({
           const osmFeature = geoJson.readFeature({ geometry: osmGeom, type: 'Feature' }, options)
           this.osmFeatureCollection.push(osmFeature)
         })
-
-        // Add new vector layer dynamically to the map
-        this.addOSMLayer()
       } catch (error) {
         console.error('Error fetching OSM features:', error)
       }
     },
-    addOSMLayer() {
-      const map = (this.$refs.map as InstanceType<typeof OlMap>).map
-      this.osmLayer = new VectorLayer({
-        source: new VectorSource({
-          features: toRaw(this.osmFeatureCollection),
-        }),
-        style: new Style({
-          stroke: new Stroke({
-            color: 'red',
-            width: 3,
-          }),
-        }),
-      })
-      this.osmLayer.setZIndex(2)
-      map.addLayer(this.osmLayer)
+    strokeColor(hex) {
+      const color = hex2rgb(hex, this.transparent ? 0.4 : 0.8)
+      return color
     },
   },
 })
@@ -186,8 +163,8 @@ export default defineComponent({
     <ol-view ref="mapView" :zoom="zoom" :center="center" :maxZoom="project?.tileServer?.maxZoom" />
     <ol-tile-layer
       v-if="project?.tileServer?.name != 'bing'"
-      id="osmLayer"
-      ref="osmLayer"
+      id="osmBaseLayer"
+      ref="osmBaseLayer"
       :zIndex="1"
     >
       <ol-source-osm />
@@ -200,10 +177,21 @@ export default defineComponent({
       />
       <ol-source-xyz v-else :url="xyzUrl" :attributions="project.tileServer.credits" />
     </ol-tile-layer>
-    <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3" :key="task.taskId">
+    <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="4" :key="task.taskId">
       <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />
-      <ol-style :key="strokeColor">
-        <ol-style-stroke :color="strokeColor" :width="5" />
+      <ol-style :key="transparent">
+        <ol-style-stroke :color="strokeColor('#0000ff')" :width="3" />
+        <ol-style-fill color="#0000" />
+      </ol-style>
+    </ol-vector-layer>
+    <ol-vector-layer id="osmFeatureLayer" ref="osmFeatureLayer" :zIndex="3" :key="task.taskId">
+      <ol-source-vector
+        :features="osmFeatureCollection"
+        ref="osmFeatureSource"
+        ident="osmFeatureSource"
+      />
+      <ol-style :key="transparent">
+        <ol-style-stroke :color="strokeColor('#ff0000')" :width="3" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>
