@@ -43,10 +43,10 @@ export default defineComponent({
     variant="flat"
     size="small"
   />
-  <v-sheet class="mx-5" v-else>
-    <v-row>
+  <v-sheet v-else class="mx-1 mx-sm-2 mx-md-3" :min-width="$vuetify.display.smAndUp ? 60 : 40">
+    <v-row justify="center">
       <v-btn
-        class="mx-2 text-caption"
+        class="text-caption"
         @click="handleOptionButtonClick"
         v-shortkey="[option.shortkey]"
         @shortkey="handleOptionButtonClick"
@@ -62,6 +62,7 @@ export default defineComponent({
       />
     </v-row>
     <v-row
+      v-if="$vuetify.display.smAndUp"
       justify="center"
       class="text-caption text-truncate"
       :style="{ color: isNotSelected ? '#888' : option.iconColor }"
