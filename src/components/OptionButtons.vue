@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import { isDefined } from '@/utils/common'
+import OptionButton from '@/components/OptionButton.vue'
 
 export interface Option {
   shortkey?: number
@@ -18,6 +19,9 @@ export interface Option {
 }
 
 export default defineComponent({
+  components: {
+    optionButton: OptionButton,
+  },
   props: {
     disabled: {
       type: Boolean,
@@ -72,6 +76,10 @@ export default defineComponent({
       const isOptionSelected = isDefined(this.result) && values.includes(this.result)
       return isOptionSelected
     },
+    isOptionNotSelected(option: Option) {
+      const isOptionNotSelected = isDefined(this.result) && !this.isOptionSelected(option)
+      return isOptionNotSelected
+    },
     resetSelectedSubOption() {
       const resultIsSubOption =
         isDefined(this.result) && !this.options.map((o) => o.value).includes(this.result)
@@ -80,26 +88,17 @@ export default defineComponent({
   },
 })
 </script>
-
 <template>
-  <v-toolbar color="white" density="compact" class="pt-1">
+  <v-toolbar color="white" height="64" class="pt-1">
     <v-spacer />
-    <v-btn
+    <option-button
       v-for="(option, optionIndex) in options"
-      class="mx-2 text-caption"
-      @click="handleOptionButtonClicked(option)"
-      v-shortkey="[option.shortkey]"
-      @shortkey="handleOptionButtonClicked(option)"
-      :disabled="disabled"
-      :title="[option.title, option.description].filter(Boolean).join(': ')"
-      :text="'(' + option.shortkey + ') ' + option.title"
       :key="optionIndex"
-      :value="option.value"
-      :color="option.iconColor"
-      :prepend-icon="option.mdiIcon"
-      :variant="isOptionSelected(option) ? 'tonal' : 'plain'"
-      width="6rem"
-      stacked
+      :option="option"
+      :disabled="disabled"
+      :is-selected="isOptionSelected(option)"
+      :is-not-selected="isOptionNotSelected(option)"
+      @option-click="handleOptionButtonClicked"
     />
     <v-spacer />
     <v-dialog v-model="subOptionsDialog" width="unset">
