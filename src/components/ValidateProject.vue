@@ -37,7 +37,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-check-bold',
             description: `The shape does outline a building in the image`,
-            iconColor: '#bbcb7d',
+            iconColor: '#388E3C',
             shortkey: 1,
             title: 'Yes',
             value: 1,
@@ -45,7 +45,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-close-thick',
             description: `The shape doesn't match a building in the image`,
-            iconColor: '#fd5054',
+            iconColor: '#D32F2F',
             shortkey: 2,
             title: 'No',
             value: 0,
@@ -53,7 +53,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-minus-thick',
             description: `If you're not sure or there is cloud cover / bad imagery.`,
-            iconColor: '#adadad',
+            iconColor: '#616161',
             title: 'Not sure',
             shortkey: 3,
             value: 2,
@@ -72,6 +72,10 @@ export default defineComponent({
     tutorial: {
       type: Object,
       require: false,
+    },
+    tutorialTasks: {
+      type: Array,
+      required: false,
     },
   },
   data() {
@@ -197,6 +201,7 @@ export default defineComponent({
       <template #tutorial>
         <validate-project-tutorial
           :tutorial="tutorial"
+          :tasks="tutorialTasks"
           :options="options"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />

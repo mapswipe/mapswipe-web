@@ -33,7 +33,7 @@ interface ProjectCompareType {
 const defaultOptions: Option[] = [
   {
     description: "I don't see any change between the two images.",
-    iconColor: '',
+    iconColor: '#616161',
     title: 'No change',
     mdiIcon: 'mdi-equal',
     shortkey: 1,
@@ -41,7 +41,7 @@ const defaultOptions: Option[] = [
   },
   {
     description: 'There is change between the two images.',
-    iconColor: 'green',
+    iconColor: '#388E3C',
     title: 'Change',
     mdiIcon: 'mdi-not-equal-variant',
     shortkey: 2,
@@ -49,7 +49,7 @@ const defaultOptions: Option[] = [
   },
   {
     description: 'I am not sure.',
-    iconColor: 'orange',
+    iconColor: '#F57C00',
     title: 'Not sure',
     mdiIcon: 'mdi-head-question',
     shortkey: 3,
@@ -57,7 +57,7 @@ const defaultOptions: Option[] = [
   },
   {
     description: 'The imagery is bad or clouded.',
-    iconColor: 'red',
+    iconColor: '#D32F2F',
     title: 'Bad imagery',
     mdiIcon: 'mdi-weather-cloudy',
     shortkey: 4,
@@ -102,6 +102,10 @@ export default defineComponent({
     },
     tutorial: {
       type: Object as PropType<Tutorial>,
+      required: false,
+    },
+    tutorialTasks: {
+      type: Array as PropType<Task[]>,
       required: false,
     },
   },
@@ -208,6 +212,7 @@ export default defineComponent({
       <template #tutorial>
         <compare-project-tutorial
           :tutorial="tutorial"
+          :tasks="tutorialTasks"
           :options="options"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />

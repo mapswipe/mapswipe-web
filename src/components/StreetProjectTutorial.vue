@@ -1,8 +1,5 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import { goOnline, onValue } from 'firebase/database'
-import { db, getTasksRef, getGroupsRef } from '@/firebase'
-import { decompressTasks } from '@/utils/tasks'
 import matchIcon from '@/utils/matchIcon'
 import OptionButtons from '@/components/OptionButtons.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
@@ -52,22 +49,27 @@ export default defineComponent({
   props: {
     tutorial: Object as PropType<Tutorial>,
     options: Array as PropType<Option[]>,
+    tasks: {
+      type: Array as PropType<Task[]>,
+      required: true,
+    },
   },
   data(): {
-    tasks: Task[]
     currentTaskIndex: number
     results: Record<string, number>
     userAttempts: number
     answersRevealed: boolean
     isLoading: boolean
+    trigger: number
   } {
     return {
-      tasks: [],
       currentTaskIndex: 0,
       results: {},
       userAttempts: 0,
       answersRevealed: false,
       isLoading: false,
+      trigger: 0,
+      taskId: undefined,
     }
   },
   computed: {
@@ -77,9 +79,6 @@ export default defineComponent({
     },
     currentScreen() {
       return this.tutorial?.screens[this.currentTaskIndex]
-    },
-    task() {
-      return this.tasks?.[this.currentTaskIndex]
     },
     hasTasks() {
       return this.tasks.length !== 0
@@ -101,8 +100,8 @@ export default defineComponent({
         return true
       }
 
-      const result = this.results[this.task?.taskId]
-      return isDefined(result) && result === this.task?.referenceAnswer
+      const result = this.results[this.taskId]
+      return isDefined(result) && result === this.tasks?.[this.currentTaskIndex].referenceAnswer
     },
     alertContent() {
       if (!this.currentScreen) {
@@ -148,41 +147,10 @@ export default defineComponent({
     },
   },
   methods: {
-    fetchTutorialGroups() {
-      if (this.tutorial?.projectId) {
-        onValue(
-          // FIXME: verify group id
-          getGroupsRef(this.tutorial.projectId),
-          (snapshot) => {
-            const data = snapshot.val()
-            const groupKeys = Object.keys(data)
-            this.fetchTutorialProject(groupKeys[0])
-          },
-          (error) => {
-            console.error('Error fetching tasks for the tutorial', error)
-          },
-          { onlyOnce: true },
-        )
-      }
-    },
-    fetchTutorialProject(groupId: string | undefined) {
-      if (this.tutorial?.projectId && groupId) {
-        onValue(
-          getTasksRef(this.tutorial.projectId, groupId),
-          (snapshot) => {
-            const data = snapshot.val()
-            this.tasks = decompressTasks(data)
-          },
-          (error) => {
-            console.error('Error fetching tasks for the tutorial', error)
-          },
-          { onlyOnce: true },
-        )
-      }
-    },
     nextTask() {
       if (!this.hasCompletedAllTasks) {
         this.currentTaskIndex += 1
+        this.taskId = this.tasks[this.currentTaskIndex]?.taskId
         this.userAttempts = 0
         this.answersRevealed = false
       }
@@ -190,18 +158,17 @@ export default defineComponent({
     addResult(value: number) {
       if (!this.answersRevealed) {
         this.userAttempts += 1
-        this.results[this.task.taskId] = value
+        this.results[this.taskId] = value
       }
     },
     showAnswer() {
       this.answersRevealed = true
-      this.results[this.task.taskId] = this.task?.referenceAnswer
+      this.results[this.taskId] = this.tasks?.[this.currentTaskIndex].referenceAnswer
     },
   },
   emits: ['tutorialComplete'],
   mounted() {
-    goOnline(db)
-    this.fetchTutorialGroups()
+    this.taskId = this.tasks?.[this.currentTaskIndex].taskId
   },
 })
 </script>
@@ -249,23 +216,23 @@ export default defineComponent({
     <v-row justify="center">
       <v-col>
         <street-project-task
-          v-if="tasks[currentTaskIndex] && tutorial"
-          :key="task.taskId"
-          :taskId="task.taskId"
+          v-if="taskId && tutorial"
+          :key="taskId"
+          :taskId="taskId"
           :containerId="'mapillary_tutorial'"
           @dataloading="(e) => (isLoading = e.loading)"
-          style="position: relative; height: calc(100vh - 425px)"
+          style="position: relative; height: calc(70vh - 390px)"
         />
       </v-col>
     </v-row>
     <v-row v-if="options">
       <v-col>
         <option-buttons
-          v-if="task?.taskId"
+          v-if="taskId"
           :disabled="isLoading"
           :options="options"
-          :result="results[task.taskId]"
-          :taskId="task.taskId"
+          :result="results[taskId]"
+          :taskId="taskId"
           @addResult="addResult"
         />
       </v-col>

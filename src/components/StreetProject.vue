@@ -35,7 +35,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-check-bold',
             description: 'the object you are looking for is in the image.',
-            iconColor: '#bbcb7d',
+            iconColor: '#388E3C',
             shortkey: 1,
             title: 'Yes',
             value: 1,
@@ -43,7 +43,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-close-thick',
             description: 'the object you are looking for is NOT in the image.',
-            iconColor: '#fd5054',
+            iconColor: '#D32F2F',
             shortkey: 2,
             title: 'No',
             value: 0,
@@ -51,7 +51,7 @@ export default defineComponent({
           {
             mdiIcon: 'mdi-minus-thick',
             description: "if you're not sure or there is bad imagery.",
-            iconColor: '#adadad',
+            iconColor: '#616161',
             title: 'Not sure',
             shortkey: 3,
             value: 2,
@@ -69,6 +69,10 @@ export default defineComponent({
     },
     tutorial: {
       type: Object,
+      required: false,
+    },
+    tutorialTasks: {
+      type: Array,
       required: false,
     },
   },
@@ -156,6 +160,7 @@ export default defineComponent({
       <template #tutorial>
         <street-project-tutorial
           :tutorial="tutorial"
+          :tasks="tutorialTasks"
           :options="options"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />
@@ -166,7 +171,7 @@ export default defineComponent({
     :taskId="taskId"
     @dataloading="(e) => (isLoading = e.loading)"
     @imageError="handleImageError(taskId)"
-    style="position: relative; height: calc(100vh - 375px)"
+    style="position: relative; height: calc(100vh - 390px)"
   />
   <option-buttons
     v-if="taskId"
