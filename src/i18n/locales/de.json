@@ -221,5 +221,8 @@
   "imageTile": {
     "failureMessage": "Bild konnte nicht geladen werden!",
     "notAvailableMessage": "Bild nicht verfügbar!"
+  },
+  "conflationProject": {
+    "whichShape": "Welche Form ist der korrekte {feature}-Umriss?"
   }
 }

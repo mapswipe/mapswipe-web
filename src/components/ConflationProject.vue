@@ -37,26 +37,26 @@ export default defineComponent({
       default() {
         return [
           {
-            mdiIcon: 'mdi-check-bold',
-            description: `The shape does outline a building in the image`,
-            iconColor: '#388E3C',
+            mdiIcon: 'mdi-shape',
+            description: `The blue shape accurately outlines the building.`,
+            iconColor: '#1976D2',
             shortkey: 1,
-            title: 'Yes',
+            title: 'Blue',
             value: 1,
           },
           {
-            mdiIcon: 'mdi-close-thick',
-            description: `The shape doesn't match a building in the image`,
+            mdiIcon: 'mdi-shape',
+            description: `The red shape accurately outlines the building.`,
             iconColor: '#D32F2F',
             shortkey: 2,
-            title: 'No',
+            title: 'Red',
             value: 0,
           },
           {
-            mdiIcon: 'mdi-minus-thick',
-            description: `If you're not sure or there is cloud cover / bad imagery.`,
+            mdiIcon: 'mdi-close-thick',
+            description: `Neither the blue nor the red shape accurately outline a building.`,
             iconColor: '#616161',
-            title: 'Not sure',
+            title: 'None',
             shortkey: 3,
             value: 2,
           },
@@ -99,7 +99,7 @@ export default defineComponent({
       return colors
     },
     mission() {
-      const message = this.$t('conflationProject.doesTheShapeOutline', {
+      const message = this.$t('conflationProject.whichShape', {
         feature: this.project?.lookFor,
       })
       return message

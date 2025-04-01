@@ -190,7 +190,7 @@ export default defineComponent({
     <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="4" :key="task.taskId">
       <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />
       <ol-style :key="transparent">
-        <ol-style-stroke :color="ready ? strokeColor('#0000ff') : '#0000'" :width="3" />
+        <ol-style-stroke :color="ready ? strokeColor('#1976D2') : '#0000'" :width="5" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>
@@ -201,7 +201,7 @@ export default defineComponent({
         ident="osmFeatureSource"
       />
       <ol-style :key="transparent">
-        <ol-style-stroke :color="ready ? strokeColor('#ff0000') : '#0000'" :width="3" />
+        <ol-style-stroke :color="ready ? strokeColor('#D32F2F') : '#0000'" :width="5" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>

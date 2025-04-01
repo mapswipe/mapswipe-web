@@ -221,5 +221,8 @@
   "imageTile": {
     "failureMessage": "Échec du chargement de l'image !",
     "notAvailableMessage": "Image non disponible !"
+  },
+  "conflationProject": {
+    "whichShape": "Quelle forme correspond avec précision au contour de {feature}?"
   }
 }
