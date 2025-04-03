@@ -1,17 +1,8 @@
 <script lang="ts">
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
-import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map'
-import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
-import { Collection } from 'ol'
-import { GeoJSON } from 'ol/format'
+import { Feature } from 'ol'
 import { type PropType, defineComponent } from 'vue'
-import { extractGeometries } from '@/utils/extractOSMGeometries'
-
-interface Task {
-  taskId: string
-  geojson: object
-}
 
 export interface Project {
   tileServer: {
@@ -26,8 +17,8 @@ export interface Project {
 
 export default defineComponent({
   props: {
-    task: {
-      type: Object as PropType<Task>,
+    taskFeature: {
+      type: Feature,
       required: true,
     },
     project: {
@@ -40,43 +31,30 @@ export default defineComponent({
     compact: {
       type: Boolean,
     },
-    taskExtent: {
-      type: Array,
-      required: true,
+    intersectingFeatures: {
+      type: Array<Feature>,
+    },
+    ready: {
+      type: Boolean,
+      default: false,
     },
   },
   data(): {
     center: [number, number]
-    results: Record<string, number>
     startTime: string | null
-    currentTaskIndex: number
     zoom: number
-    osmFeatureCollection: Collection
-    osmLayer: any
-    ready: Boolean
   } {
     return {
       center: [0, 0],
-      results: {},
       startTime: null,
-      currentTaskIndex: 0,
       zoom: 3,
-      osmFeatureCollection: new Collection(),
-      osmLayer: null,
-      ready: false,
     }
   },
   mounted() {
-    this.fetchOSMFeatures().then(() => {
-      this.ready = true
-      this.fitView()
-    })
+    this.fitView()
   },
   updated() {
-    this.fetchOSMFeatures().then(() => {
-      this.ready = true
-      this.fitView()
-    })
+    this.fitView()
   },
   computed: {
     mapStyle() {
@@ -95,27 +73,12 @@ export default defineComponent({
       // return this.project.tileServer.maxZoom ?? 19;
       return this.project.tileServer.maxZoom ?? 22
     },
-    taskFeatures() {
-      const features = new Collection()
-      const geoJson = new GeoJSON()
-
-      const geom = this.task.geojson
-      const feature = { geometry: geom, type: 'Feature' }
-      const options = {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:3857',
-      }
-
-      const newFeature = geoJson.readFeature(feature, options)
-      features.push(newFeature)
-
-      return features
-    },
   },
   methods: {
     fitView(duration = 600, delay = 100) {
       const map = (this.$refs.map as InstanceType<typeof OlMap>).map
       const mapView = this.$refs.mapView as InstanceType<typeof OlView>
+      // TODO: Use combined extent of taskSource and osmFeatureSource
       const extent = (
         this.$refs.taskSource as InstanceType<typeof OlSourceVector>
       ).source.getExtent()
@@ -129,29 +92,6 @@ export default defineComponent({
             duration: duration,
           })
         }, delay)
-      }
-    },
-    async fetchOSMFeatures() {
-      try {
-        this.ready = false
-        this.osmFeatureCollection.clear()
-        const geoJson = new GeoJSON()
-        const osmGeometries = await extractGeometries(
-          this.taskExtent.toString(),
-          'building=* and geoemtry:polygon',
-          '2024-03-25',
-        )
-        const options = {
-          dataProjection: 'EPSG:4326',
-          featureProjection: 'EPSG:3857',
-        }
-        console.log('extent', this.taskExtent.toString())
-        osmGeometries.forEach((osmGeom) => {
-          const osmFeature = geoJson.readFeature({ geometry: osmGeom, type: 'Feature' }, options)
-          this.osmFeatureCollection.push(osmFeature)
-        })
-      } catch (error) {
-        console.error('Error fetching OSM features:', error)
       }
     },
     strokeColor(hex) {
@@ -187,21 +127,26 @@ export default defineComponent({
       />
       <ol-source-xyz v-else :url="xyzUrl" :attributions="project.tileServer.credits" />
     </ol-tile-layer>
-    <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="4" :key="task.taskId">
-      <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />
+    <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="ready ? 4 : 0" :key="ready">
+      <ol-source-vector :features="[taskFeature]" ref="taskSource" ident="taskSource" />
       <ol-style :key="transparent">
-        <ol-style-stroke :color="ready ? strokeColor('#1976D2') : '#0000'" :width="5" />
+        <ol-style-stroke :color="strokeColor('#1976D2')" :width="5" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>
-    <ol-vector-layer id="osmFeatureLayer" ref="osmFeatureLayer" :zIndex="3" :key="task.taskId">
+    <ol-vector-layer
+      id="osmFeatureLayer"
+      ref="osmFeatureLayer"
+      :zIndex="3"
+      :key="taskFeature.get('taskId')"
+    >
       <ol-source-vector
-        :features="osmFeatureCollection"
+        :features="intersectingFeatures"
         ref="osmFeatureSource"
         ident="osmFeatureSource"
       />
       <ol-style :key="transparent">
-        <ol-style-stroke :color="ready ? strokeColor('#D32F2F') : '#0000'" :width="5" />
+        <ol-style-stroke :color="strokeColor('#D32F2F')" :width="5" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>

@@ -11,7 +11,11 @@ import ValidateProjectInstructions from '@/components/ValidateProjectInstruction
 import ValidateProjectTutorial from '@/components/ValidateProjectTutorial.vue'
 import ConflationProjectTask from './ConflationProjectTask.vue'
 import { GeoJSON } from 'ol/format'
-import { boundingExtent, extend } from 'ol/extent'
+import { boundingExtent, extend, getArea } from 'ol/extent'
+import { transformExtent } from 'ol/proj'
+import { booleanIntersects } from '@turf/boolean-intersects'
+
+import { extractGeometries } from '@/utils/extractOSMGeometries'
 
 export default defineComponent({
   components: {
@@ -82,7 +86,10 @@ export default defineComponent({
       center: [0, 0],
       results: {},
       startTime: null,
-      taskFeatures: new Collection(),
+      taskFeatures: null,
+      osmFeatureCollection: new Collection(),
+      intersectingFeatures: [],
+      ready: false,
       taskId: undefined,
       taskIndex: 0,
       transparent: false,
@@ -92,6 +99,11 @@ export default defineComponent({
   inject: {
     logMappingStarted: 'logMappingStarted',
     saveResults: 'saveResults',
+  },
+  watch: {
+    ready() {
+      this.filterOsmFeatures()
+    },
   },
   computed: {
     colors() {
@@ -104,34 +116,6 @@ export default defineComponent({
       })
       return message
     },
-    computeTaskExtent() {
-      /*
-      const features = new Collection()
-      const geoJson = new GeoJSON()
-      const options = { dataProjection: 'EPSG:4326' }
-
-      this.tasks.forEach((geom) => {
-        const feature = geoJson.readFeature({ geometry: geom.geojson, type: 'Feature' }, options)
-        features.push(feature)
-      })
-
-      let extent = boundingExtent([])
-      features.forEach((feature) => {
-        const geometry = feature.getGeometry()
-        if (geometry) {
-          extend(extent, geometry.getExtent())
-        }
-      })
-      */
-      let extent = boundingExtent([])
-      const geoJson = new GeoJSON()
-      const options = { dataProjection: 'EPSG:4326' }
-      const task = this.tasks?.[this.taskIndex]
-      const feature = geoJson.readFeature({ geometry: task.geojson, type: 'Feature' }, options)
-      const geometry = feature.getGeometry()
-      extend(extent, geometry.getExtent())
-      return extent
-    },
   },
   methods: {
     addResult(value) {
@@ -141,6 +125,10 @@ export default defineComponent({
       if (!this.taskIndex <= 0) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
+        this.intersectingFeatures = this.filterOsmFeatures(
+          this.taskFeatures?.[this.taskIndex],
+          this.osmFeatureCollection,
+        )
       }
     },
     createInformationPages,
@@ -152,6 +140,7 @@ export default defineComponent({
       if (this.isAnswered() && this.taskIndex + 1 < this.tasks.length) {
         this.taskIndex++
         this.taskId = this.tasks[this.taskIndex].taskId
+        this.filterOsmFeatures()
       }
     },
     isAnswered() {
@@ -159,11 +148,98 @@ export default defineComponent({
       const defined = result !== undefined
       return defined
     },
+    // Use this when the overall task group extent is not too large
+    computeTaskGroupExtent() {
+      const features = new Collection()
+
+      this.taskFeatures.forEach((feature) => features.push(feature))
+
+      let extent = boundingExtent([])
+      features.forEach((feature) => {
+        const geometry = feature.getGeometry()
+        if (geometry) {
+          extend(extent, geometry.getExtent())
+        }
+      })
+
+      console.log(getArea(extent))
+      const extentLonLat = transformExtent(extent, 'EPSG:3857', 'EPSG:4326')
+
+      console.log(extentLonLat)
+
+      return extentLonLat
+    },
+    /* TODO: fetch OSM based on array of individual task extents when overall task group extent is too large?
+    computeTaskExtent() {
+      const feature = this.taskFeatures?.[this.taskIndex]
+      const geometry = feature.getGeometry()
+      const extent = geometry.getExtent()
+      
+      console.log(extent)
+      console.log( getArea(transformExtent(extent, 'EPSG:4326', 'EPSG:3857' )))
+
+      return extent
+    },
+    */
+    async fetchOSMFeatures() {
+      try {
+        this.osmFeatureCollection.clear()
+        const geoJson = new GeoJSON()
+        const taskGroupExtent = this.computeTaskGroupExtent()
+        const osmGeometries = await extractGeometries(
+          taskGroupExtent.toString(),
+          'building=* and geometry:polygon',
+          '2024-03-25',
+        )
+
+        osmGeometries.forEach((osmGeom) => {
+          const osmFeature = geoJson.readFeature({ geometry: osmGeom, type: 'Feature' })
+          this.osmFeatureCollection.push(osmFeature)
+        })
+
+        this.ready = true
+      } catch (error) {
+        console.error('Error fetching OSM features:', error)
+      }
+    },
+    filterOsmFeatures() {
+      const geoJson = new GeoJSON()
+      const options = {
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857',
+      }
+      const turfOsmFeatures = this.osmFeatureCollection
+        .getArray()
+        .map((f) => geoJson.writeFeatureObject(f))
+      const turfTaskFeature = geoJson.writeFeatureObject(
+        this.taskFeatures?.[this.taskIndex],
+        options,
+      )
+      const filtered = turfOsmFeatures.filter((f) => booleanIntersects(turfTaskFeature, f))
+      this.intersectingFeatures = filtered.map((f) => geoJson.readFeature(f, options))
+    },
+    makeTaskFeature(task) {
+      const geoJson = new GeoJSON()
+
+      const geom = task.geojson
+      const feature = { geometry: geom, type: 'Feature' }
+      const options = {
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857',
+      }
+
+      const newFeature = geoJson.readFeature(feature, options)
+      newFeature.setProperties({ taskId: task.taskId })
+
+      return newFeature
+    },
   },
   emits: ['created'],
   created() {
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId
+    this.taskFeatures = this.tasks.map(this.makeTaskFeature)
+    this.fetchOSMFeatures()
     this.$emit('created')
     this.logMappingStarted(this.project.projectType)
   },
@@ -206,10 +282,11 @@ export default defineComponent({
   <v-container class="ma-0 pa-0">
     <conflation-project-task
       ref="conflation-project-task"
-      :task="tasks?.[taskIndex]"
+      :taskFeature="taskFeatures?.[taskIndex]"
       :project="project"
-      :taskExtent="computeTaskExtent"
+      :intersectingFeatures="intersectingFeatures"
       :transparent="transparent"
+      :ready="ready"
     />
   </v-container>
   <option-buttons
@@ -218,6 +295,7 @@ export default defineComponent({
     :result="results[taskId]"
     :taskId="taskId"
     @addResult="addResult"
+    :disabled="!ready"
   />
   <v-toolbar color="white" density="compact" extension-height="20" extended>
     <v-spacer />
