@@ -221,5 +221,8 @@
   "imageTile": {
     "failureMessage": "Failed to load image!",
     "notAvailableMessage": "Image not available!"
+  },
+  "conflationProject": {
+    "whichShape": "Which shape accurately outlines the {feature}?"
   }
 }

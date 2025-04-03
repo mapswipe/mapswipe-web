@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@intlify/unplugin-vue-i18n": "^3.0.1",
+    "@turf/boolean-intersects": "^7.2.0",
     "base-64": "^1.0.0",
     "firebase": "^10.9.0",
     "mapillary-js": "^4.1.2",
