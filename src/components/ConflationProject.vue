@@ -125,10 +125,7 @@ export default defineComponent({
       if (!this.taskIndex <= 0) {
         this.taskIndex--
         this.taskId = this.tasks[this.taskIndex].taskId
-        this.intersectingFeatures = this.filterOsmFeatures(
-          this.taskFeatures?.[this.taskIndex],
-          this.osmFeatureCollection,
-        )
+        this.filterOsmFeatures()
       }
     },
     createInformationPages,
