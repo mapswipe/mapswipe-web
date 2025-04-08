@@ -142,8 +142,10 @@ export default defineComponent({
     },
     bindTaskGroup() {
       onValue(getGroupsQuery(this.projectId), (snapshot) => {
-        const data = snapshot.val() || {}
-        const flatGroups = Object.values(data).flat()
+        const flatGroups: any[] = []
+        snapshot.forEach((childSnapshot) => {
+        flatGroups.push(childSnapshot.val())
+        })
         const completed = Object.keys(this.projectContributions)
         const available = flatGroups.filter(
           (g) => g.requiredCount > 0 && !completed.includes(g.groupId),
@@ -161,9 +163,13 @@ export default defineComponent({
         } else {
           this.hideDialog()
         }
+        if (this.project.projectType == "8") {
+          this.group = available[0]
+        } else {
         const random = available[Math.floor(Math.random() * available.length)]
         this.group = random
-        this.bindTasks()
+        }
+        this.bindTasks()  
       })
     },
     bindTasks() {
