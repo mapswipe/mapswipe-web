@@ -30,6 +30,7 @@ const projectTypes = {
   '8': {
     name: 'Conflation',
     component: 'conflationProject',
+    prioritizeNearlyCompletedGroups: true,
   },
 }
 

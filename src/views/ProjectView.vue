@@ -144,7 +144,7 @@ export default defineComponent({
       onValue(getGroupsQuery(this.projectId), (snapshot) => {
         const flatGroups: any[] = []
         snapshot.forEach((childSnapshot) => {
-        flatGroups.push(childSnapshot.val())
+          flatGroups.push(childSnapshot.val())
         })
         const completed = Object.keys(this.projectContributions)
         const available = flatGroups.filter(
@@ -163,13 +163,13 @@ export default defineComponent({
         } else {
           this.hideDialog()
         }
-        if (this.project.projectType == "8") {
+        if (projectTypes[this.project.projectType]?.prioritizeNearlyCompletedGroups) {
           this.group = available[0]
         } else {
-        const random = available[Math.floor(Math.random() * available.length)]
-        this.group = random
+          const random = available[Math.floor(Math.random() * available.length)]
+          this.group = random
         }
-        this.bindTasks()  
+        this.bindTasks()
       })
     },
     bindTasks() {
