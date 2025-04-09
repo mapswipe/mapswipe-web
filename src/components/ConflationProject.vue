@@ -186,8 +186,7 @@ export default defineComponent({
 
         const features = await fetchFeaturesFromOverpass(
           taskGroupExtent.toString(),
-          // TODO: use this.project.filter instead of hard-coded
-          'way["building"]',
+          this.project.filter ?? 'way["building"]',
         )
 
         features.forEach((f) => {
