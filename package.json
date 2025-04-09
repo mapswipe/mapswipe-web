@@ -24,6 +24,7 @@
     "ol": "^9.1.0",
     "ol-contextmenu": "^5.4.0",
     "ol-ext": "^4.0.17",
+    "osmtogeojson": "^3.0.0-beta.5",
     "pako": "^2.1.0",
     "pinia": "^2.1.6",
     "tinycolor2": "^1.6.0",

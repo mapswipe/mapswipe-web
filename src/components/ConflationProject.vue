@@ -15,7 +15,7 @@ import { boundingExtent, extend, getArea } from 'ol/extent'
 import { transformExtent } from 'ol/proj'
 import { booleanIntersects } from '@turf/boolean-intersects'
 
-import { extractGeometries } from '@/utils/extractOSMGeometries'
+import { fetchFeaturesFromOverpass } from '@/utils/fetchFeaturesFromOverpass'
 
 export default defineComponent({
   components: {
@@ -183,14 +183,15 @@ export default defineComponent({
         this.osmFeatureCollection.clear()
         const geoJson = new GeoJSON()
         const taskGroupExtent = this.computeTaskGroupExtent()
-        const osmGeometries = await extractGeometries(
+
+        const features = await fetchFeaturesFromOverpass(
           taskGroupExtent.toString(),
-          'building=* and geometry:polygon',
-          '2024-03-25',
+          // TODO: use this.project.filter instead of hard-coded
+          'way["building"]',
         )
 
-        osmGeometries.forEach((osmGeom) => {
-          const osmFeature = geoJson.readFeature({ geometry: osmGeom, type: 'Feature' })
+        features.forEach((f) => {
+          const osmFeature = geoJson.readFeature(f)
           this.osmFeatureCollection.push(osmFeature)
         })
 
