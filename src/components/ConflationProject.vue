@@ -84,6 +84,7 @@ export default defineComponent({
     return {
       arrowKeys: true,
       center: [0, 0],
+      reference: {},
       results: {},
       startTime: null,
       taskFeatures: null,
@@ -120,6 +121,13 @@ export default defineComponent({
   methods: {
     addResult(value) {
       this.results[this.taskId] = value
+      const numberIntersecting = this.intersectingFeatures.length
+      var ref = { numberIntersecting: numberIntersecting }
+      if (numberIntersecting == 1) {
+        ref.osmId = this.intersectingFeatures[0]?.get('id')
+        ref.version = this.intersectingFeatures[0]?.get('version')
+      }
+      this.reference[this.taskId] = ref
     },
     back() {
       if (!this.taskIndex <= 0) {
@@ -310,7 +318,7 @@ export default defineComponent({
       icon="mdi-content-save"
       color="primary"
       :disabled="Object.keys(results).length < tasks.length"
-      @click="saveResults(results, startTime)"
+      @click="saveResults(results, startTime, reference)"
     />
     <v-btn
       :title="$t('validateProject.moveRight')"

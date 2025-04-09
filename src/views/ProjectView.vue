@@ -57,7 +57,7 @@ export default defineComponent({
       logMappingStarted: (projectType) => {
         logAnalyticsEvent('mapping_started', { projectType: projectType })
       },
-      saveResults: (results, startTime) => {
+      saveResults: (results, startTime, reference) => {
         const numberOfTasks = Object.keys(results).length
         const endTime = new Date().toISOString()
         const dev = import.meta.env.DEV
@@ -72,6 +72,8 @@ export default defineComponent({
           results,
           startTime,
         }
+
+        reference && (entry.reference = reference)
 
         this.completedGroupId = this.group.groupId
 
