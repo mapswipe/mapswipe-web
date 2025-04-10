@@ -224,6 +224,12 @@
   },
   "conflationProject": {
     "doesTheShapeOutline": "Est-ce la forme correspond correctement au contour de {feature}?",
+    "skip": "Ignorez cette tâche",
     "whichShape": "Quelle forme correspond avec précision au contour de {feature}?"
+  },
+  "conflationInstructions": {
+    "oneRed": "Il y a une forme rouge",
+    "onlyBlue": "Il n'y a qu'une forme bleue",
+    "severalRed": "Il y a plusieurs formes rouges"
   }
 }

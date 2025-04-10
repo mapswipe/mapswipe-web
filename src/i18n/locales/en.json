@@ -224,6 +224,12 @@
   },
   "conflationProject": {
     "doesTheShapeOutline": "Does the shape accurately outline a {feature}?",
+    "skip": "Skip this task",
     "whichShape": "Which shape accurately outlines the {feature}?"
+  },
+  "conflationInstructions": {
+    "oneRed": "There is one red shape",
+    "onlyBlue": "There is only a blue shape",
+    "severalRed": "There are several red shapes"
   }
 }

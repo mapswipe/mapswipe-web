@@ -224,6 +224,12 @@
   },
   "conflationProject": {
     "doesTheShapeOutline": "Ist der Umriss des {feature} korrekt?",
+    "skip": "Überspringe diese Aufgabe",
     "whichShape": "Welche Form ist der korrekte {feature}-Umriss?"
+  },
+  "conflationInstructions": {
+    "oneRed": "Es gibt eine rote Form",
+    "onlyBlue": "Es gibt nur eine blaue Form",
+    "severalRed": "Es gibt mehere rote Formen"
   }
 }

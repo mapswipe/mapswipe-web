@@ -7,7 +7,7 @@ import OptionButtons from '@/components/OptionButtons.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
 import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
-import ValidateProjectInstructions from '@/components/ValidateProjectInstructions.vue'
+import ConflationProjectInstructions from '@/components/ConflationProjectInstructions.vue'
 import ValidateProjectTutorial from '@/components/ValidateProjectTutorial.vue'
 import ConflationProjectTask from './ConflationProjectTask.vue'
 import { GeoJSON } from 'ol/format'
@@ -19,7 +19,7 @@ import { fetchFeaturesFromOverpass } from '@/utils/fetchFeaturesFromOverpass'
 
 export default defineComponent({
   components: {
-    validateProjectInstructions: ValidateProjectInstructions,
+    conflationProjectInstructions: ConflationProjectInstructions,
     validateProjectTutorial: ValidateProjectTutorial,
     conflationProjectTask: ConflationProjectTask,
     taskProgress: TaskProgress,
@@ -156,6 +156,15 @@ export default defineComponent({
         ],
       }
     },
+    missions() {
+      return {
+        validate: this.$t('conflationProject.doesTheShapeOutline', {
+          feature: this.project?.lookFor,
+        }),
+        conflate: this.$t('conflationProject.whichShape', { feature: this.project?.lookFor }),
+        skip: this.$t('conflationProject.skip'),
+      }
+    },
   },
   methods: {
     addResult(value) {
@@ -262,8 +271,7 @@ export default defineComponent({
       const filtered = turfOsmFeatures.filter((f) => booleanIntersects(turfTaskFeature, f))
       this.intersectingFeatures = filtered.map((f) => geoJson.readFeature(f, options))
       const numberIntersecting = this.intersectingFeatures.length
-      this.updateMission(numberIntersecting)
-      this.updateOptions(numberIntersecting)
+      this.updateMissionAndOptions(numberIntersecting)
     },
     makeTaskFeature(task) {
       const geoJson = new GeoJSON()
@@ -280,25 +288,21 @@ export default defineComponent({
 
       return newFeature
     },
-    updateMission(numberIntersecting) {
-      const i18nKey =
-        numberIntersecting > 0
-          ? 'conflationProject.whichShape'
-          : 'conflationProject.doesTheShapeOutline'
-      this.mission = this.$t(i18nKey, { feature: this.project?.lookFor })
-    },
-    updateOptions(numberIntersecting) {
+    updateMissionAndOptions(numberIntersecting) {
       switch (numberIntersecting) {
         case 0: {
+          this.mission = this.missions.validate
           this.currentOptions = this.options.validate
           break
         }
         case 1: {
+          this.mission = this.missions.conflate
           this.currentOptions = this.options.conflate
           break
         }
         default: {
           this.currentOptions = this.options.skip
+          this.mission = this.missions.skip
           this.addResult(this.options.skip[0].value)
         }
       }
@@ -338,7 +342,7 @@ export default defineComponent({
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <validate-project-instructions :mission="mission" :options="options" />
+        <conflation-project-instructions :missions="missions" :options="options" />
       </template>
       <template #tutorial>
         <validate-project-tutorial
