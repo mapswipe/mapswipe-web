@@ -223,6 +223,7 @@
     "notAvailableMessage": "Bild nicht verfügbar!"
   },
   "conflationProject": {
+    "doesTheShapeOutline": "Ist der Umriss des {feature} korrekt?",
     "whichShape": "Welche Form ist der korrekte {feature}-Umriss?"
   }
 }

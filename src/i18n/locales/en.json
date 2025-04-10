@@ -223,6 +223,7 @@
     "notAvailableMessage": "Image not available!"
   },
   "conflationProject": {
+    "doesTheShapeOutline": "Does the shape accurately outline a {feature}?",
     "whichShape": "Which shape accurately outlines the {feature}?"
   }
 }

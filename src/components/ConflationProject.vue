@@ -36,10 +36,89 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    /* Do we want custom options in conflate projects?
     options: {
       type: Array,
       default() {
-        return [
+        return {}
+      },
+    },
+    */
+    project: {
+      type: Object,
+      required: true,
+    },
+    tasks: {
+      type: Array,
+      required: true,
+    },
+    tutorial: {
+      type: Object,
+      require: false,
+    },
+  },
+  data() {
+    return {
+      arrowKeys: true,
+      center: [0, 0],
+      currentOptions: [],
+      reference: {},
+      results: {},
+      startTime: null,
+      taskFeatures: null,
+      osmFeatureCollection: new Collection(),
+      mission: '',
+      intersectingFeatures: [],
+      ready: false,
+      taskId: undefined,
+      taskIndex: 0,
+      transparent: false,
+      zoom: 3,
+    }
+  },
+  inject: {
+    logMappingStarted: 'logMappingStarted',
+    saveResults: 'saveResults',
+  },
+  watch: {
+    ready() {
+      this.filterOsmFeatures()
+    },
+  },
+  computed: {
+    colors() {
+      const colors = theme
+      return colors
+    },
+    options() {
+      return {
+        validate: [
+          {
+            mdiIcon: 'mdi-check-bold',
+            description: `The shape does outline a building in the image`,
+            iconColor: '#388E3C',
+            shortkey: 1,
+            title: 'Yes',
+            value: 1,
+          },
+          {
+            mdiIcon: 'mdi-close-thick',
+            description: `The shape doesn't match a building in the image`,
+            iconColor: '#D32F2F',
+            shortkey: 2,
+            title: 'No',
+            value: 0,
+          },
+          {
+            mdiIcon: 'mdi-minus-thick',
+            description: `If you're not sure or there is cloud cover / bad imagery.`,
+            iconColor: '#616161',
+            title: 'Not sure',
+            shortkey: 3,
+            value: 2,
+          },
+        ],
+        conflate: [
           {
             mdiIcon: 'mdi-shape',
             description: `The blue shape accurately outlines the building.`,
@@ -64,58 +143,18 @@ export default defineComponent({
             shortkey: 3,
             value: 2,
           },
-        ]
-      },
-    },
-    project: {
-      type: Object,
-      required: true,
-    },
-    tasks: {
-      type: Array,
-      required: true,
-    },
-    tutorial: {
-      type: Object,
-      require: false,
-    },
-  },
-  data() {
-    return {
-      arrowKeys: true,
-      center: [0, 0],
-      reference: {},
-      results: {},
-      startTime: null,
-      taskFeatures: null,
-      osmFeatureCollection: new Collection(),
-      intersectingFeatures: [],
-      ready: false,
-      taskId: undefined,
-      taskIndex: 0,
-      transparent: false,
-      zoom: 3,
-    }
-  },
-  inject: {
-    logMappingStarted: 'logMappingStarted',
-    saveResults: 'saveResults',
-  },
-  watch: {
-    ready() {
-      this.filterOsmFeatures()
-    },
-  },
-  computed: {
-    colors() {
-      const colors = theme
-      return colors
-    },
-    mission() {
-      const message = this.$t('conflationProject.whichShape', {
-        feature: this.project?.lookFor,
-      })
-      return message
+        ],
+        skip: [
+          {
+            mdiIcon: 'mdi-flag-outline',
+            description: `There are too many red features here.`,
+            iconColor: '#F57C00',
+            title: 'Skip',
+            shortkey: 1,
+            value: 6,
+          },
+        ],
+      }
     },
   },
   methods: {
@@ -179,7 +218,7 @@ export default defineComponent({
       const feature = this.taskFeatures?.[this.taskIndex]
       const geometry = feature.getGeometry()
       const extent = geometry.getExtent()
-      
+
       console.log(extent)
       console.log( getArea(transformExtent(extent, 'EPSG:4326', 'EPSG:3857' )))
 
@@ -222,6 +261,9 @@ export default defineComponent({
       )
       const filtered = turfOsmFeatures.filter((f) => booleanIntersects(turfTaskFeature, f))
       this.intersectingFeatures = filtered.map((f) => geoJson.readFeature(f, options))
+      const numberIntersecting = this.intersectingFeatures.length
+      this.updateMission(numberIntersecting)
+      this.updateOptions(numberIntersecting)
     },
     makeTaskFeature(task) {
       const geoJson = new GeoJSON()
@@ -237,6 +279,29 @@ export default defineComponent({
       newFeature.setProperties({ taskId: task.taskId })
 
       return newFeature
+    },
+    updateMission(numberIntersecting) {
+      const i18nKey =
+        numberIntersecting > 0
+          ? 'conflationProject.whichShape'
+          : 'conflationProject.doesTheShapeOutline'
+      this.mission = this.$t(i18nKey, { feature: this.project?.lookFor })
+    },
+    updateOptions(numberIntersecting) {
+      switch (numberIntersecting) {
+        case 0: {
+          this.currentOptions = this.options.validate
+          break
+        }
+        case 1: {
+          this.currentOptions = this.options.conflate
+          break
+        }
+        default: {
+          this.currentOptions = this.options.skip
+          this.addResult(this.options.skip[0].value)
+        }
+      }
     },
   },
   emits: ['created'],
@@ -296,7 +361,7 @@ export default defineComponent({
   </v-container>
   <option-buttons
     v-if="taskId"
-    :options="options"
+    :options="currentOptions"
     :result="results[taskId]"
     :taskId="taskId"
     @addResult="addResult"

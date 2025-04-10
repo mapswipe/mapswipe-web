@@ -223,6 +223,7 @@
     "notAvailableMessage": "Image non disponible !"
   },
   "conflationProject": {
+    "doesTheShapeOutline": "Est-ce la forme correspond correctement au contour de {feature}?",
     "whichShape": "Quelle forme correspond avec précision au contour de {feature}?"
   }
 }
