@@ -252,7 +252,7 @@ export default defineComponent({
 
         this.ready = true
       } catch (error) {
-        console.error('Error fetching OSM features:', error)
+        this.$emit('error')
       }
     },
     filterOsmFeatures() {
@@ -313,6 +313,8 @@ export default defineComponent({
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId
     this.taskFeatures = this.tasks.map(this.makeTaskFeature)
+    this.mission = this.missions.conflate
+    this.currentOptions = this.options.conflate
     this.fetchOSMFeatures()
     this.$emit('created')
     this.logMappingStarted(this.project.projectType)

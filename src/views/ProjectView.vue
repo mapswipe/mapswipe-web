@@ -234,6 +234,16 @@ export default defineComponent({
     handleTaskComponentCreated() {
       goOffline(db)
     },
+    handleProjectError() {
+      this.to = '/projects'
+      this.showDialog(
+        this.$t('projectView.projectErrorTitle'),
+        this.$t('projectView.projectErrorText'),
+        this.leaveProject,
+        true,
+        false,
+      )
+    },
   },
   beforeRouteLeave(to, from, next) {
     if (this.mode === 'contribute' && to.name !== 'authentication') {
@@ -274,6 +284,7 @@ export default defineComponent({
       :tutorial="tutorial"
       :tutorialTasks="tutorialTasks"
       @created="handleTaskComponentCreated"
+      @error="handleProjectError"
     />
 
     <v-dialog v-model="nextDialog" max-width="600" persistent>

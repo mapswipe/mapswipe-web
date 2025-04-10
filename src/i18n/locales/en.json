@@ -116,6 +116,8 @@
   "projectView": {
     "leave": "Leave project",
     "AreYouSureYouWantToLeave": "Are you sure you want to leave the project? Your contributions will be lost.",
+    "projectErrorTitle": "Something went wrong",
+    "projectErrorText": "Sorry, we are unable to prepare your tasks.",
     "saveResults": "Save",
     "saveFailed": "Failed to save results",
     "resultsSaved": "Thanks, {user}! Your contribution has been saved.",

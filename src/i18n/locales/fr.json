@@ -116,6 +116,8 @@
   "projectView": {
     "leave": "Quitter le projet",
     "AreYouSureYouWantToLeave": "Êtes-vous certain de vouloir quitter le projet ? Vos contributions seront perdues.",
+    "projectErrorTitle": "Ça n'a pas marché",
+    "projectErrorText": "Désolé, nous n'arrivons pas à préparer vos tâches.",
     "saveResults": "Sauvegarder",
     "saveFailed": "Impossible de sauvegarder vos résultats",
     "resultsSaved": "Merci, {user} ! Votre contribution a été sauvegardée.",
