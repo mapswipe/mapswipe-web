@@ -11,6 +11,10 @@ export default defineComponent({
       email: '',
       password: '',
       showPassword: false,
+      authInfo: {
+        // oauthHost: 'http://localhost:5173',
+        oauthHost: 'https://dev-auth.mapswipe.org',
+      },
       rules: {
         required: (value) => !!value || this.$t('authView.required'),
         email: (v) => {
@@ -42,6 +46,10 @@ export default defineComponent({
   },
   methods: {
     i18nRoute,
+    signInOSM() {
+      // this.$router.push(i18nRoute({ name: 'osm-login' }))
+      window.location.href = `${this.authInfo.oauthHost}/redirect`;
+    },
     signin() {
       if (this.isFormValid) {
         const routerPush = this.$router.push
@@ -118,6 +126,11 @@ export default defineComponent({
             {{ $t('authView.noAccountYet') }}
           </router-link>
         </div>
+      </v-col>
+      <v-col class="text-center">   
+        <v-btn color="primary" @click="signInOSM" depressed>
+          {{ $t('authView.signInOSM') }}
+        </v-btn>
       </v-col>
     </v-form>
   </v-container>
