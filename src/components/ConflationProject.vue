@@ -84,6 +84,9 @@ export default defineComponent({
     ready() {
       this.filterOsmFeatures()
     },
+    '$i18n.locale'() {
+      this.updateMissionAndOptions()
+    },
   },
   computed: {
     colors() {
@@ -154,15 +157,6 @@ export default defineComponent({
             value: 6,
           },
         ],
-      }
-    },
-    missions() {
-      return {
-        validate: this.$t('conflationProject.doesTheShapeOutline', {
-          feature: this.project?.lookFor,
-        }),
-        conflate: this.$t('conflationProject.whichShape', { feature: this.project?.lookFor }),
-        skip: this.$t('conflationProject.skip'),
       }
     },
   },
@@ -288,21 +282,30 @@ export default defineComponent({
 
       return newFeature
     },
+    missions() {
+      return {
+        validate: this.$t('conflationProject.doesTheShapeOutline', {
+          feature: this.project?.lookFor,
+        }),
+        conflate: this.$t('conflationProject.whichShape', { feature: this.project?.lookFor }),
+        skip: this.$t('conflationProject.skip'),
+      }
+    },
     updateMissionAndOptions(numberIntersecting) {
       switch (numberIntersecting) {
         case 0: {
-          this.mission = this.missions.validate
+          this.mission = this.missions().validate
           this.currentOptions = this.options.validate
           break
         }
         case 1: {
-          this.mission = this.missions.conflate
+          this.mission = this.missions().conflate
           this.currentOptions = this.options.conflate
           break
         }
         default: {
           this.currentOptions = this.options.skip
-          this.mission = this.missions.skip
+          this.mission = this.missions().skip
           this.addResult(this.options.skip[0].value)
         }
       }
@@ -313,7 +316,7 @@ export default defineComponent({
     this.startTime = new Date().toISOString()
     this.taskId = this.tasks[this.taskIndex].taskId
     this.taskFeatures = this.tasks.map(this.makeTaskFeature)
-    this.mission = this.missions.conflate
+    this.mission = this.missions().conflate
     this.currentOptions = this.options.conflate
     this.fetchOSMFeatures()
     this.$emit('created')
@@ -344,7 +347,7 @@ export default defineComponent({
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <conflation-project-instructions :missions="missions" :options="options" />
+        <conflation-project-instructions :missions="missions()" :options="options" />
       </template>
       <template #tutorial>
         <validate-project-tutorial
