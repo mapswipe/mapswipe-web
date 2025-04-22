@@ -116,6 +116,8 @@
   "projectView": {
     "leave": "Quitter le projet",
     "AreYouSureYouWantToLeave": "Êtes-vous certain de vouloir quitter le projet ? Vos contributions seront perdues.",
+    "noResults": "Aucun résultat à sauvegarder",
+    "checkConnection": "Vérifiez votre connexion Internet et les paramètres de votre navigateur pour vous assurer que le contenu peut être chargé.",
     "saveResults": "Sauvegarder",
     "saveFailed": "Impossible de sauvegarder vos résultats",
     "resultsSaved": "Merci, {user} ! Votre contribution a été sauvegardée.",

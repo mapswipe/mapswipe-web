@@ -116,6 +116,8 @@
   "projectView": {
     "leave": "Leave project",
     "AreYouSureYouWantToLeave": "Are you sure you want to leave the project? Your contributions will be lost.",
+    "noResults": "No results to save",
+    "checkConnection": "Check your internet connection and browser settings to make sure that contents can be loaded",
     "saveResults": "Save",
     "saveFailed": "Failed to save results",
     "resultsSaved": "Thanks, {user}! Your contribution has been saved.",
