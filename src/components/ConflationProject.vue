@@ -14,8 +14,7 @@ import { GeoJSON } from 'ol/format'
 import { boundingExtent, extend, getArea } from 'ol/extent'
 import { transformExtent } from 'ol/proj'
 import { booleanIntersects } from '@turf/boolean-intersects'
-
-import { fetchFeaturesFromOverpass } from '@/utils/fetchFeaturesFromOverpass'
+import { fetchFeaturesFromRawData } from '@/utils/fetchFeaturesFromRawData'
 
 export default defineComponent({
   components: {
@@ -66,7 +65,7 @@ export default defineComponent({
       results: {},
       startTime: null,
       taskFeatures: null,
-      osmFeatureCollection: new Collection(),
+      osmFeatures: [],
       mission: '',
       intersectingFeatures: [],
       ready: false,
@@ -92,6 +91,17 @@ export default defineComponent({
     colors() {
       const colors = theme
       return colors
+    },
+    defaultOsmFilters() {
+      return {
+        tags: {
+          all_geometry: {
+            join_or: {
+              building: [],
+            },
+          },
+        },
+      }
     },
     options() {
       return {
@@ -213,7 +223,6 @@ export default defineComponent({
       const extentLonLat = transformExtent(extent, 'EPSG:3857', 'EPSG:4326')
 
       console.log(extentLonLat)
-
       return extentLonLat
     },
     /* TODO: fetch OSM based on array of individual task extents when overall task group extent is too large?
@@ -229,23 +238,15 @@ export default defineComponent({
     },
     */
     async fetchOSMFeatures() {
+      // TODO: accept custom filters
+      // const filters = this.project.filter || this.defaultOsmFilters
+      const filters = this.defaultOsmFilters
+      const taskGroupExtent = this.computeTaskGroupExtent()
       try {
-        this.osmFeatureCollection.clear()
-        const geoJson = new GeoJSON()
-        const taskGroupExtent = this.computeTaskGroupExtent()
-
-        const features = await fetchFeaturesFromOverpass(
-          taskGroupExtent.toString(),
-          this.project.filter ?? 'way["building"]',
-        )
-
-        features.forEach((f) => {
-          const osmFeature = geoJson.readFeature(f)
-          this.osmFeatureCollection.push(osmFeature)
-        })
-
+        this.osmFeatures = await fetchFeaturesFromRawData(taskGroupExtent, filters)
         this.ready = true
       } catch (error) {
+        console.log(error)
         this.$emit('error')
       }
     },
@@ -255,14 +256,11 @@ export default defineComponent({
         dataProjection: 'EPSG:4326',
         featureProjection: 'EPSG:3857',
       }
-      const turfOsmFeatures = this.osmFeatureCollection
-        .getArray()
-        .map((f) => geoJson.writeFeatureObject(f))
       const turfTaskFeature = geoJson.writeFeatureObject(
         this.taskFeatures?.[this.taskIndex],
         options,
       )
-      const filtered = turfOsmFeatures.filter((f) => booleanIntersects(turfTaskFeature, f))
+      const filtered = this.osmFeatures.filter((f) => booleanIntersects(turfTaskFeature, f))
       this.intersectingFeatures = filtered.map((f) => geoJson.readFeature(f, options))
       const numberIntersecting = this.intersectingFeatures.length
       this.updateMissionAndOptions(numberIntersecting)
