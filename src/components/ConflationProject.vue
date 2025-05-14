@@ -176,7 +176,8 @@ export default defineComponent({
       const numberIntersecting = this.intersectingFeatures.length
       var ref = { numberIntersecting: numberIntersecting }
       if (numberIntersecting == 1) {
-        ref.osmId = this.intersectingFeatures[0]?.get('id')
+        ref.osmId = this.intersectingFeatures[0]?.get('osm_id')
+        ref.osmType = this.intersectingFeatures[0]?.get('osm_type')
         ref.version = this.intersectingFeatures[0]?.get('version')
       }
       this.reference[this.taskId] = ref
