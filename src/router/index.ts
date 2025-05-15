@@ -63,7 +63,7 @@ const router = createRouter({
           },
         },
         {
-          path: '/osm-callback',
+          path: 'osm-callback',
           name: 'osm-callback',
           component: () => import('../components/OauthReturn.vue'),
         },

@@ -48,7 +48,7 @@ export default defineComponent({
     i18nRoute,
     signInOSM() {
       // this.$router.push(i18nRoute({ name: 'osm-login' }))
-      window.location.href = `${this.authInfo.oauthHost}/redirect`;
+      window.location.href = `${this.authInfo.oauthHost}/redirectweb`
     },
     signin() {
       if (this.isFormValid) {
@@ -127,7 +127,7 @@ export default defineComponent({
           </router-link>
         </div>
       </v-col>
-      <v-col class="text-center">   
+      <v-col class="text-center">
         <v-btn color="primary" @click="signInOSM" depressed>
           {{ $t('authView.signInOSM') }}
         </v-btn>
