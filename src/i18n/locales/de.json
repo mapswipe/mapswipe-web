@@ -41,6 +41,8 @@
     "noAccountYet": "Du hast noch kein Konto?",
     "noUppercase": "Dein Nutzername darf keine Großbuchstaben enthalten.",
     "noSpace": "Dein Nutzername darf keine Leerzeichen enthalten.",
+    "osmSignInSuccess": "Du bist mit OpenStreetMap angemeldet.",
+    "osmSignInError": "Leider konnten wir dich nicht mit OpenStreetMap anmelden.",
     "or": "oder",
     "password": "Passwort",
     "passwordMatch": "Passwort stimmt nicht überein",

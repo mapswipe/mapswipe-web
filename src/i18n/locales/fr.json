@@ -41,6 +41,8 @@
     "noAccountYet": "Pas encore de compte ?",
     "noUppercase": "Votre nom d'utilisateur ne peut pas contenir de lettres majuscules.",
     "noSpace": "Votre nom d'utilisateur ne peut pas contenir d'espaces.",
+    "osmSignInSuccess": "Vous êtes connecté avec OpenStreetMap.",
+    "osmSignInError": "Désolé, nous n'avons pas pu vous connecter avec OpenStreetMap.",
     "or": "ou",
     "password": "Mot de passe",
     "passwordMatch": "Le mot de passe ne correspond pas",
