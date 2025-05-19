@@ -48,6 +48,7 @@
     "recoverAccount": "Récupérer votre compte",
     "required": "Ce champ est obligatoire.",
     "signIn": "Se connecter",
+    "signInOSM": "Se connecter avec OpenStreetMap",
     "signUp": "S'inscrire",
     "signUpFailed": "L'inscription a échoué"
   },
