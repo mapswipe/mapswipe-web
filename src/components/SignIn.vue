@@ -11,10 +11,6 @@ export default defineComponent({
       email: '',
       password: '',
       showPassword: false,
-      authInfo: {
-        // oauthHost: 'http://localhost:5173',
-        oauthHost: 'https://dev-auth.mapswipe.org',
-      },
       rules: {
         required: (value) => !!value || this.$t('authView.required'),
         email: (v) => {
@@ -43,12 +39,15 @@ export default defineComponent({
       const allow = import.meta.env.VITE_ALLOW_UNVERIFIED_USERS
       return allow
     },
+    osmOAuthRedirectUri() {
+      const uri = import.meta.env.VITE_OSM_OAUTH_REDIRECT_URI
+      return uri
+    },
   },
   methods: {
     i18nRoute,
     signInOSM() {
-      // this.$router.push(i18nRoute({ name: 'osm-login' }))
-      window.location.href = `${this.authInfo.oauthHost}/redirectweb`
+      window.location.href = this.osmOAuthRedirectUri
     },
     signin() {
       if (this.isFormValid) {
@@ -127,7 +126,7 @@ export default defineComponent({
           </router-link>
         </div>
       </v-col>
-      <v-col class="text-center">
+      <v-col v-if="osmOAuthRedirectUri" class="text-center">
         <v-btn color="primary" @click="signInOSM" depressed>
           {{ $t('authView.signInOSM') }}
         </v-btn>
