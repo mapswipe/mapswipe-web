@@ -190,15 +190,6 @@ export default defineComponent({
           {{ $t('authView.signUp') }}
         </v-btn>
       </v-col>
-      <v-col v-if="osmOAuthRedirectUri" class="text-center">
-        <v-divider />
-        <br />
-        {{ $t('authView.or') }}
-        <br /><br />
-        <v-btn color="primary" @click="signUpOSM" depressed>
-          {{ $t('authView.signUpOSM') }}
-        </v-btn>
-      </v-col>
       <sign-in-osm />
     </v-form>
   </v-container>
