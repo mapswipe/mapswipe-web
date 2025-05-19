@@ -41,6 +41,7 @@
     "noAccountYet": "Du hast noch kein Konto?",
     "noUppercase": "Dein Nutzername darf keine Großbuchstaben enthalten.",
     "noSpace": "Dein Nutzername darf keine Leerzeichen enthalten.",
+    "or": "oder",
     "password": "Passwort",
     "passwordMatch": "Passwort stimmt nicht überein",
     "passwordResetEmailSent": "E-Mail zum Zurücksetzen des Passworts versandt",

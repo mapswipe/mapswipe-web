@@ -41,6 +41,7 @@
     "noAccountYet": "Pas encore de compte ?",
     "noUppercase": "Votre nom d'utilisateur ne peut pas contenir de lettres majuscules.",
     "noSpace": "Votre nom d'utilisateur ne peut pas contenir d'espaces.",
+    "or": "ou",
     "password": "Mot de passe",
     "passwordMatch": "Le mot de passe ne correspond pas",
     "passwordResetEmailSent": "E-mail de réinitialisation de mot de passe envoyé",
