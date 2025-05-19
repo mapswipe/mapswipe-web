@@ -49,9 +49,9 @@
     "recoverAccount": "Konto wiederherstellen",
     "required": "Dies ist ein Pflichtfeld.",
     "signIn": "Anmelden",
-    "signInOSM": "Mit OpenStreetMap anmelden",
+    "signInOsm": "Mit OpenStreetMap anmelden",
+    "signInOsmText": "Du kannst dich bei MapSwipe mit deinem OpenStreetMap-Konto anmelden. Wenn du bereits ein MapSwipe-Konto hast, werden die beiden Konten dadurch nicht miteinander verknüpft! (Diese Funktion wird in einer zukünftigen Version verfügbar sein.)",
     "signUp": "Registrieren",
-    "signUpOSM": "Mit OpenStreetMap registrieren",
     "signUpFailed": "Registrierung gescheitert"
   },
   "homeView": {

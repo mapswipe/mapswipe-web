@@ -3,8 +3,12 @@ import { defineComponent } from 'vue'
 import { i18nRoute } from '@/i18n/translation'
 import { signInWithEmailAndPassword, getAuth } from 'firebase/auth'
 import { logAnalyticsEvent } from '@/firebase'
+import SignInOsm from '@/components/SignInOsm.vue'
 
 export default defineComponent({
+  components: {
+    signInOsm: SignInOsm,
+  },
   data() {
     return {
       isFormValid: false,
@@ -39,16 +43,9 @@ export default defineComponent({
       const allow = import.meta.env.VITE_ALLOW_UNVERIFIED_USERS
       return allow
     },
-    osmOAuthRedirectUri() {
-      const uri = import.meta.env.VITE_OSM_OAUTH_REDIRECT_URI
-      return uri
-    },
   },
   methods: {
     i18nRoute,
-    signInOSM() {
-      window.location.href = this.osmOAuthRedirectUri
-    },
     signin() {
       if (this.isFormValid) {
         const routerPush = this.$router.push
@@ -126,15 +123,7 @@ export default defineComponent({
           </router-link>
         </div>
       </v-col>
-      <v-col v-if="osmOAuthRedirectUri" class="text-center">
-        <v-divider />
-        <br />
-        {{ $t('authView.or') }}
-        <br /><br />
-        <v-btn color="primary" @click="signInOSM" depressed>
-          {{ $t('authView.signInOSM') }}
-        </v-btn>
-      </v-col>
+      <sign-in-osm />
     </v-form>
   </v-container>
 </template>

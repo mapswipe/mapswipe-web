@@ -30,7 +30,7 @@
       "auth/email-already-in-use": "E-mail déjà utilisé."
     },
     "confirmPassword": "Confirmer le mot de passe",
-    "consent": "Je suis d'accord avec {action}.",
+    "consent": "Je suis d'accord avec la {action}.",
     "consentSubtitle": "* Toutes vos contributions à MapSwipe sont en accès libres et disponibles pour tout le monde. Votre nom d'utilisateur est public mais votre e-mail et mot de passe ne seront jamais communiqués à des tiers.",
     "displayName": "Nom d'utilisateur",
     "email": "E-mail",
@@ -49,9 +49,9 @@
     "recoverAccount": "Récupérer votre compte",
     "required": "Ce champ est obligatoire.",
     "signIn": "Se connecter",
-    "signInOSM": "Se connecter avec OpenStreetMap",
+    "signInOsm": "Se connecter avec OpenStreetMap",
+    "signInOsmText": "Vous pouvez vous connecter à MapSwipe en utilisant votre compte OpenStreetMap. Si vous avez déjà un compte MapSwipe, cela ne les liera pas ensemble ! (Cette fonctionnalité sera disponible dans une future version.)",
     "signUp": "S'inscrire",
-    "signUpOSM": "S'inscrire avec OpenStreetMap",
     "signUpFailed": "L'inscription a échoué"
   },
   "homeView": {

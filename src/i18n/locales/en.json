@@ -49,9 +49,9 @@
     "recoverAccount": "Recover account",
     "required": "This field is required.",
     "signIn": "Sign in",
-    "signInOSM": "Sign in with OpenStreetMap",
+    "signInOsm": "Sign in with OpenStreetMap",
+    "signInOsmText": "You can sign in to MapSwipe using your OpenStreetMap account. If you already have a MapSwipe account, this will not link them together! (this will come soon in a future release)",
     "signUp": "Sign up",
-    "signUpOSM": "Sign up with OpenStreetMap",
     "signUpFailed": "Sign-up failed"
   },
   "homeView": {
