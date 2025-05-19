@@ -51,6 +51,7 @@
     "signIn": "Sign in",
     "signInOSM": "Sign in with OpenStreetMap",
     "signUp": "Sign up",
+    "signUpOSM": "Sign up with OpenStreetMap",
     "signUpFailed": "Sign-up failed"
   },
   "homeView": {

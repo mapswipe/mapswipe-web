@@ -62,8 +62,15 @@ export default defineComponent({
       const allow = import.meta.env.VITE_ALLOW_UNVERIFIED_USERS
       return allow
     },
+    osmOAuthRedirectUri() {
+      const uri = import.meta.env.VITE_OSM_OAUTH_REDIRECT_URI
+      return uri
+    },
   },
   methods: {
+    signUpOSM() {
+      window.location.href = this.osmOAuthRedirectUri
+    },
     signup() {
       if (this.isFormValid && this.consent) {
         const auth = getAuth()
@@ -184,6 +191,15 @@ export default defineComponent({
       <v-col class="text-right">
         <v-btn :disabled="!isFormValid || !consent" @click="signup" color="primary">
           {{ $t('authView.signUp') }}
+        </v-btn>
+      </v-col>
+      <v-col v-if="osmOAuthRedirectUri" class="text-center">
+        <v-divider />
+        <br />
+        {{ $t('authView.or') }}
+        <br /><br />
+        <v-btn color="primary" @click="signUpOSM" depressed>
+          {{ $t('authView.signUpOSM') }}
         </v-btn>
       </v-col>
     </v-form>

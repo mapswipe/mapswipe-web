@@ -51,6 +51,7 @@
     "signIn": "Anmelden",
     "signInOSM": "Mit OpenStreetMap anmelden",
     "signUp": "Registrieren",
+    "signUpOSM": "Mit OpenStreetMap registrieren",
     "signUpFailed": "Registrierung gescheitert"
   },
   "homeView": {
