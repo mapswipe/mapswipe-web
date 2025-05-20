@@ -73,9 +73,15 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   document.title = to.meta.title
-  next()
+  // route callback from OSM OAuth to persisted locale
+  if (to.path === '/osm-callback') {
+    const locale = Tr.guessDefaultLocale()
+    next(i18nRoute({ path: `/${locale}/osm-callback`, query: to.query }))
+  } else {
+    next()
+  }
 })
 
 export default router
