@@ -66,6 +66,7 @@ const router = createRouter({
           path: 'osm-callback',
           name: 'osm-callback',
           component: () => import('../components/OauthReturn.vue'),
+          props: (route) => ({ token: route.query.token }),
         },
       ],
     },

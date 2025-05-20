@@ -5,29 +5,31 @@ import { signInWithCustomToken, getAuth } from 'firebase/auth'
 import { logAnalyticsEvent } from '@/firebase'
 
 export default defineComponent({
+  props: {
+    token: String,
+  },
   inject: {
     showSnackbar: 'showSnackbar',
   },
   methods: {
     i18nRoute,
-    signin(token) {
-      const routerPush = this.$router.push
+    signin(token: String) {
+      const routerReplace = this.$router.replace
       const auth = getAuth()
       signInWithCustomToken(auth, token)
         .then(() => {
           this.showSnackbar(this.$t('authView.osmSignInSuccess'), 'success')
           logAnalyticsEvent('account_login')
-          routerPush(i18nRoute({ name: 'projects' }))
+          routerReplace(i18nRoute({ name: 'projects' }))
         })
         .catch(() => {
           this.showSnackbar(this.$t('authView.osmSignInError'), 'error')
-          routerPush(i18nRoute({ name: 'authentication', params: { authTab: 'sign-in' } }))
+          routerReplace(i18nRoute({ name: 'authentication', params: { authTab: 'sign-in' } }))
         })
     },
   },
-  // before enter?
   mounted() {
-    this.signin(this.$route.query.token)
+    this.signin(this.token)
   },
 })
 </script>
