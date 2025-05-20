@@ -122,6 +122,8 @@
     "leave": "Projekt verlassen",
     "saveResults": "Speichern",
     "AreYouSureYouWantToLeave": "Bist du sicher, dass du das Projekt verlassen möchtest? Deine Beiträge gehen verloren.",
+    "noResults": "Keine Ergebnisse",
+    "checkConnection": "Überprüfe deine Internetverbindung und Browsereinstellungen, um sicherzustellen, dass Inhalte geladen werden können.",
     "saveFailed": "Ergebnisse konnten nicht gespeichert werden",
     "resultsSaved": "Danke, {user}! Dein Beitrag wurde gespeichert.",
     "wellDone": "Gut gemacht, {user}!",

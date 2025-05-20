@@ -60,6 +60,7 @@ export default defineComponent({
         const data = snapshot.val() || {}
         const destructure = ([groupId, group]) => ({ groupId, ...group })
         this.userGroups = Object.entries(data).map(destructure)
+        this.bindUserGroupsOfUser()
       })
     },
     bindUserGroupsOfUser() {
@@ -210,7 +211,6 @@ export default defineComponent({
   },
   mounted() {
     this.bindUserGroups()
-    this.bindUserGroupsOfUser()
   },
 })
 </script>
