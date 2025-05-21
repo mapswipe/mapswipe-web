@@ -225,7 +225,7 @@ export default defineComponent({
           <v-icon>mdi-chart-bar</v-icon> {{ $t('profileView.userStats') }}
         </v-btn>
       </v-col>
-      <v-col>
+      <v-col v-if="!user?.uid?.startsWith('osm:')">
         <v-btn color="primary" @click="changeUsernameDialog = true" :disabled="!user">
           <v-icon>mdi-account-edit</v-icon> {{ $t('profileView.changeUsername') }}
         </v-btn>

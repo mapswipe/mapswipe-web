@@ -62,14 +62,26 @@ const router = createRouter({
             }
           },
         },
+        {
+          path: 'osm-callback',
+          name: 'osm-callback',
+          component: () => import('../components/OauthReturn.vue'),
+          props: (route) => ({ token: route.query.token }),
+        },
       ],
     },
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   document.title = to.meta.title
-  next()
+  // route callback from OSM OAuth to persisted locale
+  if (to.path === '/osm-callback') {
+    const locale = Tr.guessDefaultLocale()
+    next(i18nRoute({ path: `/${locale}/osm-callback`, query: to.query }))
+  } else {
+    next()
+  }
 })
 
 export default router
