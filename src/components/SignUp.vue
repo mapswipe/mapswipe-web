@@ -10,8 +10,12 @@ import {
 import { getDatabase, ref, set } from 'firebase/database'
 import { logAnalyticsEvent } from '@/firebase'
 import { i18nRoute } from '@/i18n/translation'
+import SignInOsm from '@/components/SignInOsm.vue'
 
 export default defineComponent({
+  components: {
+    signInOsm: SignInOsm,
+  },
   data() {
     return {
       isFormValid: false,
@@ -186,6 +190,7 @@ export default defineComponent({
           {{ $t('authView.signUp') }}
         </v-btn>
       </v-col>
+      <sign-in-osm />
     </v-form>
   </v-container>
 </template>

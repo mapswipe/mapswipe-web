@@ -41,6 +41,9 @@
     "noAccountYet": "Don't have an account yet?",
     "noUppercase": "Your username cannot contain uppercase letters.",
     "noSpace": "Your username cannot contain space.",
+    "osmSignInSuccess": "You are signed in with OpenStreetMap.",
+    "osmSignInError": "Sorry, we did not manage to sign you in with OpenStreetMap.",
+    "or": "or",
     "password": "Password",
     "passwordMatch": "Password does not match",
     "passwordResetEmailSent": "Password reset e-mail sent",
@@ -48,6 +51,8 @@
     "recoverAccount": "Recover account",
     "required": "This field is required.",
     "signIn": "Sign in",
+    "signInOsm": "Sign in with OpenStreetMap",
+    "signInOsmText": "You can sign in to MapSwipe using your OpenStreetMap account. If you already have a MapSwipe account, this will not link them together! (this will come soon in a future release)",
     "signUp": "Sign up",
     "signUpFailed": "Sign-up failed"
   },

@@ -41,6 +41,9 @@
     "noAccountYet": "Du hast noch kein Konto?",
     "noUppercase": "Dein Nutzername darf keine Großbuchstaben enthalten.",
     "noSpace": "Dein Nutzername darf keine Leerzeichen enthalten.",
+    "osmSignInSuccess": "Du bist mit OpenStreetMap angemeldet.",
+    "osmSignInError": "Leider konnten wir dich nicht mit OpenStreetMap anmelden.",
+    "or": "oder",
     "password": "Passwort",
     "passwordMatch": "Passwort stimmt nicht überein",
     "passwordResetEmailSent": "E-Mail zum Zurücksetzen des Passworts versandt",
@@ -48,6 +51,8 @@
     "recoverAccount": "Konto wiederherstellen",
     "required": "Dies ist ein Pflichtfeld.",
     "signIn": "Anmelden",
+    "signInOsm": "Mit OpenStreetMap anmelden",
+    "signInOsmText": "Du kannst dich bei MapSwipe mit deinem OpenStreetMap-Konto anmelden. Wenn du bereits ein MapSwipe-Konto hast, werden die beiden Konten dadurch nicht miteinander verknüpft! (Diese Funktion wird in einer zukünftigen Version verfügbar sein.)",
     "signUp": "Registrieren",
     "signUpFailed": "Registrierung gescheitert"
   },

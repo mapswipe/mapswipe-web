@@ -3,8 +3,12 @@ import { defineComponent } from 'vue'
 import { i18nRoute } from '@/i18n/translation'
 import { signInWithEmailAndPassword, getAuth } from 'firebase/auth'
 import { logAnalyticsEvent } from '@/firebase'
+import SignInOsm from '@/components/SignInOsm.vue'
 
 export default defineComponent({
+  components: {
+    signInOsm: SignInOsm,
+  },
   data() {
     return {
       isFormValid: false,
@@ -119,6 +123,7 @@ export default defineComponent({
           </router-link>
         </div>
       </v-col>
+      <sign-in-osm />
     </v-form>
   </v-container>
 </template>
