@@ -121,6 +121,8 @@
   "projectView": {
     "leave": "Leave project",
     "AreYouSureYouWantToLeave": "Are you sure you want to leave the project? Your contributions will be lost.",
+    "projectErrorTitle": "Something went wrong",
+    "projectErrorText": "Sorry, we are unable to prepare your tasks.",
     "noResults": "No results to save",
     "checkConnection": "Check your internet connection and browser settings to make sure that contents can be loaded",
     "saveResults": "Save",
@@ -228,5 +230,15 @@
   "imageTile": {
     "failureMessage": "Failed to load image!",
     "notAvailableMessage": "Image not available!"
+  },
+  "conflationProject": {
+    "doesTheShapeOutline": "Does the shape accurately outline a {feature}?",
+    "skip": "Skip this task",
+    "whichShape": "Which shape accurately outlines the {feature}?"
+  },
+  "conflationInstructions": {
+    "oneRed": "There is one red shape",
+    "onlyBlue": "There is only a blue shape",
+    "severalRed": "There are several red shapes"
   }
 }
