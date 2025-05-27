@@ -69,7 +69,7 @@ export default defineComponent({
           )
           return 0
         }
-        
+
         const numberOfTasks = Object.keys(results).length
         const endTime = new Date().toISOString()
         const dev = import.meta.env.DEV
