@@ -16,7 +16,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@intlify/unplugin-vue-i18n": "^3.0.1",
+    "@intlify/unplugin-vue-i18n": "^6.0.8",
     "base-64": "^1.0.0",
     "firebase": "^11.8.1",
     "mapillary-js": "^4.1.2",
