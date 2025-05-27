@@ -18,7 +18,7 @@
   "dependencies": {
     "@intlify/unplugin-vue-i18n": "^3.0.1",
     "base-64": "^1.0.0",
-    "firebase": "^10.9.0",
+    "firebase": "^11.8.1",
     "mapillary-js": "^4.1.2",
     "ol": "^10.5.0",
     "ol-contextmenu": "^5.5.0",
