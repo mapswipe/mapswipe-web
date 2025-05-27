@@ -58,6 +58,18 @@ export default defineComponent({
         logAnalyticsEvent('mapping_started', { projectType: projectType })
       },
       saveResults: (results, startTime, reference) => {
+        if (Object.values(results).every((v) => v === null)) {
+          this.to = this.i18nRoute({ name: 'projects' })
+          this.showDialog(
+            this.$t('projectView.noResults'),
+            this.$t('projectView.checkConnection'),
+            this.leaveProject,
+            true,
+            false,
+          )
+          return 0
+        }
+        
         const numberOfTasks = Object.keys(results).length
         const endTime = new Date().toISOString()
         const dev = import.meta.env.DEV

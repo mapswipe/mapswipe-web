@@ -60,6 +60,7 @@ export default defineComponent({
         const data = snapshot.val() || {}
         const destructure = ([groupId, group]) => ({ groupId, ...group })
         this.userGroups = Object.entries(data).map(destructure)
+        this.bindUserGroupsOfUser()
       })
     },
     bindUserGroupsOfUser() {
@@ -210,7 +211,6 @@ export default defineComponent({
   },
   mounted() {
     this.bindUserGroups()
-    this.bindUserGroupsOfUser()
   },
 })
 </script>
@@ -225,7 +225,7 @@ export default defineComponent({
           <v-icon>mdi-chart-bar</v-icon> {{ $t('profileView.userStats') }}
         </v-btn>
       </v-col>
-      <v-col>
+      <v-col v-if="!user?.uid?.startsWith('osm:')">
         <v-btn color="primary" @click="changeUsernameDialog = true" :disabled="!user">
           <v-icon>mdi-account-edit</v-icon> {{ $t('profileView.changeUsername') }}
         </v-btn>
