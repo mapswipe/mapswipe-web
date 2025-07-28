@@ -1,3 +1,5 @@
+import getQuadKeyFromCoordsAndZoom from './getQuadKeyFromCoordsAndZoom'
+
 const arrayFromMinMax = (min, max) => {
   min = parseInt(min)
   max = parseInt(max)
@@ -19,25 +21,6 @@ const getBingURLFromQuadKey = (urlTemplate, quadKey, apiKey) => {
     .replace(/({quadKey})|({quad_key})/, quadKey)
     .replace(/({apiKey})|({key})/, apiKey)
   return bingUrl
-}
-
-const getQuadKeyFromCoordsAndZoom = (x, y, zoom) => {
-  // Create a quadkey for use with certain tileservers that use them, e.g. Bing
-  let quadKey = ''
-  for (let i = zoom; i > 0; i -= 1) {
-    let digit = 0
-    /* eslint-disable no-bitwise */
-    const mask = 1 << (i - 1)
-    if ((x & mask) !== 0) {
-      digit += 1
-    }
-    if ((y & mask) !== 0) {
-      digit += 2
-    }
-    /* eslint-enable no-bitwise */
-    quadKey += digit.toString()
-  }
-  return quadKey
 }
 
 const getTileUrlFromCoordsAndTileserver = (x, y, zoom, tileServer) => {
