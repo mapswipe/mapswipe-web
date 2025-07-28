@@ -5,7 +5,7 @@ const makeXyzUrl = (tileServer: string, tileCoord: [number, number, number]) => 
   const wmtsLayerName = tileServer.wmtsLayerName
   const [zoom, x, y] = tileCoord
   const quadkey = getQuadKeyFromCoordsAndZoom(x, y, zoom)
-  let url = tileServer.url
+  const url = tileServer.url
     .replace(/({apiKey})|({key})/, apiKey)
     .replace(/({layer})|({name})/, wmtsLayerName)
     .replace(/({quad_key})/, quadkey)
