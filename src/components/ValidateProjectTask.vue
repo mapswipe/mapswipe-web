@@ -74,8 +74,7 @@ export default defineComponent({
       return color
     },
     maxZoom() {
-      // return this.project.tileServer.maxZoom ?? 19;
-      return this.project.tileServer.maxZoom ?? 20
+      return this.project.tileServer.maxZoom ?? 19
     },
     taskFeatures() {
       const features = new Collection()
