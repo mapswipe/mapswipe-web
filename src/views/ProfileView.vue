@@ -59,7 +59,9 @@ export default defineComponent({
       onValue(userGroupsRef, (snapshot) => {
         const data = snapshot.val() || {}
         const destructure = ([groupId, group]) => ({ groupId, ...group })
-        this.userGroups = Object.entries(data).map(destructure)
+        this.userGroups = Object.entries(data)
+          .map(destructure)
+          .filter((g) => g.archivedAt === undefined)
         this.bindUserGroupsOfUser()
       })
     },
