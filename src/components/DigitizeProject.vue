@@ -198,6 +198,14 @@ export default defineComponent({
       this.taskFeatures.clear()
       this.taskFeatures.push(newFeature)
     },
+    xyzUrl(tileCoord: [number, number, number]) {
+      const url = makeXyzUrl(this.project.tileServer, tileCoord)
+      return url
+    },
+    xyzUrlB(tileCoord: [number, number, number]) {
+      const url = makeXyzUrl(this.project.tileServerB, tileCoord)
+      return url
+    },
   },
   created() {
     this.startTime = new Date().toISOString()
@@ -280,24 +288,17 @@ export default defineComponent({
       </ol-tile-layer>
 
       <ol-tile-layer ref="basemapLayer" :zIndex="2">
-        <ol-source-bingmaps
-          v-if="project?.tileServer?.name === 'bing'"
-          :api-key="project?.tileServer?.apiKey"
-          :imagery-set="project?.tileServer?.imagerySet || 'Aerial'"
-        />
         <ol-source-xyz
-          v-else
+          :tile-url-function="xyzUrl"
           :opaque="false"
-          :url="makeXyzUrl(project.tileServer)"
           :attributions="project.tileServer.credits"
         />
       </ol-tile-layer>
-
       <ol-tile-layer v-if="project.tileServerB && !transparent" ref="basemapLayerB" :zIndex="3">
         <ol-source-xyz
+          :tile-url-function="xyzUrlB"
           :opaque="false"
-          :url="makeXyzUrl(project.tileServerB)"
-          :attributions="project.tileServerB.credits"
+          :attributions="project.tileServer.credits"
         />
       </ol-tile-layer>
 
