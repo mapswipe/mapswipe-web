@@ -12,7 +12,6 @@ const makeXyzUrl = (tileServer: string, tileCoord: [number, number, number]) => 
     .replace(/{z}/gi, zoom.toString())
     .replace(/{x}/gi, x.toString())
     .replace(/{y}/gi, y.toString())
-  console.log(url)
   return url
 }
 
