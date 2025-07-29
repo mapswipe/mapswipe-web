@@ -2,8 +2,8 @@
 import { defineComponent } from 'vue'
 import BasicPage from '@/components/BasicPage.vue'
 import ProjectMoreInfo from '@/components/ProjectMoreInfo.vue'
-import { ref, getDatabase, onValue, set } from 'firebase/database'
-import { activeProjectsQuery, logAnalyticsEvent, getUserContributionsRef } from '@/firebase'
+import { ref, onValue, set } from 'firebase/database'
+import { activeProjectsQuery, logAnalyticsEvent, getUserContributionsRef, db } from '@/firebase'
 import { i18nRoute } from '@/i18n/translation'
 import { mapStores } from 'pinia'
 import { useCurrentUserStore } from '@/stores/currentUser'
@@ -83,6 +83,7 @@ export default defineComponent({
   methods: {
     bindProjects() {
       onValue(activeProjectsQuery, (snapshot) => {
+        console.info('project snapshot', snapshot, snapshot.val());
         const data = snapshot.val() || {}
         this.projects = data
       })
@@ -156,7 +157,7 @@ export default defineComponent({
     },
     updateLastAppUse() {
       const userId = this.user.uid
-      set(ref(getDatabase(), `/v2/users/${userId}/lastAppUse`), new Date().toISOString())
+      set(ref(db, `/v2/users/${userId}/lastAppUse`), new Date().toISOString())
     },
   },
   mounted() {

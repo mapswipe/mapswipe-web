@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { i18nRoute } from '@/i18n/translation'
-import { signInWithEmailAndPassword, getAuth } from 'firebase/auth'
-import { logAnalyticsEvent } from '@/firebase'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { getFirebaseAuth, logAnalyticsEvent } from '@/firebase'
 import SignInOsm from '@/components/SignInOsm.vue'
 
 export default defineComponent({
@@ -49,7 +49,7 @@ export default defineComponent({
     signin() {
       if (this.isFormValid) {
         const routerPush = this.$router.push
-        const auth = getAuth()
+        const auth = getFirebaseAuth()
         signInWithEmailAndPassword(auth, this.email, this.password)
           .then((userCredential) => {
             const user = userCredential.user

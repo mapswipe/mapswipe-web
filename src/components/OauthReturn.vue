@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { i18nRoute } from '@/i18n/translation'
-import { signInWithCustomToken, getAuth } from 'firebase/auth'
-import { logAnalyticsEvent } from '@/firebase'
+import { signInWithCustomToken } from 'firebase/auth'
+import { getFirebaseAuth, logAnalyticsEvent } from '@/firebase'
 
 export default defineComponent({
   props: {
@@ -15,7 +15,7 @@ export default defineComponent({
     i18nRoute,
     signin(token: String) {
       const routerReplace = this.$router.replace
-      const auth = getAuth()
+      const auth = getFirebaseAuth()
       signInWithCustomToken(auth, token)
         .then(() => {
           this.showSnackbar(this.$t('authView.osmSignInSuccess'), 'success')
