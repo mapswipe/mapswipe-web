@@ -27,7 +27,7 @@
     "pinia": "^2.1.6",
     "tinycolor2": "^1.6.0",
     "vue": "^3.5.15",
-    "vue-i18n": "^11.1.4",
+    "vue-i18n": "^11.1.10",
     "vue-markdown-render": "^2.1.1",
     "vue-router": "^4.2.4",
     "vue3-openlayers": "^11.6.1",
