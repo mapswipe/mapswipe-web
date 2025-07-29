@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { getAuth, sendPasswordResetEmail, type ActionCodeSettings } from 'firebase/auth'
+import { sendPasswordResetEmail, type ActionCodeSettings } from 'firebase/auth'
+import { getFirebaseAuth } from '@/firebase'
 
 export default defineComponent({
   data() {
@@ -36,7 +37,7 @@ export default defineComponent({
   methods: {
     requestReset() {
       if (this.isFormValid) {
-        const auth = getAuth()
+        const auth = getFirebaseAuth()
         // workaround: dev instance does not accept continueUrl argument at the moment
         var actionCodeSettings = undefined
         const mode = import.meta.env.MODE
