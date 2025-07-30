@@ -9,6 +9,11 @@ export interface TileTask {
   urlB?: string;
 }
 
+export interface TutorialTileTask extends TileTask {
+  screen: number;
+  referenceAnswer: number;
+}
+
 export interface CustomOption {
   color: string;
   label: string;
@@ -25,13 +30,63 @@ export interface TileServer {
   wmtsLayerName?: string;
 }
 
+export interface VectorTileServer {
+  circleColor: string;
+  circleOpacity: number;
+  circleRadius: number;
+  fillColor: string;
+  fillOpacity: number;
+  lineColor: string;
+  lineDasharray: [number, number];
+  lineOpacity: number;
+  lineWidth: number;
+  tileServer: {
+    credits: string;
+    maxZoom: number;
+    minZoom: number;
+    name: string;
+    url: string;
+    sourceLayer: string;
+  }
+}
+
+export type OverlayTileServer = {
+    type: 'vector'
+    vector: VectorTileServer;
+  } | {
+    type: 'raster';
+    raster: TileServer;
+}
+
 export interface Project {
   projectId: string;
   zoomLevel: number;
   tileServer: TileServer;
   tileServerB?: TileServer;
+  overlayTileServer?: OverlayTileServer;
   lookFor: string;
   projectTopic: string;
+  manualUrl?: string;
+  projectType: string;
+}
+
+interface Screen {
+  title: string
+  icon: string
+  description: string
+}
+
+export interface Tutorial {
+  projectId: string
+  name: string
+  lookFor?: string
+  exampleImage1?: string;
+  exampleImage2?: string;
+  screens: {
+    hint: Screen
+    instructions: Screen
+    success: Screen
+  }[]
 }
 
 export interface TaskGroup {
@@ -41,4 +96,3 @@ export interface TaskGroup {
   yMin: number;
   yMax: number;
 }
-

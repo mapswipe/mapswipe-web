@@ -83,7 +83,6 @@ export default defineComponent({
   methods: {
     bindProjects() {
       onValue(activeProjectsQuery, (snapshot) => {
-        console.info('project snapshot', snapshot, snapshot.val());
         const data = snapshot.val() || {}
         this.projects = data
       })
