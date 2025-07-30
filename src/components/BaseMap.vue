@@ -1,16 +1,26 @@
 <script setup lang="ts" generic="GeoJsonProperties extends GeoJSON.GeoJsonProperties">
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Map } from 'maplibre-gl';
-import { shallowRef, onMounted, onUnmounted, markRaw, watchEffect, onBeforeUnmount, computed } from 'vue';
+import { shallowRef, onMounted, onUnmounted, markRaw, watchEffect, onBeforeUnmount, computed, watch } from 'vue';
 import getBbox from '@turf/bbox';
 import { isDefined, isNotDefined, listToMap } from '@togglecorp/fujs';
+import type { OverlayTileServer, TileServer } from '@/utils/types';
+
+const BASE_SOURCE_NAME = 'base-source';
+const BASE_RASTER_LAYER_NAME = 'base-raster-layer';
 
 const BOUNDS_SOURCE_NAME = 'bounds-geojson-source';
 const BOUNDS_LINE_LAYER_NAME = 'bounds-geojson-line-layer';
 const BOUNDS_FILL_LAYER_NAME = 'bounds-geojson-fill-layer';
 
+const OVERLAY_SOURCE_NAME = 'overlay-source';
+const OVERLAY_RASTER_LAYER_NAME = 'overlay-raster-layer';
+const OVERLAY_LINE_LAYER_NAME = 'overlay-line-layer';
+const OVERLAY_FILL_LAYER_NAME = 'overlay-fill-layer';
+
 type Props = {
   geoJson: GeoJSON.GeoJSON<GeoJSON.Geometry, GeoJsonProperties>;
+  tileSize: number;
   mapWidth: number;
   mapHeight: number;
   mapState: {
@@ -20,6 +30,8 @@ type Props = {
       value: any,
     }[]
   }[];
+  tileServer: TileServer;
+  overlayTileServer: OverlayTileServer;
 }
 
 const props = defineProps<Props>();
@@ -32,36 +44,51 @@ const emit = defineEmits<{
 const mapContainer = shallowRef<HTMLDivElement | null>(null);
 const map = shallowRef<Map | null>(null);
 const lastHoveredBoundFeatureId = shallowRef<number | string>();
+const updateBoundsRef = shallowRef();
+
+function getUpdatedUrl(url: string) {
+  // NOTE: maplibre uses `quadkey`
+  return url.replace('quad_key', 'quadkey');
+}
 
 const bounds = computed(() => (
-    getBbox(props.geoJson) as [number, number, number, number]
+  getBbox(props.geoJson) as [number, number, number, number]
 ));
+
+function updateBounds() {
+  window.clearTimeout(updateBoundsRef.value);
+  updateBoundsRef.value = window.setTimeout(() => {
+    if (isDefined(map.value)) {
+      map.value.fitBounds(
+        bounds.value,
+        {
+          padding: 0,
+          duration: 200,
+        },
+      );
+    }
+  }, 200);
+}
 
 const style = computed(() => ({
   width: `${props.mapWidth}px`,
-  height: `${props.mapHeight}px`
+  height: `${props.mapHeight}px`,
 }));
 
 watchEffect(() => {
-  if (isDefined(map.value) && isDefined(props.mapHeight) && isDefined(props.mapWidth)) {
-    const tileSize = Math.round(props.mapHeight / 3);
-
-    const baseTileSource = map.value.getSource('base-tile-source');
+  if (isDefined(map.value)) {
+    const baseTileSource = map.value.getSource(BASE_SOURCE_NAME);
     if (isDefined(baseTileSource)) {
-      baseTileSource.tileSize = tileSize;
+      baseTileSource.tileSize = props.tileSize;
+      updateBounds();
     }
-
-    /*
-    map.value.fitBounds(
-      bounds.value,
-      {
-        duration: 0,
-        padding: 0,
-      },
-    );
-    */
   }
 });
+
+watch(style, () => {
+  updateBounds();
+});
+
 
 function clearLastHoveredFeatureState() {
   if (isDefined(map.value) && isDefined(lastHoveredBoundFeatureId.value)) {
@@ -76,6 +103,7 @@ function clearLastHoveredFeatureState() {
   }
 }
 
+
 onMounted(() => {
   if (mapContainer.value) {
     const mapValue = markRaw(new Map({
@@ -83,36 +111,19 @@ onMounted(() => {
       style: {
         version: 8,
         sources: {
-          'base-tile-source': {
+          [BASE_SOURCE_NAME]: {
             type: 'raster',
-            tiles: ['https://ecn.t0.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=7505'],
+            tiles: [getUpdatedUrl(props.tileServer.url)],
             tileSize: 256,
-            attribution: '© 2019 Microsoft Corporation, Earthstar Geographics SIO',
-            maxzoom: 19,
-          },
-          'overlay-tile-source': {
-            type: 'vector',
-            tiles: ['https://vector.osm.org/shortbread_v1/{z}/{x}/{y}.mvt'],
-            attribution: 'Map data from OpenStreetMap',
-            minzoom: 0,
-            maxzoom: 14,
+            attribution: props.tileServer.credits,
+            // maxzoom: 19,
           },
         },
         layers: [
           {
-            id: 'base-tile-layer',
+            id: BASE_RASTER_LAYER_NAME,
             type: 'raster',
-            source: 'base-tile-source',
-          },
-          {
-            id: 'overlay-tile-layer',
-            type: 'line',
-            source: 'overlay-tile-source',
-            'source-layer': 'buildings',
-            paint: {
-              'line-color': '#ffff00',
-              'line-width': 2,
-            },
+            source: BASE_SOURCE_NAME,
           },
         ],
       },
@@ -215,6 +226,92 @@ onBeforeUnmount(() => {
   }
 });
 
+function removeLayerSafe(layerName: string) {
+  if (isDefined(map.value)) {
+    if (map.value.getLayer(layerName)) {
+      map.value.removeLayer(layerName);
+    }
+  }
+}
+
+function removeSourceSafe(sourceName: string) {
+  if (isDefined(map.value)) {
+    if (map.value.getSource(sourceName)) {
+      map.value.removeSource(sourceName);
+    }
+  }
+}
+
+watchEffect((onCleanup) => {
+  if (isDefined(map.value)) {
+    const {
+      overlayTileServer,
+    } = props;
+
+    if (overlayTileServer.type === 'raster') {
+      const { raster } = overlayTileServer;
+
+      map.value.addSource(
+        OVERLAY_SOURCE_NAME,
+        {
+          type: 'raster',
+          tiles: [getUpdatedUrl(raster.url)],
+          attribution: raster.credits,
+        },
+      );
+
+      map.value.addLayer({
+        id: OVERLAY_RASTER_LAYER_NAME,
+        type: 'raster',
+        source: OVERLAY_SOURCE_NAME
+      });
+    } else {
+      const { vector } = overlayTileServer;
+      map.value.addSource(
+        OVERLAY_SOURCE_NAME,
+        {
+          type: 'vector',
+          tiles: [vector.tileServer.url],
+          attribution: vector.tileServer.credits,
+          minzoom: vector.tileServer.maxZoom,
+          maxzoom: vector.tileServer.maxZoom,
+        },
+      );
+
+      map.value.addLayer({
+        id: OVERLAY_LINE_LAYER_NAME,
+        type: 'line',
+        source: OVERLAY_SOURCE_NAME,
+        'source-layer': vector.tileServer.sourceLayer,
+        paint: {
+          'line-color': vector.lineColor,
+          'line-width': vector.lineWidth,
+          'line-opacity': vector.lineOpacity,
+          'line-dasharray': vector.lineDasharray,
+        },
+      });
+
+      map.value.addLayer({
+        id: OVERLAY_FILL_LAYER_NAME,
+        type: 'fill',
+        source: OVERLAY_SOURCE_NAME,
+        'source-layer': vector.tileServer.sourceLayer,
+        paint: {
+          'fill-color': vector.fillColor,
+          'fill-opacity': vector.fillOpacity,
+        },
+      });
+    }
+  }
+
+  onCleanup(() => {
+    removeLayerSafe(OVERLAY_RASTER_LAYER_NAME);
+    removeLayerSafe(OVERLAY_LINE_LAYER_NAME);
+    removeLayerSafe(OVERLAY_FILL_LAYER_NAME);
+    removeSourceSafe(OVERLAY_SOURCE_NAME);
+  });
+});
+
 watchEffect((onCleanup) => {
   if (isDefined(map.value)) {
     map.value.addSource(BOUNDS_SOURCE_NAME, {
@@ -291,17 +388,9 @@ watchEffect((onCleanup) => {
   }
 
   onCleanup(() => {
-    if (isDefined(map.value)) {
-      if (map.value.getLayer(BOUNDS_LINE_LAYER_NAME)) {
-        map.value.removeLayer(BOUNDS_LINE_LAYER_NAME);
-      }
-      if (map.value.getLayer(BOUNDS_FILL_LAYER_NAME)) {
-        map.value.removeLayer(BOUNDS_FILL_LAYER_NAME);
-      }
-      if (map.value.getSource(BOUNDS_SOURCE_NAME)) {
-        map.value.removeSource(BOUNDS_SOURCE_NAME);
-      }
-    }
+    removeLayerSafe(BOUNDS_LINE_LAYER_NAME);
+    removeLayerSafe(BOUNDS_FILL_LAYER_NAME);
+    removeSourceSafe(BOUNDS_SOURCE_NAME);
   });
 });
 
@@ -324,37 +413,24 @@ watchEffect(() => {
 });
 
 onUnmounted(() => {
+  window.clearTimeout(updateBoundsRef.value);
   map.value?.remove();
 });
 </script>
 
 <template>
-  <div
-    class="map-wrapper"
-    :style="style"
-  >
-    <a href="https://www.maptiler.com" class="watermark">
-      <img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"/>
-    </a>
-    <div class="map" ref="mapContainer" />
+  <div class="map-wrapper">
+    <div
+      :style="style"
+      ref="mapContainer"
+    />
   </div>
 </template>
 
 <style scoped>
 .map-wrapper {
   position: relative;
+  background-color: gray;
   isolation: isolate;
-}
-
-.map {
-  width: 100%;
-  height: 100%;
-}
-
-.watermark {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  z-index: 1;
 }
 </style>

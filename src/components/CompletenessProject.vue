@@ -1,13 +1,18 @@
 <script lang="ts" setup>
-import { computed, ref, useTemplateRef, watch, watchEffect } from 'vue';
-import { clamp, createGeoJsonFromTasks } from '@/utils/common';
+import { computed, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch, watchEffect } from 'vue';
+import { createGeoJsonFromTasks } from '@/utils/common';
 import buildTasks from '@/utils/buildTasks';
-import type { CustomOption, Project, TaskGroup, TileTask } from '@/utils/types';
+import type { CustomOption, OverlayTileServer, Project, TaskGroup, TutorialTileTask, TileTask, Tutorial } from '@/utils/types';
 import BaseMap from './BaseMap.vue';
-import { isDefined, listToMap } from '@togglecorp/fujs';
+import { isDefined, isNotDefined, listToMap } from '@togglecorp/fujs';
 import TaskProgress from '@/components/TaskProgress.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
 import TileMap from '@/components/TileMap.vue'
+import createInformationPages from '@/utils/createInformationPages';
+import { createFallbackInformationPages } from '@/utils/domain';
+import FindProjectTutorial from './FindProjectTutorial.vue';
+import ProjectInfo from './ProjectInfo.vue';
+import FindProjectInstructions from './FindProjectInstructions.vue';
 
 interface Props {
   group: TaskGroup;
@@ -15,8 +20,8 @@ interface Props {
   options: CustomOption[];
   project: Project;
   tasks: TileTask[];
-  tutorial: Object;
-  tutorialTasks: unknown[];
+  tutorial: Tutorial;
+  tutorialTasks: TutorialTileTask[];
 }
 
 const ROWS_PER_PAGE = 3;
@@ -31,12 +36,16 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const containerRef = useTemplateRef('container');
+const projectInfoRef = useTemplateRef('projectInfo');
 
 const tileSize = ref(0);
 const columnsPerPage = ref(0);
 const taskOffset = ref(0);
+// FIXME: implement arrow keys
+const arrowKeys = ref(false);
 const results = ref<Record<string, number>>({});
 const selectedTasks = ref<Record<string, boolean>>({});
+const debounceTimeoutRef = shallowRef();
 
 const numSelectedTasks = computed(() => Object.values(selectedTasks.value).filter(Boolean).length);
 
@@ -104,6 +113,17 @@ const geoJson = computed(() => (
   createGeoJsonFromTasks(currentTasks.value)
 ));
 
+const overlayTileServer = computed(() => {
+  if (isNotDefined(props.project.overlayTileServer)) {
+    return {
+      type: 'raster' as const,
+      raster: props.project.tileServerB,
+    } as OverlayTileServer;
+  }
+
+  return props.project.overlayTileServer;
+});
+
 const numFastBackColumns = computed(() => Math.min(taskOffset.value, columnsPerPage.value));
 const numFastForwardColumns = computed(
   () => Math.min(
@@ -120,36 +140,40 @@ type GeoJsonProperties = NonNullable<(typeof geoJson.value)>['features'][number]
 const viewportWidth = computed(() => tileSize.value * columnsPerPage.value);
 const viewportHeight = computed(() => tileSize.value * ROWS_PER_PAGE);
 
-function handleContainerResize() {
-  if (containerRef.value) {
-    const containerWidth = containerRef.value.$el?.clientWidth;
+function handleWindowResize() {
+  window.clearTimeout(debounceTimeoutRef.value);
+  debounceTimeoutRef.value = window.setTimeout(() => {
+    if (containerRef.value) {
+      const clientRect = containerRef.value.$el?.getBoundingClientRect();
+      const containerWidth = clientRect.width;
 
-    const tentetiveTileHeight = Math.floor(window.innerHeight - 300) / ROWS_PER_PAGE;
-    const maxTileSize = clamp(
-      tentetiveTileHeight,
-      128,
-      512,
-    )
+      const usableHeight = window.innerHeight - 300;
 
-    const remainder = containerWidth % maxTileSize;
-    const ratio = containerWidth / maxTileSize;
-    const rounded = remainder < 100
-      ? Math.floor(ratio)
-      : Math.ceil(ratio)
+      const maxTileHeight = Math.floor(usableHeight / ROWS_PER_PAGE);
+      const tentetiveNumTiles = Math.max(
+        2,
+        Math.floor(containerWidth / maxTileHeight),
+      );
 
-    const totalColumns = Math.ceil(processedTasks.value.length / ROWS_PER_PAGE)
-    columnsPerPage.value = clamp(
-      rounded,
-      1,
-      totalColumns,
-    )
+      columnsPerPage.value = tentetiveNumTiles;
+      tileSize.value = Math.min(
+        maxTileHeight,
+        Math.floor(containerWidth / tentetiveNumTiles),
+      );
+    }
+  }, 200);
 
-    tileSize.value = Math.min(
-      maxTileSize,
-      Math.floor(containerWidth / columnsPerPage.value) - 1,
-    )
-  }
 }
+
+onMounted(() => {
+  window.addEventListener('resize', handleWindowResize);
+  handleWindowResize();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleWindowResize);
+  window.clearTimeout(debounceTimeoutRef.value);
+});
 
 const nextOptionMapping = computed(() => listToMap(
   props.options,
@@ -218,6 +242,23 @@ function handleClearTaskSelection() {
   });
 }
 
+function handleSelectAll() {
+  if (numSelectedTasks.value === currentTasks.value.length) {
+    handleClearTaskSelection();
+  } else {
+    currentTasks.value.forEach(({ taskId }) => {
+      selectedTasks.value[taskId] = true;
+    });
+  }
+}
+
+const attribution = computed(() => ([
+  props.project.tileServer.credits,
+  overlayTileServer.value.type === 'vector'
+    ? overlayTileServer.value.vector.tileServer.credits
+    : overlayTileServer.value.raster.credits
+].join('; ')));
+
 </script>
 
 <template>
@@ -231,58 +272,51 @@ function handleClearTaskSelection() {
       <v-icon @click="handleClearTaskSelection">mdi-close</v-icon>
     </v-chip>
     <tile-map :page="currentTasks" :zoomLevel="project.zoomLevel" :key="columnsPerPage" />
-    <!--
     <v-btn
-      :title="allTilesSelected ? $t('findProject.clearSelection') : $t('findProject.selectAll')"
-      :icon="'mdi-select-'.concat(allTilesSelected ? 'off' : 'all')"
+      :title="numSelectedTasks === currentTasks.length ? $t('findProject.clearSelection') : $t('findProject.selectAll')"
+      :icon="'mdi-select-'.concat(numSelectedTasks === currentTasks.length ? 'off' : 'all')"
       @click="handleSelectAll"
       color="primary"
     />
-    <v-btn
-      v-if="page.flat()[0]?.urlB"
-      :title="$t('findProject.toggleOpacity')"
-      :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
-      @click="transparent = !transparent"
-      color="primary"
-    />
-    <tile-map :page="page" :zoomLevel="project.zoomLevel" :key="columnsPerPage" />
-    <project-info
+    <ProjectInfo
       ref="projectInfo"
       :first="first"
-      :informationPages="createInformationPages(tutorial, project, createFallbackInformationPages)"
-      :manualUrl="project?.manualUrl"
+      :informationPages="createInformationPages(props.tutorial, props.project, createFallbackInformationPages)"
+      :manualUrl="props.project.manualUrl"
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
       <template #instructions>
-        <find-project-instructions
+        <FindProjectInstructions
           :attribution="attribution"
-          :exampleTileUrls="[page.flat()[0]?.url, page.flat()[0]?.urlB]"
-          :mission="mission"
+          :exampleTileUrls="[currentTasks[0]?.url, currentTasks[0]?.urlB]"
+          :mission="$t('projectView.youAreLookingFor', { lookFor: props.project.lookFor })"
           :options="options"
         />
       </template>
       <template #tutorial>
-        <find-project-tutorial
-          :tutorial="tutorial"
-          :tasks="tutorialTasks"
+        <FindProjectTutorial
+          :tutorial="props.tutorial"
+          :tasks="props.tutorialTasks"
           :options="options"
-          @tutorialComplete="$refs.projectInfo?.toggleDialog"
+          @tutorialComplete="projectInfoRef?.toggleDialog"
         />
       </template>
-    </project-info>
-    -->
+    </ProjectInfo>
   </project-header>
+  <!-- FIXME: v-resize prop is unreliable and does not always trigger -->
   <v-container
     ref="container"
-    v-resize="handleContainerResize"
     class="container"
   >
     <base-map
-      v-if="isDefined(geoJson)"
+      v-if="isDefined(geoJson) && isDefined(overlayTileServer)"
       :geo-json="geoJson"
+      :tile-size="tileSize"
       :map-width="viewportWidth"
       :map-height="viewportHeight"
       :map-state="mapState"
+      :tile-server="props.project.tileServer"
+      :overlay-tile-server="overlayTileServer"
       @on-bound-feature-click="handleTaskClick"
       @on-bound-feature-context-menu="handleTaskContextMenu"
     />
