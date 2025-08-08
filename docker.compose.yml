@@ -1,0 +1,48 @@
+# NOTE: Please read ./README.md before using this
+
+services:
+  react:
+    depends_on:
+      - web
+    build:
+      context: ../
+      target: dev
+    command: sh -c 'yarn install && yarn dev'
+    environment:
+      VITE_FIREBASE_API_KEY: '${VITE_FIREBASE_API_KEY:-AIzaSyBuvneRh621iQkac31JNKWOYElhpRA_XYM}'
+      VITE_FIREBASE_AUTH_DOMAIN: '${VITE_FIREBASE_AUTH_DOMAIN:-tc-mapswipe-alpha-2.firebaseapp.com}'
+      VITE_FIREBASE_DATABASE_URL: '${VITE_FIREBASE_DATABASE_URL:-https://tc-mapswipe-alpha-2-default-rtdb.asia-southeast1.firebasedatabase.app}'
+      VITE_FIREBASE_PROJECT_ID: '${VITE_FIREBASE_PROJECT_ID:-tc-mapswipe-alpha-2}'
+      VITE_FIREBASE_STORAGE_BUCKET: '${VITE_FIREBASE_STORAGE_BUCKET:-tc-mapswipe-alpha-2.firebasestorage.app}'
+      VITE_FIREBASE_MESSAGING_SENDER_ID: '${VITE_FIREBASE_MESSAGING_SENDER_ID:-1054350869566}'
+      VITE_FIREBASE_MEASUREMENT_ID: '${VITE_FIREBASE_MEASUREMENT_ID:-123}'
+      VITE_COMMUNITY_DASHBOARD_URL: '${VITE_COMMUNITY_DASHBOARD_URL:-https://community.mapswipe.org}'
+      VITE_BASE_URL: '${VITE_BASE_URL:-https://mapswipe.org/privacy/}'
+      VITE_PRIVACY_POLICY_URL: '${VITE_PRIVACY_POLICY_URL:-https://mapswipe.org/privacy/}'
+      VITE_IMPRINT_URL: '${VITE_IMPRINT_URL:-https://mapswipe.org/privacy/}'
+      VITE_APP_LOGO: '${VITE_APP_LOGO:-./img/mapswipe-white.svg}'
+      VITE_PROJECTS_FALLBACK_IMAGE: '${VITE_PROJECTS_FALLBACK_IMAGE:-./img/map-pin-600x400.jpg}'
+      VITE_ALLOW_UNVERIFIED_USERS: '${VITE_ALLOW_UNVERIFIED_USERS:-true}'
+      VITE_DEFAULT_LOCALE: '${VITE_DEFAULT_LOCALE:-en}'
+      VITE_FALLBACK_LOCALE: '${VITE_FALLBACK_LOCALE:-en}'
+      VITE_SUPPORTED_LOCALES: '${VITE_SUPPORTED_LOCALES:-en,de,fr}'
+      VITE_THEME_LIGHT_PRIMARY: '${VITE_THEME_LIGHT_PRIMARY:-#060E2F}'
+      VITE_THEME_LIGHT_SECONDARY: '${VITE_THEME_LIGHT_SECONDARY:-#0D1949}'
+
+      VITE_THEME_LIGHT_TERTIARY=: '${VITE_THEME_LIGHT_TERTIARY:-#EEF2FB}'
+      VITE_THEME_LIGHT_ACCENT: '${VITE_THEME_LIGHT_ACCENT:-#589AE3}'
+      VITE_THEME_LIGHT_ERROR: '${VITE_THEME_LIGHT_ERROR:-#C62828}'
+      VITE_THEME_LIGHT_WARNING: '${VITE_THEME_LIGHT_WARNING:-8E0000}'
+      VITE_THEME_LIGHT_INFO: '${VITE_THEME_LIGHT_INFO:-#2196f3}'
+      VITE_THEME_LIGHT_SUCCESS: '${VITE_THEME_LIGHT_SUCCESS:-#4caf50}'
+      VITE_THEME_LIGHT_NEUTRAL: '${VITE_THEME_LIGHT_NEUTRAL:-#272727}'
+
+      VITE_APP_NAME: '${VITE_APP_NAME:-MapSwipe}'
+      VITE_APP_WEBSITE_URL: '${VITE_APP_WEBSITE_URL:-https://mapswipe.org}'
+      VITE_APP_ATTRIBUTION_TITLE: '${VITE_APP_ATTRIBUTION_TITLE:-MapSwipe}'
+      VITE_APP_ATTRIBUTION_URL: '${VITE_APP_ATTRIBUTION_URL:-https://mapswipe.org/privacy/}'
+
+    volumes:
+      - ../:/code
+    ports:
+      - 127.0.0.1:3000:3000
