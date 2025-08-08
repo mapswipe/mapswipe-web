@@ -1,0 +1,13 @@
+.env
+.vite/
+
+# Tooling
+node_modules/
+.eslintcache
+tsconfig.tsbuildinfo
+
+# Custom
+build/
+generated/
+coverage/
+stats.html
