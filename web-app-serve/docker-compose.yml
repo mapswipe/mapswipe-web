@@ -1,0 +1,15 @@
+# NOTE: The name should is mandatory and should be unique
+name: mapswipe-web
+
+services:
+  web-app-serve:
+    build:
+      context: ../
+      target: web-app-serve
+    environment:
+      # web-app-serve config
+      APPLY_CONFIG__ENABLE_DEBUG: true
+    # NOTE: See "Dockerfile" to get dynamic env variables for .env file
+    env_file: .env
+    ports:
+      - '8050:80'

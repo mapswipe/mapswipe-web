@@ -1,0 +1,24 @@
+name: Publish web app serve
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+
+permissions:
+  packages: write
+
+jobs:
+  publish_image:
+    name: Publish Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Publish web-app-serve
+        uses: toggle-corp/web-app-serve-action@v0.1.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
