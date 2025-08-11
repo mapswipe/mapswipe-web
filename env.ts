@@ -56,7 +56,5 @@ export default defineConfig({
         VITE_COMMUNITY_DASHBOARD_URL: Schema.string.optional(),
 
         VITE_MAPILLARY_API_KEY: Schema.string.optional(),
-
-        VITE_OSM_OAUTH_REDIRECT_URI: Schema.string.optional(),
     },
 });

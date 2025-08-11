@@ -1,3 +1,4 @@
+import { ValidateEnv as validateEnv } from '@julr/vite-plugin-validate-env';
 import { fileURLToPath, URL } from 'node:url'
 import { resolve, dirname } from 'node:path'
 import { defineConfig } from 'vite'
@@ -11,6 +12,9 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
+    validateEnv({
+      configFile: 'env',
+    }),
     VueI18nPlugin({
       runtimeOnly: false,
       include: resolve(dirname(fileURLToPath(import.meta.url)), './src/i18n/locales/**'),
