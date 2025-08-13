@@ -17,20 +17,21 @@ export default defineConfig({
     overrideDefine,
     validator: 'builtin',
     schema: {
-        // NOTE: These are the dynamic env variables
         VITE_FIREBASE_API_KEY: Schema.string.optional(),
         VITE_FIREBASE_AUTH_DOMAIN: Schema.string.optional(),
-        VITE_FIREBASE_DATABASE_URL: Schema.string.optional(),
+        VITE_FIREBASE_DATABASE_URL: Schema.string({ format: 'url', protocol: true, tld: false }),
         VITE_FIREBASE_PROJECT_ID: Schema.string.optional(),
         VITE_FIREBASE_STORAGE_BUCKET: Schema.string.optional(),
         VITE_FIREBASE_MESSAGING_SENDER_ID: Schema.string.optional(),
         VITE_FIREBASE_APP_ID: Schema.string.optional(),
         VITE_FIREBASE_MEASUREMENT_ID: Schema.string.optional(),
-
-        VITE_BASE_URL: Schema.string.optional(),
-        VITE_PRIVACY_POLICY_URL: Schema.string.optional(),
-        VITE_IMPRINT_URL: Schema.string.optional(),
-        VITE_APP_LOGO: Schema.string.optional(),
+        VITE_BASE_URL: Schema.string({ format: 'url', protocol: true, tld: false }),
+        VITE_IMPRINT_URL: Schema.string({ format: 'url', protocol: true, tld: false }),
+        VITE_APP_NAME: Schema.string.optional(),
+        VITE_APP_ATTRIBUTION_TITLE: Schema.string.optional(),
+        VITE_APP_ATTRIBUTION_URL: Schema.string({ format: 'url', protocol: true, tld: false }),
+        VITE_APP_WEBSITE_URL: Schema.string({ format: 'url', protocol: true, tld: false }),
+        VITE_APP_LOG: Schema.string.optional(),
         VITE_PROJECTS_FALLBACK_IMAGE: Schema.string.optional(),
         VITE_ALLOW_UNVERIFIED_USERS: Schema.string.optional(),
 
@@ -48,12 +49,7 @@ export default defineConfig({
         VITE_THEME_LIGHT_SUCCESS: Schema.string.optional(),
         VITE_THEME_LIGHT_NEUTRAL: Schema.string.optional(),
 
-        VITE_APP_NAME: Schema.string(),
-        VITE_APP_WEBSITE_URL: Schema.string.optional(),
-        VITE_APP_ATTRIBUTION_TITLE: Schema.string.optional(),
-        VITE_APP_ATTRIBUTION_URL: Schema.string.optional(),
-
-        VITE_COMMUNITY_DASHBOARD_URL: Schema.string.optional(),
+        VITE_COMMUNITY_DASHBOARD_URL: Schema.string({ format: 'url', protocol: true, tld: false }),
 
         VITE_MAPILLARY_API_KEY: Schema.string.optional(),
     },
