@@ -2,7 +2,7 @@
 import { computed, inject, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch, watchEffect } from 'vue';
 import { createGeoJsonFromTasks } from '@/utils/common';
 import buildTasks from '@/utils/buildTasks';
-import type { CustomOption, OverlayTileServer, Project, TaskGroup, TutorialTileTask, TileTask, Tutorial } from '@/utils/types';
+import type { DefaultOption, OverlayTileServer, Project, TaskGroup, TutorialTileTask, TileTask, Tutorial } from '@/utils/types';
 import BaseMap from './BaseMap.vue';
 import { isDefined, isNotDefined, listToMap } from '@togglecorp/fujs';
 import TaskProgress from '@/components/TaskProgress.vue'
@@ -17,7 +17,7 @@ import FindProjectInstructions from './FindProjectInstructions.vue';
 interface Props {
   group: TaskGroup;
   first: boolean;
-  options: CustomOption[];
+  options: DefaultOption[];
   project: Project;
   tasks: TileTask[];
   tutorial: Tutorial;
@@ -171,7 +171,6 @@ function handleWindowResize() {
       );
     }
   }, 200);
-
 }
 
 onMounted(() => {
