@@ -1,3 +1,9 @@
+export interface ImageTask {
+  taskId: string;
+  fileName: string;
+  url: string;
+}
+
 export interface TileTask {
   groupId: string;
   projectId: string;
@@ -15,6 +21,15 @@ export interface TutorialTileTask extends TileTask {
 }
 
 export interface CustomOption {
+  mdiIcon: string;
+  description: string;
+  iconColor: string;
+  shortKey: number;
+  title: string;
+  value: number;
+}
+
+export interface DefaultOption {
   color: string;
   label: string;
   value: number;
