@@ -27,6 +27,10 @@ const projectTypes = {
     name: 'Street',
     component: 'streetProject',
   },
+  '10': {
+    name: 'Validate Image',
+    component: 'validateImageProject',
+  },
 }
 
 export default projectTypes
