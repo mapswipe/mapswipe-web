@@ -19,7 +19,6 @@
     "@intlify/unplugin-vue-i18n": "^6.0.8",
     "@togglecorp/fujs": "^2.2.0",
     "@turf/bbox": "^7.2.0",
-    "@julr/vite-plugin-validate-env": "git+https://github.com/toggle-corp/vite-plugin-validate-env#v2.2.0-tc.1",
     "base-64": "^1.0.0",
     "firebase": "^11.8.1",
     "mapillary-js": "^4.1.2",
@@ -64,6 +63,5 @@
     "vite": "^6.3.5",
     "vitest": "^3.1.4",
     "vue-tsc": "^2.2.10"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  }
 }

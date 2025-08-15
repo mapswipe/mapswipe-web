@@ -5,8 +5,7 @@ FROM node:22-bullseye AS dev
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/* \
-    # NOTE: yarn > 1.22.19 breaks yarn-install invoked by yarn
-    && npm install -g yarn@8.6.0 yarn@1.22.19 --force \
+    && npm install -g yarn@1.22.19 --force \
     && git config --global --add safe.directory /code
 
 WORKDIR /code
@@ -19,16 +18,17 @@ COPY ./package.json ./yarn.lock /code/
 RUN yarn install
 COPY . /code/
 
-ENV VITE_FIREBASE_API_KEY=12
-ENV VITE_FIREBASE_AUTH_DOMAIN=1234
+ENV VITE_FIREBASE_API_KEY=FIrebaseAP1k3y
+ENV VITE_FIREBASE_AUTH_DOMAIN=FIrebaseAP1k3
 ENV VITE_FIREBASE_DATABASE_URL=https://mapswipe.org
-ENV VITE_FIREBASE_PROJECT_ID=1235
-ENV VITE_FIREBASE_STORAGE_BUCKET=1245
-ENV VITE_FIREBASE_MESSAGING_SENDER_ID=124
-ENV VITE_FIREBASE_APP_ID=134
+ENV VITE_FIREBASE_PROJECT_ID=FIrebaseAP13
+ENV VITE_FIREBASE_STORAGE_BUCKET=FIrebase1k3y
+ENV VITE_FIREBASE_MESSAGING_SENDER_ID=FIreAP1k3y
+ENV VITE_FIREBASE_APP_ID=FIrebaseAPy
 ENV VITE_COMMUNITY_DASHBOARD_URL=https://mapswipe.org
 
 ENV VITE_FIREBASE_MEASUREMENT_ID=
+ENV VITE_MAPILLARY_API_KEY=
 ENV VITE_BASE_URL=https://mapswipe.org/privacy
 ENV VITE_PRIVACY_POLICY_URL=https://mapswipe.org/privacy/
 ENV VITE_IMPRINT_URL=https://mapswipe.org/privacy/
@@ -57,19 +57,14 @@ ENV VITE_APP_ATTRIBUTION_URL=https://mapswipe.org/privacy/
 
 RUN WEB_APP_SERVE_ENABLED=true yarn build-only --outDir=/code/build
 
-# FROM web-app-serve AS web-app-serve-example
-
-# LABEL maintainer="Togglecorp"
 FROM ghcr.io/toggle-corp/web-app-serve:v0.1.2 AS web-app-serve
 
 LABEL org.opencontainers.image.source="github.com/mapswipe/mapswipe-web"
 LABEL org.opencontainers.image.authors="dev@togglecorp.com"
 
-# Env for apply-config script
 ENV APPLY_CONFIG__SOURCE_DIRECTORY=/code/build/
 
 COPY ./web-app-serve/web-app-apply-config.sh /code/
 ENV APPLY_CONFIG__APPLY_CONFIG_PATH=/code/web-app-apply-config.sh
-RUN ls /code/
 
 COPY --from=web-app-serve-build /code/build "$APPLY_CONFIG__SOURCE_DIRECTORY"
