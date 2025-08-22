@@ -35,16 +35,16 @@ const task = computed(() => (
 ))
 
 const hasCompletedAllTasks = computed(() => {
-      if (!hasTasks.value) {
-        return false
-      }
+  if (!hasTasks.value) {
+    return false
+  }
 
-      const maxIndex = props.tasks.length
-      return currentTaskIndex.value === maxIndex
+  const maxIndex = props.tasks.length
+  return currentTaskIndex.value === maxIndex
 });
 
 const currentScreen = computed(() => (
-     props.tutorial?.screens[currentTaskIndex.value]
+  props.tutorial?.screens[currentTaskIndex.value]
 ));
 
 const answeredCorrectly = computed(() => {
