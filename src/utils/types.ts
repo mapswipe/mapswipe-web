@@ -112,10 +112,9 @@ interface Screen {
   description: string
 }
 
-export interface Tutorial {
+export interface Tutorial extends Project {
   projectId: string
   name: string
-  lookFor?: string
   exampleImage1?: string;
   exampleImage2?: string;
   screens: {
