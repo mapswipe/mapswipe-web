@@ -7,6 +7,16 @@ export interface ImageTask {
   bbox: [number, number, number, number];
 }
 
+export interface TutorialImageTask {
+  taskId: string;
+  fileName: string;
+  url: string;
+  width: number;
+  height: number;
+  bbox: [number, number, number, number];
+  referenceAnswer: number;
+}
+
 export interface TileTask {
   groupId: string;
   projectId: string;
@@ -23,13 +33,21 @@ export interface TutorialTileTask extends TileTask {
   referenceAnswer: number;
 }
 
+interface SubOption {
+  value: number;
+  description: string;
+}
+
 export interface CustomOption {
-  mdiIcon: string;
+  value: number;
+  title: string;
   description: string;
   iconColor: string;
+  subOptions?: SubOption[];
+
+  // NOTE: following are injected
   shortKey: number;
-  title: string;
-  value: number;
+  mdiIcon: string;
 }
 
 export interface DefaultOption {
