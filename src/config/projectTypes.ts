@@ -13,7 +13,7 @@ const projectTypes = {
   },
   '4': {
     name: 'Completeness',
-    component: 'findProject',
+    component: 'completenessProject',
   },
   '5': {
     name: 'Media',
@@ -26,6 +26,10 @@ const projectTypes = {
   '7': {
     name: 'Street',
     component: 'streetProject',
+  },
+  '10': {
+    name: 'Validate Image',
+    component: 'validateImageProject',
   },
 }
 
