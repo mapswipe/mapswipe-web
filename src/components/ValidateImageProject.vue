@@ -1,15 +1,20 @@
 <script lang="ts" setup>
 
 import { isDefined } from '@togglecorp/fujs';
-import { computed, inject, onMounted, ref, shallowRef, watchEffect } from 'vue';
-import type { Project, TaskGroup, TutorialTileTask, Tutorial, CustomOption, ImageTask } from '@/utils/types';
+import { computed, inject, onMounted, ref, shallowRef, useTemplateRef, watchEffect } from 'vue';
+import type { Project, TaskGroup, Tutorial, CustomOption, ImageTask, TutorialImageTask } from '@/utils/types';
 import ValidateImageProjectTask from '@/components/ValidateImageProjectTask.vue';
 import OptionButtons from '@/components/OptionButtons.vue';
-import TaskProgress from './TaskProgress.vue';
 import ProjectHeader from '@/components/ProjectHeader.vue'
-import ProjectInfo from './ProjectInfo.vue';
+import TaskProgress from '@/components/TaskProgress.vue';
+import ProjectInfo from '@/components/ProjectInfo.vue';
+import ValidateImageProjectInstructions from '@/components/ValidateImageProjectInstructions.vue';
 import createInformationPages from '@/utils/createInformationPages';
 import { createFallbackInformationPages } from '@/utils/domain';
+import { useI18n } from 'vue-i18n';
+import ValidateImageProjectTutorial from './ValidateImageProjectTutorial.vue';
+
+const { t } = useI18n();
 
 interface Props {
   group: TaskGroup;
@@ -18,17 +23,17 @@ interface Props {
   project: Project;
   tasks: ImageTask[];
   tutorial: Tutorial;
-  tutorialTasks: TutorialTileTask[];
+  tutorialTasks: TutorialImageTask[];
 }
 
 const taskOffset = ref(0);
-// const projectInfoRef = useTemplateRef('projectInfo');
+const projectInfoRef = useTemplateRef('projectInfo');
 
 const props = withDefaults(defineProps<Props>(), {
   options: () => [
     {
       mdiIcon: 'mdi-check-bold',
-      description: `The shape does outline a building in the image`,
+      description: `The shape does outline the feature in image`,
       iconColor: '#388E3C',
       shortKey: 1,
       title: 'Yes',
@@ -36,7 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
     },
     {
       mdiIcon: 'mdi-close-thick',
-      description: `The shape doesn't match a building in the image`,
+      description: `The shape doesn't match the feature in image`,
       iconColor: '#D32F2F',
       shortKey: 2,
       title: 'No',
@@ -44,7 +49,7 @@ const props = withDefaults(defineProps<Props>(), {
     },
     {
       mdiIcon: 'mdi-minus-thick',
-      description: `If you're not sure or there is cloud cover / bad imagery.`,
+      description: `If you're not sure`,
       iconColor: '#616161',
       title: 'Not sure',
       shortKey: 3,
@@ -57,6 +62,9 @@ const logMappingStarted = inject<(projectType: string) => void>('logMappingStart
 const saveResults = inject<(results: Record<string, number>, startTime: string) => void>('saveResults');
 const arrowKeys = ref(true);
 const startTime = shallowRef<string>();
+const instruction = computed(
+  () => t('validateProject.doesTheShapeOutline', { feature: props.project.lookFor })
+);
 
 const emit = defineEmits<{ created: []}>();
 const results = ref<Record<string, number>>({});
@@ -100,7 +108,7 @@ function handleForward() {
 
 <template>
   <ProjectHeader
-    :mission="$t('projectView.youAreLookingFor', { lookFor: props.project.lookFor })"
+    :mission="instruction"
   >
     <Project-info
       ref="projectInfo"
@@ -109,23 +117,17 @@ function handleForward() {
       :manualUrl="project?.manualUrl"
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
-      <!-- TODO: add instruction -->
-      <!--
       <template #instructions>
-        <validate-project-instructions :mission="mission" :options="options" />
+        <ValidateImageProjectInstructions :instruction="instruction" :options="props.options" />
       </template>
-      -->
-      <!-- FIXME: add tutorial -->
-      <!--
       <template #tutorial>
-        <validate-project-tutorial
+        <ValidateImageProjectTutorial
           :tutorial="tutorial"
           :tasks="tutorialTasks"
           :options="options"
           @tutorialComplete="projectInfoRef?.toggleDialog"
         />
       </template>
-      -->
       <!-- FIXME: add tutorial -->
     </Project-info>
   </ProjectHeader>

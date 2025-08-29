@@ -10,9 +10,10 @@ import ProjectHeader from '@/components/ProjectHeader.vue'
 import TileMap from '@/components/TileMap.vue'
 import createInformationPages from '@/utils/createInformationPages';
 import { createFallbackInformationPages } from '@/utils/domain';
-import FindProjectTutorial from './FindProjectTutorial.vue';
 import ProjectInfo from './ProjectInfo.vue';
 import FindProjectInstructions from './FindProjectInstructions.vue';
+import { useI18n } from 'vue-i18n';
+import CompletenessProjectTutorial from './CompletenessProjectTutorial.vue';
 
 interface Props {
   group: TaskGroup;
@@ -31,6 +32,7 @@ const saveResults = inject<(results: Record<string, number>, startTime: string) 
 // const showSnackbar = inject<() => void>('showSnackbar');
 
 const emit = defineEmits<{ created: []}>();
+const { t } = useI18n();
 
 const ROWS_PER_PAGE = 3;
 
@@ -54,6 +56,10 @@ const results = ref<Record<string, number>>({});
 const selectedTasks = ref<Record<string, boolean>>({});
 const debounceTimeoutRef = shallowRef();
 const startTime = shallowRef<string>();
+
+const instruction = computed(
+  () => t('projectView.youAreLookingFor', { lookFor: props.project.lookFor })
+);
 
 const numSelectedTasks = computed(() => Object.values(selectedTasks.value).filter(Boolean).length);
 
@@ -273,7 +279,7 @@ const attribution = computed(() => ([
 
 <template>
   <project-header
-    :mission="$t('projectView.youAreLookingFor', { lookFor: props.project.lookFor })"
+    :mission="instruction"
     :title="props.project.projectTopic"
   >
     <v-chip v-if="numSelectedTasks > 0" color="primary" :ripple="false">
@@ -299,12 +305,12 @@ const attribution = computed(() => ([
         <FindProjectInstructions
           :attribution="attribution"
           :exampleTileUrls="[currentTasks[0]?.url, currentTasks[0]?.urlB]"
-          :mission="$t('projectView.youAreLookingFor', { lookFor: props.project.lookFor })"
+          :mission="instruction"
           :options="options"
         />
       </template>
       <template #tutorial>
-        <FindProjectTutorial
+        <CompletenessProjectTutorial
           :tutorial="props.tutorial"
           :tasks="props.tutorialTasks"
           :options="options"
@@ -318,7 +324,7 @@ const attribution = computed(() => ([
     class="container"
     v-touch="{ left: () => handleFastForward(), right: () => handleFastBack() }"
   >
-    <base-map
+    <BaseMap
       v-if="isDefined(geoJson) && isDefined(overlayTileServer)"
       :geo-json="geoJson"
       :tile-size="tileSize"

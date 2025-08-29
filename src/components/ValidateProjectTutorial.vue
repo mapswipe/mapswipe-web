@@ -38,8 +38,10 @@ interface Tutorial extends Project {
   name: string
   lookFor?: string
   screens: {
-    hint: Screen
     instructions: Screen
+
+    // FIXME: we may not have success and hint for this project type
+    hint: Screen
     success: Screen
   }[]
 }
@@ -110,6 +112,7 @@ export default defineComponent({
         return undefined
       }
 
+      // FIXME: we may not have success and hint for this project type
       const { instructions, success, hint } = this.currentScreen
 
       if (this.answeredCorrectly && success) {
