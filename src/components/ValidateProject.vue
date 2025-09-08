@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Collection } from 'ol'
+import { isDefined } from '@togglecorp/fujs'
 import createInformationPages from '@/utils/createInformationPages'
 import { theme } from '@/plugins/vuetify'
 import OptionButtons from '@/components/OptionButtons.vue'
@@ -101,9 +102,11 @@ export default defineComponent({
       return colors
     },
     mission() {
-      const message = this.$t('validateProject.doesTheShapeOutline', {
-        feature: this.project?.lookFor,
-      })
+      const message = isDefined(this.project?.projectInstruction)
+        ? this.project?.projectInstruction
+        : this.$t('validateProject.doesTheShapeOutline', {
+          feature: this.project?.lookFor,
+        })
       return message
     },
   },

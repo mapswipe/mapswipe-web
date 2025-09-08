@@ -27,6 +27,7 @@ export interface Tutorial {
   projectId: string
   name: string
   lookFor?: string
+  projectInstruction?: string
   screens: {
     hint: Screen
     instructions: Screen
@@ -86,7 +87,9 @@ export default defineComponent({
         )
     },
     mission() {
-      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.tutorial.lookFor })
+      const message = isDefined(this.tutorial?.projectInstruction) 
+        ? this.tutorial.projectInstruction
+        : this.$t('projectView.youAreLookingFor', { lookFor: this.tutorial.lookFor })
       return message
     },
     currentScreen() {

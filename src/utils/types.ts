@@ -101,6 +101,7 @@ export interface Project {
   tileServerB?: TileServer;
   overlayTileServer?: OverlayTileServer;
   lookFor: string;
+  projectInstruction: string;
   projectTopic: string;
   manualUrl?: string;
   projectType: string;

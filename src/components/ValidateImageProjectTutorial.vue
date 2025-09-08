@@ -25,7 +25,9 @@ const answersRevealed = ref(false);
 const results = ref<Record<string, number>>({});
 
 const instruction = computed(
-  () => t('validateProject.doesTheShapeOutline', { feature: props.tutorial.lookFor })
+  () => isDefined(props.tutorial.projectInstruction)
+    ? props.tutorial.projectInstruction
+    : t('validateProject.doesTheShapeOutline', { feature: props.tutorial.lookFor })
 );
 
 const hasTasks = computed(() => isDefined(props.tasks) && props.tasks.length !== 0);

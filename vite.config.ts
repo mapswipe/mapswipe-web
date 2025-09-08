@@ -10,7 +10,7 @@ import { ValidateEnv } from '@togglecorp/vite-plugin-validate-env';
 export default defineConfig({
   base: './',
   plugins: [
-    ValidateEnv({ configFile: 'env' }),
+    ValidateEnv(),
     vue(),
     vueJsx(),
     VueI18nPlugin({

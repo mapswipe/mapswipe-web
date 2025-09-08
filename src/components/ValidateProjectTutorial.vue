@@ -37,6 +37,7 @@ interface Tutorial extends Project {
   projectId: string
   name: string
   lookFor?: string
+  projectInstruction?: string
   screens: {
     instructions: Screen
 
@@ -73,9 +74,11 @@ export default defineComponent({
   },
   computed: {
     mission() {
-      const message = this.$t('validateProject.doesTheShapeOutline', {
-        feature: this.tutorial?.lookFor,
-      })
+      const message = isDefined(this.tutorial?.projectInstruction)
+        ? this.tutorial.projectInstruction
+        : this.$t('validateProject.doesTheShapeOutline', {
+          feature: this.tutorial?.lookFor,
+        });
       return message
     },
     currentScreen() {

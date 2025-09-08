@@ -42,7 +42,9 @@ const optionMap = computed(() => {
 });
 
 const instruction = computed(
-  () => t('projectView.youAreLookingFor', { lookFor: props.tutorial.lookFor })
+  () => isDefined(props.tutorial.projectInstruction)
+    ? props.tutorial.projectInstruction
+    : t('projectView.youAreLookingFor', { lookFor: props.tutorial.lookFor })
 );
 
 const currentScreen = computed(() => (
