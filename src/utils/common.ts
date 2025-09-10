@@ -83,3 +83,25 @@ export function createGeoJsonFromTasks(
   return geojson;
 }
 
+export function getInstruction(
+  instruction: string | null | undefined,
+  lookFor: string | null | undefined,
+  projectType: string,
+) {
+  if (isNotDefined(instruction) && isNotDefined(lookFor)) {
+    return '??';
+  }
+
+  if (isDefined(instruction)) {
+    return instruction;
+  }
+
+  // Validate = 2, Validate image = '10'
+  const fallbackInstruction = (projectType === '2'
+    || projectType === '10')
+    ? `Does the shape outline ${lookFor}?`
+    : `You are looking for ${lookFor}`;
+
+  return fallbackInstruction;
+}
+

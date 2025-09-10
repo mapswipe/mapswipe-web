@@ -63,7 +63,9 @@ const saveResults = inject<(results: Record<string, number>, startTime: string) 
 const arrowKeys = ref(true);
 const startTime = shallowRef<string>();
 const instruction = computed(
-  () => t('validateProject.doesTheShapeOutline', { feature: props.project.lookFor })
+  () => isDefined(props.project.projectInstruction)
+    ? props.project.projectInstruction
+    : t('validateProject.doesTheShapeOutline', { feature: props.project.lookFor })
 );
 
 const emit = defineEmits<{ created: []}>();

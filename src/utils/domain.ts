@@ -1,14 +1,19 @@
+import { getInstruction } from "./common"
 import type { Tutorial } from "./types"
 
 export function createFallbackInformationPages(tutorial: Tutorial) {
-  if (tutorial.exampleImage1 && tutorial.exampleImage2 && tutorial.lookFor) {
+  if (tutorial.exampleImage1 && tutorial.exampleImage2 && (tutorial.projectInstruction || tutorial.lookFor)) {
     return [
       {
         blocks: [
           {
             blockNumber: 1,
             blockType: 'text',
-            textDescription: `You are looking for ${tutorial.lookFor}.`,
+            textDescription: getInstruction(
+              tutorial.lookFor,
+              tutorial.projectInstruction,
+              tutorial.projectType,
+            ),
           },
           {
             blockNumber: 2,

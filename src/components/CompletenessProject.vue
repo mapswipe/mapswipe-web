@@ -58,7 +58,9 @@ const debounceTimeoutRef = shallowRef();
 const startTime = shallowRef<string>();
 
 const instruction = computed(
-  () => t('projectView.youAreLookingFor', { lookFor: props.project.lookFor })
+  () => isDefined(props.project.projectInstruction)
+    ? props.project.projectInstruction
+    : t('projectView.youAreLookingFor', { lookFor: props.project.lookFor })
 );
 
 const numSelectedTasks = computed(() => Object.values(selectedTasks.value).filter(Boolean).length);
