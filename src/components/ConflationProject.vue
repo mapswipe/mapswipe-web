@@ -164,7 +164,7 @@ export default defineComponent({
             iconColor: '#F57C00',
             title: 'Skip',
             shortkey: 1,
-            value: 6,
+            value: 3,
           },
         ],
       }
