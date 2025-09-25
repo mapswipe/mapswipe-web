@@ -6,6 +6,7 @@ import ProjectHeader from './ProjectHeader.vue'
 import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import MediaProjectInstructions from './MediaProjectInstructions.vue'
+import { isDefined } from '@togglecorp/fujs'
 
 export default defineComponent({
   components: {
@@ -86,7 +87,9 @@ export default defineComponent({
       return attribution
     },
     mission() {
-      const message = this.project?.lookFor
+      const message = isDefined(this.project?.projectInstruction)
+        ? this.project.projectInstruction
+        : this.project?.lookFor
       return message
     },
     isImageTask() {

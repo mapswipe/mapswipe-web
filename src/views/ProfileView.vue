@@ -2,9 +2,9 @@
 import BasicPage from '@/components/BasicPage.vue'
 import { defineComponent } from 'vue'
 import { mapStores } from 'pinia'
-import { getAuth, signOut, updateProfile } from 'firebase/auth'
-import { getDatabase, ref, push, set, update, onValue } from 'firebase/database'
-import { logAnalyticsEvent } from '@/firebase'
+import { signOut, updateProfile } from 'firebase/auth'
+import { ref, push, set, update, onValue } from 'firebase/database'
+import { db, getFirebaseAuth, logAnalyticsEvent } from '@/firebase'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import {
   dbRef,
@@ -91,7 +91,6 @@ export default defineComponent({
     changeUsername() {
       this.changeUsernameDialog = false
       const userId = this.user.uid
-      const db = getDatabase()
 
       if ((this.newUsername?.length ?? 0) >= 4) {
         updateProfile(this.user, { displayName: this.newUsername })
@@ -202,7 +201,7 @@ export default defineComponent({
     },
     signOut() {
       this.hideDialog()
-      const auth = getAuth()
+      const auth = getFirebaseAuth()
       signOut(auth)
         .then(() => {
           logAnalyticsEvent('sign_out')

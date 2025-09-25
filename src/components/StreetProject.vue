@@ -8,6 +8,7 @@ import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import StreetProjectInstructions from './StreetProjectInstructions.vue'
 import { defineComponent } from 'vue'
+import { isDefined } from '@togglecorp/fujs'
 
 export default defineComponent({
   components: {
@@ -94,7 +95,9 @@ export default defineComponent({
   },
   computed: {
     mission() {
-      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
+      const message = isDefined(this.project.projectInstruction)
+        ? this.project.projectInstruction
+        : this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
   },

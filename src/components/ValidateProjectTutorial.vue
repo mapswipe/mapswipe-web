@@ -37,9 +37,12 @@ interface Tutorial extends Project {
   projectId: string
   name: string
   lookFor?: string
+  projectInstruction?: string
   screens: {
-    hint: Screen
     instructions: Screen
+
+    // FIXME: we may not have success and hint for this project type
+    hint: Screen
     success: Screen
   }[]
 }
@@ -71,9 +74,11 @@ export default defineComponent({
   },
   computed: {
     mission() {
-      const message = this.$t('validateProject.doesTheShapeOutline', {
-        feature: this.tutorial?.lookFor,
-      })
+      const message = isDefined(this.tutorial?.projectInstruction)
+        ? this.tutorial.projectInstruction
+        : this.$t('validateProject.doesTheShapeOutline', {
+          feature: this.tutorial?.lookFor,
+        });
       return message
     },
     currentScreen() {
@@ -110,6 +115,7 @@ export default defineComponent({
         return undefined
       }
 
+      // FIXME: we may not have success and hint for this project type
       const { instructions, success, hint } = this.currentScreen
 
       if (this.answeredCorrectly && success) {

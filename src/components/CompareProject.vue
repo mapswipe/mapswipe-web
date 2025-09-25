@@ -28,6 +28,7 @@ interface ProjectCompareType {
   }
   credits: string
   lookFor: string
+  projectInstruction: string
 }
 
 const defaultOptions: Option[] = [
@@ -146,7 +147,9 @@ export default defineComponent({
       return attribution.join('; ')
     },
     mission() {
-      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
+      const message = isDefined(this.project.projectInstruction)
+        ? this.project.projectInstruction
+        : this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
   },
