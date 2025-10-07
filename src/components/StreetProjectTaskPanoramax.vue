@@ -30,15 +30,10 @@ export default defineComponent({
   },
   mounted() {
     this.viewer = this.$refs.viewer as HTMLElement
-    this.viewer.addEventListener('pnx-viewer-ready', () => {
+    this.viewer.addEventListener('ready', () => {
+      this.removeArrows()
       console.log('Web component viewer ready')
     })
-
-    const observer = new MutationObserver(() => {
-      this.removeArrows()
-    })
-
-    observer.observe(this.viewer, { childList: true, subtree: true })
   },
 })
 </script>
