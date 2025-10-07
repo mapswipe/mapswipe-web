@@ -87,7 +87,7 @@ export default defineComponent({
         )
     },
     mission() {
-      const message = isDefined(this.tutorial?.projectInstruction) 
+      const message = isDefined(this.tutorial?.projectInstruction)
         ? this.tutorial.projectInstruction
         : this.$t('projectView.youAreLookingFor', { lookFor: this.tutorial.lookFor })
       return message

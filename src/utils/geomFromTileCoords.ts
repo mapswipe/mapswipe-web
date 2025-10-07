@@ -9,7 +9,13 @@ const pixelCoordsZoomToLonLat = (pixelX, pixelY, zoom, size = 256) => {
   return [lon, lat]
 }
 
-const geomFromTileCoords = (tileX: number, tileY: number, zoom: number, size = 256, epsg = 3857) => {
+const geomFromTileCoords = (
+  tileX: number,
+  tileY: number,
+  zoom: number,
+  size = 256,
+  epsg = 3857,
+) => {
   const leftPixelX = tileX * size
   const topPixelY = tileY * size
   const lonLeftLatTop = pixelCoordsZoomToLonLat(leftPixelX, topPixelY, zoom, size)

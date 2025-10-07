@@ -1,6 +1,14 @@
 import { initializeApp } from 'firebase/app'
 import { initializeAnalytics, logEvent } from 'firebase/analytics'
-import { connectDatabaseEmulator, equalTo, getDatabase, orderByChild, query, ref, startAfter } from 'firebase/database'
+import {
+  connectDatabaseEmulator,
+  equalTo,
+  getDatabase,
+  orderByChild,
+  query,
+  ref,
+  startAfter,
+} from 'firebase/database'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
 import { isDefined } from '@togglecorp/fujs'
 
@@ -27,25 +35,26 @@ export const logAnalyticsEvent = (eventName, eventParams = {}) => {
 // used for the database refs
 export const db = getDatabase(firebaseApp)
 
-const shouldUseEmulator = isDefined(import.meta.env.VITE_FIREBASE_DB_EMULATOR_HOST)
-    && isDefined(import.meta.env.VITE_FIREBASE_DB_EMULATOR_PORT);
+const shouldUseEmulator =
+  isDefined(import.meta.env.VITE_FIREBASE_DB_EMULATOR_HOST) &&
+  isDefined(import.meta.env.VITE_FIREBASE_DB_EMULATOR_PORT)
 
 if (shouldUseEmulator) {
   connectDatabaseEmulator(
     db,
     import.meta.env.VITE_FIREBASE_DB_EMULATOR_HOST,
     import.meta.env.VITE_FIREBASE_DB_EMULATOR_PORT,
-  );
+  )
 }
 
 export function getFirebaseAuth() {
-  const auth = getAuth(firebaseApp);
+  const auth = getAuth(firebaseApp)
 
   if (shouldUseEmulator && isDefined(import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_URL)) {
-    connectAuthEmulator(auth, import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_URL);
+    connectAuthEmulator(auth, import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_URL)
   }
 
-  return auth;
+  return auth
 }
 
 // export reusable database references

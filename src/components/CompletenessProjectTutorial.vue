@@ -10,47 +10,48 @@ import { useI18n } from 'vue-i18n'
 import BaseMap from './BaseMap.vue'
 
 interface Props {
-  tutorial: Tutorial;
-  options: DefaultOption[];
-  tasks: TutorialTileTask[];
+  tutorial: Tutorial
+  options: DefaultOption[]
+  tasks: TutorialTileTask[]
 }
 
-const props = defineProps<Props>();
-const { t } = useI18n();
+const props = defineProps<Props>()
+const { t } = useI18n()
 
-const currentTaskIndex = ref(0);
-const userAttempts = ref(0);
-const answersRevealed = ref(false);
-const results = ref<Record<string, number>>({});
-const selectedTasks = ref<Record<string, boolean>>({});
-const debounceTimeoutRef = shallowRef();
-const tileSize = ref(0);
+const currentTaskIndex = ref(0)
+const userAttempts = ref(0)
+const answersRevealed = ref(false)
+const results = ref<Record<string, number>>({})
+const selectedTasks = ref<Record<string, boolean>>({})
+const debounceTimeoutRef = shallowRef()
+const tileSize = ref(0)
 
-const containerRef = useTemplateRef('container');
+const containerRef = useTemplateRef('container')
 
 const optionMap = computed(() => {
-      const maxOptionIndex = props.options.length - 1
+  const maxOptionIndex = props.options.length - 1
 
-      return listToMap(
-        props.options.map((option, index) => ({
-          ...option,
-          nextOptionKey:
-            index === maxOptionIndex ? props.options[0].value : props.options[index + 1].value,
-        })),
-        ({ value }) => value,
-      );
-});
+  return listToMap(
+    props.options.map((option, index) => ({
+      ...option,
+      nextOptionKey:
+        index === maxOptionIndex ? props.options[0].value : props.options[index + 1].value,
+    })),
+    ({ value }) => value,
+  )
+})
 
-const instruction = computed(
-  () => isDefined(props.tutorial.projectInstruction)
+const instruction = computed(() =>
+  isDefined(props.tutorial.projectInstruction)
     ? props.tutorial.projectInstruction
-    : t('projectView.youAreLookingFor', { lookFor: props.tutorial.lookFor })
-);
+    : t('projectView.youAreLookingFor', { lookFor: props.tutorial.lookFor }),
+)
 
-const currentScreen = computed(() => (
-  // NOTE: this should be extracted from the `screen` property of current task
-  props.tutorial?.screens[currentTaskIndex.value]
-));
+const currentScreen = computed(
+  () =>
+    // NOTE: this should be extracted from the `screen` property of current task
+    props.tutorial?.screens[currentTaskIndex.value],
+)
 
 const taskList = computed(() => {
   if (!props.tasks) {
@@ -58,9 +59,9 @@ const taskList = computed(() => {
   }
 
   return props.tasks.filter(({ screen }) => screen === currentTaskIndex.value + 1)
-});
+})
 
-const hasTasks = computed(() => isDefined(props.tasks) && props.tasks.length !== 0);
+const hasTasks = computed(() => isDefined(props.tasks) && props.tasks.length !== 0)
 const hasCompletedAllTasks = computed(() => {
   if (!hasTasks.value) {
     return false
@@ -68,7 +69,7 @@ const hasCompletedAllTasks = computed(() => {
 
   const maxIndex = props.tasks.length
   return currentTaskIndex.value === maxIndex
-});
+})
 
 const answeredCorrectly = computed(() => {
   if (props.tasks.length === 0) {
@@ -88,14 +89,14 @@ const answeredCorrectly = computed(() => {
   )
 
   return !hasWrongAnswer
-});
+})
 
 const alertContent = computed(() => {
   if (!currentScreen.value) {
     return undefined
   }
 
-  const { instructions, success, hint } = currentScreen.value;
+  const { instructions, success, hint } = currentScreen.value
 
   if (!answersRevealed.value && answeredCorrectly.value && success) {
     const icon = success.icon
@@ -131,35 +132,37 @@ const alertContent = computed(() => {
     text: instructions.description,
     icon: icon ? matchIcon(icon) : undefined,
   }
-});
+})
 
-const geoJson = computed(() => (
-  createGeoJsonFromTasks(taskList.value.map((task) => ({
-    ...task,
-    taskZ: props.tutorial.zoomLevel,
-  }))
-)));
+const geoJson = computed(() =>
+  createGeoJsonFromTasks(
+    taskList.value.map((task) => ({
+      ...task,
+      taskZ: props.tutorial.zoomLevel,
+    })),
+  ),
+)
 
-const ROWS_PER_PAGE = 3;
-const COLS_PER_PAGE = 2;
+const ROWS_PER_PAGE = 3
+const COLS_PER_PAGE = 2
 
-type GeoJsonProperties = NonNullable<(typeof geoJson.value)>['features'][number]['properties'];
+type GeoJsonProperties = NonNullable<typeof geoJson.value>['features'][number]['properties']
 
-const viewportWidth = computed(() => tileSize.value * COLS_PER_PAGE);
-const viewportHeight = computed(() => tileSize.value * ROWS_PER_PAGE);
+const viewportWidth = computed(() => tileSize.value * COLS_PER_PAGE)
+const viewportHeight = computed(() => tileSize.value * ROWS_PER_PAGE)
 
 const overlayTileServer = computed(() => {
   if (isNotDefined(props.tutorial.overlayTileServer)) {
     return {
       type: 'raster' as const,
       raster: props.tutorial.tileServerB,
-    } as OverlayTileServer;
+    } as OverlayTileServer
   }
 
-  return props.tutorial.overlayTileServer;
-});
+  return props.tutorial.overlayTileServer
+})
 
-const mapState = computed(() => (
+const mapState = computed(() =>
   taskList.value.map((task, i) => ({
     featureId: i + 1,
     state: [
@@ -172,46 +175,40 @@ const mapState = computed(() => (
         value: selectedTasks.value[task.taskId],
       },
     ],
-  }))
-));
+  })),
+)
 
 function handleWindowResize() {
-  window.clearTimeout(debounceTimeoutRef.value);
+  window.clearTimeout(debounceTimeoutRef.value)
   debounceTimeoutRef.value = window.setTimeout(() => {
     if (containerRef.value) {
-      const clientRect = containerRef.value.getBoundingClientRect();
-      const containerWidth = clientRect.width;
+      const clientRect = containerRef.value.getBoundingClientRect()
+      const containerWidth = clientRect.width
 
-      const usableHeight = clientRect.height;
+      const usableHeight = clientRect.height
 
-      const maxTileHeight = Math.floor(usableHeight / ROWS_PER_PAGE);
-      const tentetiveNumTiles = Math.max(
-        2,
-        Math.floor(containerWidth / maxTileHeight),
-      );
+      const maxTileHeight = Math.floor(usableHeight / ROWS_PER_PAGE)
+      const tentetiveNumTiles = Math.max(2, Math.floor(containerWidth / maxTileHeight))
 
-      tileSize.value = Math.min(
-        maxTileHeight,
-        Math.floor(containerWidth / tentetiveNumTiles),
-      );
+      tileSize.value = Math.min(maxTileHeight, Math.floor(containerWidth / tentetiveNumTiles))
     }
-  }, 200);
+  }, 200)
 }
 
 onMounted(() => {
-  window.addEventListener('resize', handleWindowResize);
-  handleWindowResize();
+  window.addEventListener('resize', handleWindowResize)
+  handleWindowResize()
   results.value = listToMap(
     props.tasks,
     ({ taskId }) => taskId,
     () => props.options[0].value,
-  );
-});
+  )
+})
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleWindowResize)
-  window.clearTimeout(debounceTimeoutRef.value);
-});
+  window.clearTimeout(debounceTimeoutRef.value)
+})
 
 function nextTask() {
   if (!hasCompletedAllTasks.value) {
@@ -251,15 +248,14 @@ function updateResult(taskId: string) {
 }
 
 function handleTaskClick(featureProperties: GeoJsonProperties) {
-  const { taskId } = featureProperties;
+  const { taskId } = featureProperties
 
   const selectedTaskKeys = Object.keys(selectedTasks.value).filter(
     (taskKey) => !!selectedTasks.value[taskKey],
   )
 
   const hasSomeSelectedItem = selectedTaskKeys.length > 0
-  const isTaskFromSelectedItem =
-    selectedTaskKeys.findIndex((taskKey) => taskKey === taskId) !== -1
+  const isTaskFromSelectedItem = selectedTaskKeys.findIndex((taskKey) => taskKey === taskId) !== -1
 
   if (hasSomeSelectedItem) {
     if (isTaskFromSelectedItem) {
@@ -274,12 +270,12 @@ function handleTaskClick(featureProperties: GeoJsonProperties) {
 }
 
 function handleTaskContextMenu(featureProperties: GeoJsonProperties) {
-  const { taskId } = featureProperties;
+  const { taskId } = featureProperties
 
   if (isDefined(results.value[taskId])) {
-    selectedTasks.value[taskId] = !selectedTasks.value[taskId];
+    selectedTasks.value[taskId] = !selectedTasks.value[taskId]
   } else {
-    selectedTasks.value[taskId] = true;
+    selectedTasks.value[taskId] = true
   }
 }
 
@@ -304,7 +300,6 @@ export default defineComponent({
   },
 })
 */
-
 </script>
 
 <template>
@@ -344,10 +339,7 @@ export default defineComponent({
     </v-row>
     <v-row>
       <v-col>
-        <div
-          ref="container"
-          class="container"
-        >
+        <div ref="container" class="container">
           <BaseMap
             v-if="isDefined(geoJson) && isDefined(overlayTileServer)"
             :geo-json="geoJson"

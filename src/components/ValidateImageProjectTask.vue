@@ -1,55 +1,53 @@
 <script lang="ts" setup>
-import type { ImageTask } from '@/utils/types';
-import { isNotDefined } from '@togglecorp/fujs';
-import { onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from 'vue';
+import type { ImageTask } from '@/utils/types'
+import { isNotDefined } from '@togglecorp/fujs'
+import { onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 
 interface Props {
-  task: ImageTask;
+  task: ImageTask
 }
 
-const imgRef = useTemplateRef("taskImage");
-const props = defineProps<Props>();
+const imgRef = useTemplateRef('taskImage')
+const props = defineProps<Props>()
 
-const bbox = ref<{ x: string, y: string, width: string, height: string} | undefined>();
-const debounceTimeoutRef = shallowRef();
+const bbox = ref<{ x: string; y: string; width: string; height: string } | undefined>()
+const debounceTimeoutRef = shallowRef()
 
 function calculateBbox() {
   if (isNotDefined(imgRef.value?.image)) {
-    bbox.value = undefined;
-    return;
+    bbox.value = undefined
+    return
   }
 
   if (isNotDefined(props.task.bbox)) {
-    bbox.value = undefined;
-    return;
+    bbox.value = undefined
+    return
   }
 
-  const imageWidth = props.task.width ?? imgRef.value.image.naturalWidth;
-  const imageHeight = props.task.height ?? imgRef.value.image.naturalHeight;
+  const imageWidth = props.task.width ?? imgRef.value.image.naturalWidth
+  const imageHeight = props.task.height ?? imgRef.value.image.naturalHeight
 
-  const containerWidth = imgRef.value.image.clientWidth;
-  const containerHeight = imgRef.value.image.clientHeight;
+  const containerWidth = imgRef.value.image.clientWidth
+  const containerHeight = imgRef.value.image.clientHeight
 
-  const containerAspectRatio = containerWidth / containerHeight;
-  const imageAspectRatio = imageWidth / imageHeight;
+  const containerAspectRatio = containerWidth / containerHeight
+  const imageAspectRatio = imageWidth / imageHeight
 
-  const renderedHeight = imageAspectRatio > containerAspectRatio
-    ? containerWidth / imageAspectRatio
-    : containerHeight;
+  const renderedHeight =
+    imageAspectRatio > containerAspectRatio ? containerWidth / imageAspectRatio : containerHeight
 
-  const renderedWidth = containerAspectRatio > imageAspectRatio
-    ? containerHeight * imageAspectRatio
-    : containerWidth;
+  const renderedWidth =
+    containerAspectRatio > imageAspectRatio ? containerHeight * imageAspectRatio : containerWidth
 
-  const yExcess = containerHeight - renderedHeight;
-  const xExcess = containerWidth - renderedWidth;
+  const yExcess = containerHeight - renderedHeight
+  const xExcess = containerWidth - renderedWidth
 
-  const [x1, y1, w, h] = props.task.bbox;
+  const [x1, y1, w, h] = props.task.bbox
 
-  const cx = (x1 / imageWidth) * renderedWidth + xExcess / 2;
-  const cy = (y1 / imageHeight) * renderedHeight + yExcess / 2;
-  const cw = (w / imageWidth) * renderedWidth;
-  const ch = (h / imageHeight) * renderedHeight;
+  const cx = (x1 / imageWidth) * renderedWidth + xExcess / 2
+  const cy = (y1 / imageHeight) * renderedHeight + yExcess / 2
+  const cw = (w / imageWidth) * renderedWidth
+  const ch = (h / imageHeight) * renderedHeight
 
   bbox.value = {
     x: `${cx}px`,
@@ -59,35 +57,31 @@ function calculateBbox() {
   }
 }
 
-watch(
-  () => props.task,
-  calculateBbox,
-);
+watch(() => props.task, calculateBbox)
 
 function handleResize() {
-  calculateBbox();
+  calculateBbox()
 }
 
 function handleImageLoad() {
-  setTimeout(calculateBbox, 0);
+  setTimeout(calculateBbox, 0)
 }
 
 function handleWindowResize() {
-  window.clearTimeout(debounceTimeoutRef.value);
+  window.clearTimeout(debounceTimeoutRef.value)
   debounceTimeoutRef.value = window.setTimeout(() => {
-    calculateBbox();
-  }, 200);
+    calculateBbox()
+  }, 200)
 }
 
 onMounted(() => {
-  window.addEventListener('resize', handleWindowResize);
-});
+  window.addEventListener('resize', handleWindowResize)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleWindowResize);
-  window.clearTimeout(debounceTimeoutRef.value);
-});
-
+  window.removeEventListener('resize', handleWindowResize)
+  window.clearTimeout(debounceTimeoutRef.value)
+})
 </script>
 
 <template>
@@ -99,17 +93,8 @@ onUnmounted(() => {
     :onresize="handleResize"
     ref="taskImage"
   >
-    <svg
-      v-if="bbox"
-      class="bbox"
-      view-box="0 0 100 100"
-    >
-      <rect
-        :x="bbox.x"
-        :y="bbox.y"
-        :width="bbox.width"
-        :height="bbox.height"
-      />
+    <svg v-if="bbox" class="bbox" view-box="0 0 100 100">
+      <rect :x="bbox.x" :y="bbox.y" :width="bbox.width" :height="bbox.height" />
     </svg>
     <template v-slot:placeholder>
       <v-row class="fill-height ma-0" align="center" justify="center">
@@ -160,7 +145,7 @@ onUnmounted(() => {
   stroke-width: 2;
   fill: #fff;
   fill-opacity: 0.1;
-  transition: .2s all ease-in-out;
+  transition: 0.2s all ease-in-out;
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
 }
 </style>

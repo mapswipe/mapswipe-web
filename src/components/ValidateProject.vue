@@ -105,8 +105,8 @@ export default defineComponent({
       const message = isDefined(this.project?.projectInstruction)
         ? this.project?.projectInstruction
         : this.$t('validateProject.doesTheShapeOutline', {
-          feature: this.project?.lookFor,
-        })
+            feature: this.project?.lookFor,
+          })
       return message
     },
   },
