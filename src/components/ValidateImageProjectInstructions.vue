@@ -1,14 +1,13 @@
 <script lang="ts" setup>
 import OptionButton from '@/components/OptionButton.vue'
-import type { CustomOption } from '@/utils/types';
+import type { CustomOption } from '@/utils/types'
 
 interface Props {
-  instruction: string;
-  options: CustomOption[];
+  instruction: string
+  options: CustomOption[]
 }
 
-const props = defineProps<Props>();
-
+const props = defineProps<Props>()
 </script>
 
 <template>
@@ -16,7 +15,9 @@ const props = defineProps<Props>();
     <div class="text-h6">
       {{ $t('projectInstructions.classifyTitle') }}
     </div>
-    <div class="text-p">{{ props.instruction }} {{ $t('projectInstructions.classifyInstruction') }}.</div>
+    <div class="text-p">
+      {{ props.instruction }} {{ $t('projectInstructions.classifyInstruction') }}.
+    </div>
     <v-row v-for="(option, optionIndex) in props.options" :key="optionIndex" align="center" dense>
       <v-col cols="auto" class="mt-5 mr-4">
         <option-button :option="option" :only-icon="true" />

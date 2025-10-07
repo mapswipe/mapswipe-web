@@ -1,40 +1,38 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { isDefined } from '@togglecorp/fujs';
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { isDefined } from '@togglecorp/fujs'
 import matchIcon from '@/utils/matchIcon'
-import type { CustomOption, Tutorial, TutorialImageTask } from '@/utils/types';
-import ValidateImageProjectTask from './ValidateImageProjectTask.vue';
+import type { CustomOption, Tutorial, TutorialImageTask } from '@/utils/types'
+import ValidateImageProjectTask from './ValidateImageProjectTask.vue'
 import OptionButtons from '@/components/OptionButtons.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import TutorialCompletionCard from '@/components/TutorialCompletionCard.vue'
 
-const { t } = useI18n();
+const { t } = useI18n()
 
 interface Props {
-  tutorial: Tutorial;
-  options: CustomOption[];
-  tasks: TutorialImageTask[];
+  tutorial: Tutorial
+  options: CustomOption[]
+  tasks: TutorialImageTask[]
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props>()
 
-const currentTaskIndex = ref(0);
-const userAttempts = ref(0);
-const answersRevealed = ref(false);
-const results = ref<Record<string, number>>({});
+const currentTaskIndex = ref(0)
+const userAttempts = ref(0)
+const answersRevealed = ref(false)
+const results = ref<Record<string, number>>({})
 
-const instruction = computed(
-  () => isDefined(props.tutorial.projectInstruction)
+const instruction = computed(() =>
+  isDefined(props.tutorial.projectInstruction)
     ? props.tutorial.projectInstruction
-    : t('validateProject.doesTheShapeOutline', { feature: props.tutorial.lookFor })
-);
+    : t('validateProject.doesTheShapeOutline', { feature: props.tutorial.lookFor }),
+)
 
-const hasTasks = computed(() => isDefined(props.tasks) && props.tasks.length !== 0);
+const hasTasks = computed(() => isDefined(props.tasks) && props.tasks.length !== 0)
 
-const task = computed(() => (
-  props.tasks?.[currentTaskIndex.value]
-))
+const task = computed(() => props.tasks?.[currentTaskIndex.value])
 
 const hasCompletedAllTasks = computed(() => {
   if (!hasTasks.value) {
@@ -43,11 +41,9 @@ const hasCompletedAllTasks = computed(() => {
 
   const maxIndex = props.tasks.length
   return currentTaskIndex.value === maxIndex
-});
+})
 
-const currentScreen = computed(() => (
-  props.tutorial?.screens[currentTaskIndex.value]
-));
+const currentScreen = computed(() => props.tutorial?.screens[currentTaskIndex.value])
 
 const answeredCorrectly = computed(() => {
   if (!hasTasks.value) {
@@ -60,7 +56,7 @@ const answeredCorrectly = computed(() => {
 
   const result = results.value[task.value?.taskId]
   return isDefined(result) && result === task.value?.referenceAnswer
-});
+})
 
 const alertContent = computed(() => {
   if (!currentScreen.value) {
@@ -68,7 +64,7 @@ const alertContent = computed(() => {
   }
 
   // FIXME: we may not have success and hint for this project type
-  const { instructions, success, hint } = currentScreen.value;
+  const { instructions, success, hint } = currentScreen.value
 
   if (answeredCorrectly.value && success) {
     const icon = success.icon
@@ -104,11 +100,11 @@ const alertContent = computed(() => {
     text: instructions.description,
     icon: icon ? matchIcon(icon) : undefined,
   }
-});
+})
 
 function showAnswer() {
-  answersRevealed.value = true;
-  results.value[task.value.taskId] = task.value.referenceAnswer;
+  answersRevealed.value = true
+  results.value[task.value.taskId] = task.value.referenceAnswer
 }
 
 function nextTask() {
@@ -121,11 +117,10 @@ function nextTask() {
 
 function addResult(value: number) {
   if (!answersRevealed.value) {
-    userAttempts.value += 1;
-    results.value[task.value.taskId] = value;
+    userAttempts.value += 1
+    results.value[task.value.taskId] = value
   }
-};
-
+}
 </script>
 
 <template>
@@ -165,13 +160,8 @@ function addResult(value: number) {
     </v-row>
     <v-row>
       <v-col>
-        <div
-          v-if="tasks[currentTaskIndex] && tutorial"
-          class="task-container"
-        >
-          <ValidateImageProjectTask
-            :task="tasks[currentTaskIndex]"
-          />
+        <div v-if="tasks[currentTaskIndex] && tutorial" class="task-container">
+          <ValidateImageProjectTask :task="tasks[currentTaskIndex]" />
         </div>
       </v-col>
     </v-row>

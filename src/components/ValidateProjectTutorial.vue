@@ -77,8 +77,8 @@ export default defineComponent({
       const message = isDefined(this.tutorial?.projectInstruction)
         ? this.tutorial.projectInstruction
         : this.$t('validateProject.doesTheShapeOutline', {
-          feature: this.tutorial?.lookFor,
-        });
+            feature: this.tutorial?.lookFor,
+          })
       return message
     },
     currentScreen() {

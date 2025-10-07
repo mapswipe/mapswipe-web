@@ -1,8 +1,12 @@
-import { getInstruction } from "./common"
-import type { Tutorial } from "./types"
+import { getInstruction } from './common'
+import type { Tutorial } from './types'
 
 export function createFallbackInformationPages(tutorial: Tutorial) {
-  if (tutorial.exampleImage1 && tutorial.exampleImage2 && (tutorial.projectInstruction || tutorial.lookFor)) {
+  if (
+    tutorial.exampleImage1 &&
+    tutorial.exampleImage2 &&
+    (tutorial.projectInstruction || tutorial.lookFor)
+  ) {
     return [
       {
         blocks: [
@@ -29,7 +33,7 @@ export function createFallbackInformationPages(tutorial: Tutorial) {
             blockNumber: 4,
             blockType: 'text',
             textDescription:
-            'But the images you will see will show it from above, and it looks like this:',
+              'But the images you will see will show it from above, and it looks like this:',
           },
           {
             blockNumber: 5,
