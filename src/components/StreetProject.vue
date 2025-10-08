@@ -1,6 +1,7 @@
 <script lang="ts">
 import createInformationPages from '@/utils/createInformationPages'
 import StreetProjectTask from './StreetProjectTask.vue'
+import StreetProjectTaskPanoramax from './StreetProjectTaskPanoramax.vue'
 import StreetProjectTutorial from '@/components/StreetProjectTutorial.vue'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
@@ -14,6 +15,7 @@ export default defineComponent({
   components: {
     streetProjectInstructions: StreetProjectInstructions,
     streetProjectTask: StreetProjectTask,
+    streetProjectTaskPanoramax: StreetProjectTaskPanoramax,
     streetProjectTutorial: StreetProjectTutorial,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
@@ -170,7 +172,16 @@ export default defineComponent({
       </template>
     </project-info>
   </project-header>
+  <street-project-task-panoramax
+    v-if="project.tileServer?.name == 'panoramax'"
+    :taskId="taskId"
+    :endpoint="project.tileServer?.url"
+    @dataloading="(e) => (isLoading = e)"
+    @imageError="handleImageError(taskId)"
+    style="position: relative; height: calc(100vh - 390px)"
+  />
   <street-project-task
+    v-else
     :taskId="taskId"
     @dataloading="(e) => (isLoading = e.loading)"
     @imageError="handleImageError(taskId)"
