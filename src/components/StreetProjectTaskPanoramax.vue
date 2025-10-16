@@ -8,7 +8,6 @@ export default defineComponent({
     containerId: {
       type: String,
       default: 'panoramax',
-      required: true,
     },
     taskId: { type: String, required: true },
     endpoint: { type: String, default: 'https://api.panoramax.xyz/api' },
@@ -35,12 +34,9 @@ export default defineComponent({
       this.viewer.addEventListener('psv:picture-loaded', () => {
         this.$emit('dataloading', false)
       })
-      /* TODO
       this.viewer.addEventListener('broken', () => {
         this.$emit('imageError', this.taskId)
-        console.log("broken")
       })
-      */
     },
     moveViewer(pictureId) {
       this.viewer.select(undefined, pictureId, true)

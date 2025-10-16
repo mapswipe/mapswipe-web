@@ -95,6 +95,7 @@ export default defineComponent({
     saveResults: 'saveResults',
     showSnackbar: 'showSnackbar',
   },
+  emits: ['created'],
   computed: {
     mission() {
       const message = isDefined(this.project.projectInstruction)
@@ -133,7 +134,6 @@ export default defineComponent({
       this.errorLoading = true
       this.addResult(null)
       this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error', 1200)
-      this.forward()
     },
     isAnswered() {
       const result = this.results[this.taskId]
@@ -177,14 +177,14 @@ export default defineComponent({
     :taskId="taskId"
     :endpoint="project.tileServer?.url"
     @dataloading="(e) => (isLoading = e)"
-    @imageError="handleImageError(taskId)"
+    @imageError="handleImageError()"
     style="position: relative; height: calc(100vh - 390px)"
   />
   <street-project-task
     v-else
     :taskId="taskId"
     @dataloading="(e) => (isLoading = e.loading)"
-    @imageError="handleImageError(taskId)"
+    @imageError="handleImageError()"
     style="position: relative; height: calc(100vh - 390px)"
   />
   <option-buttons
