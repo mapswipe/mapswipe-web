@@ -11,7 +11,14 @@ export default defineConfig({
   base: './',
   plugins: [
     ValidateEnv(),
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          // Treat pnx-* as custom elements (prevents warnings)
+          isCustomElement: (tag) => tag.startsWith('pnx-')
+        }
+      }
+    }),
     vueJsx(),
     VueI18nPlugin({
       runtimeOnly: false,

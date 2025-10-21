@@ -4,6 +4,7 @@ import matchIcon from '@/utils/matchIcon'
 import OptionButtons from '@/components/OptionButtons.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import StreetProjectTask from '@/components/StreetProjectTask.vue'
+import StreetProjectTaskPanoramax from '@/components/StreetProjectTaskPanoramax.vue'
 import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import { isDefined } from '@/utils/common'
 
@@ -42,6 +43,7 @@ interface Tutorial {
 export default defineComponent({
   components: {
     StreetProjectTask,
+    StreetProjectTaskPanoramax,
     OptionButtons,
     TaskProgress,
     TutorialCompletionCard,
@@ -215,8 +217,17 @@ export default defineComponent({
     </v-row>
     <v-row justify="center">
       <v-col>
+        <street-project-task-panoramax
+          v-if="taskId && tutorial && tutorial.tileServer?.name == 'panoramax'"
+          :key="taskId"
+          :taskId="taskId"
+          :endpoint="tutorial.tileServer?.url"
+          :containerId="'panoramax_tutorial'"
+          @dataloading="(e) => (isLoading = e)"
+          style="position: relative; height: calc(70vh - 390px)"
+        />
         <street-project-task
-          v-if="taskId && tutorial"
+          v-else-if="taskId && tutorial"
           :key="taskId"
           :taskId="taskId"
           :containerId="'mapillary_tutorial'"
