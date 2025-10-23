@@ -2,13 +2,12 @@
 import { defineComponent } from 'vue'
 import {
   type ActionCodeSettings,
-  getAuth,
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updateProfile,
 } from 'firebase/auth'
-import { getDatabase, ref, set } from 'firebase/database'
-import { logAnalyticsEvent } from '@/firebase'
+import { ref, set } from 'firebase/database'
+import { db, getFirebaseAuth, logAnalyticsEvent } from '@/firebase'
 import { i18nRoute } from '@/i18n/translation'
 import SignInOsm from '@/components/SignInOsm.vue'
 
@@ -70,8 +69,7 @@ export default defineComponent({
   methods: {
     signup() {
       if (this.isFormValid && this.consent) {
-        const auth = getAuth()
-        const db = getDatabase()
+        const auth = getFirebaseAuth()
         const routerPush = this.$router.push
 
         createUserWithEmailAndPassword(auth, this.email, this.password)

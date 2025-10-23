@@ -23,6 +23,8 @@ import ValidateProject from '@/components/ValidateProject.vue'
 import DigitizeProject from '@/components/DigitizeProject.vue'
 import StreetProject from '@/components/StreetProject.vue'
 import ConflationProject from '@/components/ConflationProject.vue'
+import CompletenessProject from '@/components/CompletenessProject.vue'
+import ValidateImageProject from '@/components/ValidateImageProject.vue'
 import projectTypes from '@/config/projectTypes'
 import { decompressTasks } from '@/utils/tasks'
 
@@ -31,6 +33,8 @@ export default defineComponent({
     basicPage: BasicPage,
     compareProject: CompareProject,
     findProject: FindProject,
+    completenessProject: CompletenessProject,
+    validateImageProject: ValidateImageProject,
     mediaProject: MediaProject,
     validateProject: ValidateProject,
     digitizeProject: DigitizeProject,

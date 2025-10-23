@@ -1,10 +1,21 @@
-const arrayFromMinMax = (min, max) => {
-  min = parseInt(min)
-  max = parseInt(max)
-  return Array.from({ length: max - min + 1 }, (_, i) => i + min)
+import getQuadKeyFromCoordsAndZoom from './getQuadKeyFromCoordsAndZoom'
+
+import type { Project, TaskGroup, TileServer, TileTask } from './types'
+
+const arrayFromMinMax = (min: number | string, max: number | string) => {
+  const minValue = parseInt(String(min))
+  const maxValue = parseInt(String(max))
+  return Array.from({ length: maxValue - minValue + 1 }, (_, i) => i + minValue)
 }
 
-const formatXYZoomKey = (urlTemplate, x, y, zoom, apiKey, wmtsLayerName = '') => {
+const formatXYZoomKey = (
+  urlTemplate: string,
+  x: number,
+  y: number,
+  zoom: number,
+  apiKey: string,
+  wmtsLayerName = '',
+) => {
   const url = urlTemplate
     .replace('{x}', x.toString())
     .replace('{y}', y.toString())
@@ -14,33 +25,19 @@ const formatXYZoomKey = (urlTemplate, x, y, zoom, apiKey, wmtsLayerName = '') =>
   return url
 }
 
-const getBingURLFromQuadKey = (urlTemplate, quadKey, apiKey) => {
+const getBingURLFromQuadKey = (urlTemplate: string, quadKey: string, apiKey: string) => {
   const bingUrl = urlTemplate
     .replace(/({quadKey})|({quad_key})/, quadKey)
     .replace(/({apiKey})|({key})/, apiKey)
   return bingUrl
 }
 
-const getQuadKeyFromCoordsAndZoom = (x, y, zoom) => {
-  // Create a quadkey for use with certain tileservers that use them, e.g. Bing
-  let quadKey = ''
-  for (let i = zoom; i > 0; i -= 1) {
-    let digit = 0
-    /* eslint-disable no-bitwise */
-    const mask = 1 << (i - 1)
-    if ((x & mask) !== 0) {
-      digit += 1
-    }
-    if ((y & mask) !== 0) {
-      digit += 2
-    }
-    /* eslint-enable no-bitwise */
-    quadKey += digit.toString()
-  }
-  return quadKey
-}
-
-const getTileUrlFromCoordsAndTileserver = (x, y, zoom, tileServer) => {
+const getTileUrlFromCoordsAndTileserver = (
+  x: number,
+  y: number,
+  zoom: number,
+  tileServer: TileServer,
+) => {
   // based on https://github.com/mapswipe/mapswipe/blob/master/src/shared/common/tile_functions.js
   const urlTemplate = tileServer.url
   const apiKey = tileServer.apiKey
@@ -63,17 +60,18 @@ const getTileUrlFromCoordsAndTileserver = (x, y, zoom, tileServer) => {
   return url
 }
 
-const buildTasks = (project, group) => {
+const buildTasks = (project: Project, group: TaskGroup) => {
   const xArray = arrayFromMinMax(group.xMin, group.xMax)
   const yArray = arrayFromMinMax(group.yMin, group.yMax)
-  const tasks = []
+  const tasks: TileTask[] = []
   for (const x of xArray) {
     for (const y of yArray) {
-      const task = {
-        groupId: group.groupId,
-        projectId: project.projectId,
+      const task: TileTask = {
+        groupId: String(group.groupId),
+        projectId: String(project.projectId),
         taskX: x,
         taskY: y,
+        taskZ: Number(project.zoomLevel),
         taskId: `${project.zoomLevel}-${x}-${y}`,
         url: getTileUrlFromCoordsAndTileserver(x, y, project.zoomLevel, project.tileServer),
       }

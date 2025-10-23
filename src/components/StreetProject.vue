@@ -1,6 +1,7 @@
 <script lang="ts">
 import createInformationPages from '@/utils/createInformationPages'
 import StreetProjectTask from './StreetProjectTask.vue'
+import StreetProjectTaskPanoramax from './StreetProjectTaskPanoramax.vue'
 import StreetProjectTutorial from '@/components/StreetProjectTutorial.vue'
 import OptionButtons from './OptionButtons.vue'
 import ProjectHeader from './ProjectHeader.vue'
@@ -8,11 +9,13 @@ import ProjectInfo from './ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import StreetProjectInstructions from './StreetProjectInstructions.vue'
 import { defineComponent } from 'vue'
+import { isDefined } from '@togglecorp/fujs'
 
 export default defineComponent({
   components: {
     streetProjectInstructions: StreetProjectInstructions,
     streetProjectTask: StreetProjectTask,
+    streetProjectTaskPanoramax: StreetProjectTaskPanoramax,
     streetProjectTutorial: StreetProjectTutorial,
     optionButtons: OptionButtons,
     projectHeader: ProjectHeader,
@@ -92,9 +95,12 @@ export default defineComponent({
     saveResults: 'saveResults',
     showSnackbar: 'showSnackbar',
   },
+  emits: ['created'],
   computed: {
     mission() {
-      const message = this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
+      const message = isDefined(this.project.projectInstruction)
+        ? this.project.projectInstruction
+        : this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
   },
@@ -128,7 +134,6 @@ export default defineComponent({
       this.errorLoading = true
       this.addResult(null)
       this.showSnackbar(this.$t('streetProject.couldNotLoadImage'), 'error', 1200)
-      this.forward()
     },
     isAnswered() {
       const result = this.results[this.taskId]
@@ -167,10 +172,19 @@ export default defineComponent({
       </template>
     </project-info>
   </project-header>
+  <street-project-task-panoramax
+    v-if="project.tileServer?.name == 'panoramax'"
+    :taskId="taskId"
+    :endpoint="project.tileServer?.url"
+    @dataloading="(e) => (isLoading = e)"
+    @imageError="handleImageError()"
+    style="position: relative; height: calc(100vh - 390px)"
+  />
   <street-project-task
+    v-else
     :taskId="taskId"
     @dataloading="(e) => (isLoading = e.loading)"
-    @imageError="handleImageError(taskId)"
+    @imageError="handleImageError()"
     style="position: relative; height: calc(100vh - 390px)"
   />
   <option-buttons

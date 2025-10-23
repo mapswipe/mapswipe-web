@@ -13,7 +13,7 @@ const projectTypes = {
   },
   '4': {
     name: 'Completeness',
-    component: 'findProject',
+    component: 'completenessProject',
   },
   '5': {
     name: 'Media',
@@ -31,6 +31,10 @@ const projectTypes = {
     name: 'Conflation',
     component: 'conflationProject',
     prioritizeNearlyCompletedGroups: true,
+  },
+  '10': {
+    name: 'Validate Image',
+    component: 'validateImageProject',
   },
 }
 

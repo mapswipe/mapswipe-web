@@ -69,16 +69,12 @@ export default defineComponent({
         height: 'max(calc(100vh - 390px), 600px)',
       }
     },
-    xyzUrl() {
-      return makeXyzUrl(this.project.tileServer)
-    },
     strokeColor() {
       const color = hex2rgb(theme.light.accent, this.transparent ? 0.4 : 1)
       return color
     },
     maxZoom() {
-      // return this.project.tileServer.maxZoom ?? 19;
-      return this.project.tileServer.maxZoom ?? 20
+      return this.project.tileServer.maxZoom ?? 19
     },
     taskFeatures() {
       const features = new Collection()
@@ -116,6 +112,10 @@ export default defineComponent({
         }, delay)
       }
     },
+    xyzUrl(tileCoord: [number, number, number]) {
+      const url = makeXyzUrl(this.project.tileServer, tileCoord)
+      return url
+    },
   },
 })
 </script>
@@ -138,12 +138,7 @@ export default defineComponent({
       <ol-source-osm />
     </ol-tile-layer>
     <ol-tile-layer id="basemapLayer" ref="basemapLayer" :zIndex="2">
-      <ol-source-bingmaps
-        v-if="project?.tileServer?.name === 'bing'"
-        :api-key="project?.tileServer?.apiKey"
-        :imagery-set="project?.tileServer?.imagerySet || 'Aerial'"
-      />
-      <ol-source-xyz v-else :url="xyzUrl" :attributions="project.tileServer.credits" />
+      <ol-source-xyz :tile-url-function="xyzUrl" :attributions="project.tileServer.credits" />
     </ol-tile-layer>
     <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3" :key="task.taskId">
       <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />

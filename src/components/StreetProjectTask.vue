@@ -14,7 +14,6 @@ export default defineComponent({
     containerId: {
       type: String,
       default: 'mapillary',
-      required: true,
     },
     taskId: {
       type: String,

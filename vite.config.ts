@@ -4,12 +4,21 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import { ValidateEnv } from '@togglecorp/vite-plugin-validate-env';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
   plugins: [
-    vue(),
+    ValidateEnv(),
+    vue({
+      template: {
+        compilerOptions: {
+          // Treat pnx-* as custom elements (prevents warnings)
+          isCustomElement: (tag) => tag.startsWith('pnx-')
+        }
+      }
+    }),
     vueJsx(),
     VueI18nPlugin({
       runtimeOnly: false,
