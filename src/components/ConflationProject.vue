@@ -71,6 +71,7 @@ export default defineComponent({
       ready: false,
       taskId: undefined,
       taskIndex: 0,
+      taskIsBlue: Math.random() < 0.5,
       transparent: false,
       zoom: 3,
     }
@@ -104,6 +105,7 @@ export default defineComponent({
       }
     },
     options() {
+      const taskIsBlue = this.taskIsBlue
       return {
         validate: [
           {
@@ -138,7 +140,7 @@ export default defineComponent({
             iconColor: '#1976D2',
             shortkey: 1,
             title: 'Blue',
-            value: 1,
+            value: taskIsBlue ? 1 : 0,
           },
           {
             mdiIcon: 'mdi-shape',
@@ -146,7 +148,7 @@ export default defineComponent({
             iconColor: '#D32F2F',
             shortkey: 2,
             title: 'Red',
-            value: 0,
+            value: taskIsBlue ? 0 : 1,
           },
           {
             mdiIcon: 'mdi-close-thick',
@@ -291,6 +293,8 @@ export default defineComponent({
       }
     },
     updateMissionAndOptions(numberIntersecting) {
+      this.taskIsBlue = Math.random() < 0.5
+
       switch (numberIntersecting) {
         case 0: {
           this.mission = this.missions().validate
@@ -365,6 +369,7 @@ export default defineComponent({
       :intersectingFeatures="intersectingFeatures"
       :transparent="transparent"
       :ready="ready"
+      :taskIsBlue="taskIsBlue"
     />
   </v-container>
   <option-buttons

@@ -38,6 +38,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    taskIsBlue: {
+      type: Boolean,
+      required: true,
+    },
   },
   data(): {
     center: [number, number]
@@ -73,30 +77,50 @@ export default defineComponent({
       // return this.project.tileServer.maxZoom ?? 19;
       return this.project.tileServer.maxZoom ?? 22
     },
+    strokeColors() {
+      const alpha = this.transparent ? 0.4 : 0.8
+      const blue = '#1976D2'
+      const red = '#D32F2F'
+      let colors = [blue, red]
+      if (!this.taskIsBlue) {
+        colors.reverse()
+      }
+      const rgbaColors = colors.map((c) => hex2rgb(c, alpha))
+      return rgbaColors
+    },
   },
   methods: {
     fitView(duration = 600, delay = 100) {
       const map = (this.$refs.map as InstanceType<typeof OlMap>).map
       const mapView = this.$refs.mapView as InstanceType<typeof OlView>
-      // TODO: Use combined extent of taskSource and osmFeatureSource
-      const extent = (
-        this.$refs.taskSource as InstanceType<typeof OlSourceVector>
-      ).source.getExtent()
+      const taskSource = this.$refs.taskSource as InstanceType<typeof OlSourceVector>
+      const osmSource = this.$refs.osmFeatureSource as InstanceType<typeof OlSourceVector>
+      const taskExtent = taskSource.source.getExtent()
+      const osmExtent = osmSource.source.getExtent()
 
-      if (!extent.some((coordinate) => coordinate == Infinity)) {
-        setTimeout(() => {
-          mapView.fit(extent, {
-            size: map.getSize(),
-            padding: this.compact ? [10, 10, 10, 10] : [20, 20, 20, 20],
-            maxZoom: this.maxZoom,
-            duration: duration,
-          })
-        }, delay)
+      const isValidExtent = (extent: number[]) => !extent.some((coord) => !isFinite(coord))
+      const extent = isValidExtent(osmExtent)
+        ? [
+            Math.min(taskExtent[0], osmExtent[0]),
+            Math.min(taskExtent[1], osmExtent[1]),
+            Math.max(taskExtent[2], osmExtent[2]),
+            Math.max(taskExtent[3], osmExtent[3]),
+          ]
+        : taskExtent
+      if (!isValidExtent(extent)) {
+        return
       }
-    },
-    strokeColor(hex) {
-      const color = hex2rgb(hex, this.transparent ? 0.4 : 0.8)
-      return color
+
+      const padding = this.compact ? [10, 10, 10, 10] : [20, 20, 20, 20]
+
+      setTimeout(() => {
+        mapView.fit(extent, {
+          size: map.getSize(),
+          padding,
+          maxZoom: this.maxZoom,
+          duration,
+        })
+      }, delay)
     },
   },
 })
@@ -130,7 +154,7 @@ export default defineComponent({
     <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="ready ? 4 : 0" :key="ready">
       <ol-source-vector :features="[taskFeature]" ref="taskSource" ident="taskSource" />
       <ol-style :key="transparent">
-        <ol-style-stroke :color="strokeColor('#1976D2')" :width="5" />
+        <ol-style-stroke :color="strokeColors[0]" :width="5" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>
@@ -146,7 +170,7 @@ export default defineComponent({
         ident="osmFeatureSource"
       />
       <ol-style :key="transparent">
-        <ol-style-stroke :color="strokeColor('#D32F2F')" :width="5" />
+        <ol-style-stroke :color="strokeColors[1]" :width="5" />
         <ol-style-fill color="#0000" />
       </ol-style>
     </ol-vector-layer>
