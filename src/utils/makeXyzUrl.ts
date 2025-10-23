@@ -3,8 +3,9 @@ import getQuadKeyFromCoordsAndZoom from './getQuadKeyFromCoordsAndZoom'
 const makeXyzUrl = (tileServer: string, tileCoord: [number, number, number]) => {
   const apiKey = tileServer.apiKey
   const wmtsLayerName = tileServer.wmtsLayerName
-  const [zoom, x, y] = tileCoord
-  const quadkey = getQuadKeyFromCoordsAndZoom(x, y, zoom)
+  const [zoom, x, y] = tileCoord ?? ['{z}', '{x}', '{y}']
+  const quadkey = getQuadKeyFromCoordsAndZoom(x, y, zoom) ?? '{quadkey}'
+
   const url = tileServer.url
     .replace(/({apiKey})|({key})/, apiKey)
     .replace(/({layer})|({name})/, wmtsLayerName)

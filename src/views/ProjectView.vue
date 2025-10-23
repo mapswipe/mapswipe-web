@@ -22,6 +22,7 @@ import MediaProject from '@/components/MediaProject.vue'
 import ValidateProject from '@/components/ValidateProject.vue'
 import DigitizeProject from '@/components/DigitizeProject.vue'
 import StreetProject from '@/components/StreetProject.vue'
+import ConflationProject from '@/components/ConflationProject.vue'
 import CompletenessProject from '@/components/CompletenessProject.vue'
 import ValidateImageProject from '@/components/ValidateImageProject.vue'
 import projectTypes from '@/config/projectTypes'
@@ -38,6 +39,7 @@ export default defineComponent({
     validateProject: ValidateProject,
     digitizeProject: DigitizeProject,
     streetProject: StreetProject,
+    conflationProject: ConflationProject,
   },
   data() {
     return {
@@ -59,7 +61,7 @@ export default defineComponent({
       logMappingStarted: (projectType) => {
         logAnalyticsEvent('mapping_started', { projectType: projectType })
       },
-      saveResults: (results, startTime) => {
+      saveResults: (results, startTime, reference) => {
         if (Object.values(results).every((v) => v === null)) {
           this.to = this.i18nRoute({ name: 'projects' })
           this.showDialog(
@@ -86,6 +88,8 @@ export default defineComponent({
           results,
           startTime,
         }
+
+        reference && (entry.reference = reference)
 
         this.completedGroupId = this.group.groupId
 
@@ -156,8 +160,10 @@ export default defineComponent({
     },
     bindTaskGroup() {
       onValue(getGroupsQuery(this.projectId), (snapshot) => {
-        const data = snapshot.val() || {}
-        const flatGroups = Object.values(data).flat()
+        const flatGroups: any[] = []
+        snapshot.forEach((childSnapshot) => {
+          flatGroups.push(childSnapshot.val())
+        })
         const completed = Object.keys(this.projectContributions)
         const available = flatGroups.filter(
           (g) => g.requiredCount > 0 && !completed.includes(g.groupId),
@@ -175,8 +181,12 @@ export default defineComponent({
         } else {
           this.hideDialog()
         }
-        const random = available[Math.floor(Math.random() * available.length)]
-        this.group = random
+        if (projectTypes[this.project.projectType]?.prioritizeNearlyCompletedGroups) {
+          this.group = available[0]
+        } else {
+          const random = available[Math.floor(Math.random() * available.length)]
+          this.group = random
+        }
         this.bindTasks()
       })
     },
@@ -240,6 +250,16 @@ export default defineComponent({
     handleTaskComponentCreated() {
       goOffline(db)
     },
+    handleProjectError() {
+      this.to = '/projects'
+      this.showDialog(
+        this.$t('projectView.projectErrorTitle'),
+        this.$t('projectView.projectErrorText'),
+        this.leaveProject,
+        true,
+        false,
+      )
+    },
   },
   beforeRouteLeave(to, from, next) {
     if (this.mode === 'contribute' && to.name !== 'authentication') {
@@ -280,6 +300,7 @@ export default defineComponent({
       :tutorial="tutorial"
       :tutorialTasks="tutorialTasks"
       @created="handleTaskComponentCreated"
+      @error="handleProjectError"
     />
 
     <v-dialog v-model="nextDialog" max-width="600" persistent>

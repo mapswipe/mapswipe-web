@@ -120,8 +120,10 @@
   },
   "projectView": {
     "leave": "Projekt verlassen",
-    "saveResults": "Speichern",
     "AreYouSureYouWantToLeave": "Bist du sicher, dass du das Projekt verlassen möchtest? Deine Beiträge gehen verloren.",
+    "projectErrorTitle": "Das hat nicht geklappt",
+    "projectErrorText": "Leider können wir die Aufgaben nicht bereitstellen.",
+    "saveResults": "Speichern",
     "noResults": "Keine Ergebnisse",
     "checkConnection": "Überprüfe deine Internetverbindung und Browsereinstellungen, um sicherzustellen, dass Inhalte geladen werden können.",
     "saveFailed": "Ergebnisse konnten nicht gespeichert werden",
@@ -228,5 +230,15 @@
   "imageTile": {
     "failureMessage": "Bild konnte nicht geladen werden!",
     "notAvailableMessage": "Bild nicht verfügbar!"
+  },
+  "conflationProject": {
+    "doesTheShapeOutline": "Ist der Umriss des {feature} korrekt?",
+    "skip": "Überspringe diese Aufgabe",
+    "whichShape": "Welche Form ist der korrekte {feature}-Umriss?"
+  },
+  "conflationInstructions": {
+    "oneRed": "Es gibt eine rote Form",
+    "onlyBlue": "Es gibt nur eine blaue Form",
+    "severalRed": "Es gibt mehere rote Formen"
   }
 }

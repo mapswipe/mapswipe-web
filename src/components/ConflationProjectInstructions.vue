@@ -1,0 +1,120 @@
+<script lang="ts">
+import { defineComponent } from 'vue'
+import OptionButton from '@/components/OptionButton.vue'
+
+export default defineComponent({
+  components: {
+    optionButton: OptionButton,
+  },
+  props: {
+    missions: {
+      type: Object,
+      required: true,
+    },
+    options: {
+      type: Array,
+      required: true,
+    },
+  },
+})
+</script>
+
+<template>
+  <v-card-text>
+    <div class="text-h6">{{ $t('projectInstructions.classifyTitle') }}</div>
+    <div class="text-overline">{{ $t('conflationInstructions.onlyBlue') }}:</div>
+    <div class="text-p">{{ missions.validate }}</div>
+    <v-row
+      v-for="(option, optionIndex) in options.validate"
+      :key="optionIndex"
+      align="center"
+      dense
+    >
+      <v-col cols="auto" class="mt-5 mr-4">
+        <option-button :option="option" :only-icon="true" />
+      </v-col>
+      <v-col class="mt-5">{{
+        [option.title, option.description].filter(Boolean).join(': ')
+      }}</v-col>
+    </v-row>
+
+    <div class="text-overline mt-6">{{ $t('conflationInstructions.oneRed') }}:</div>
+    <div class="text-p">{{ missions.conflate }}</div>
+    <v-row
+      v-for="(option, optionIndex) in options.conflate"
+      :key="optionIndex"
+      align="center"
+      dense
+    >
+      <v-col cols="auto" class="mt-5 mr-4">
+        <option-button :option="option" :only-icon="true" />
+      </v-col>
+      <v-col class="mt-5">{{
+        [option.title, option.description].filter(Boolean).join(': ')
+      }}</v-col>
+    </v-row>
+
+    <div class="text-overline mt-6">{{ $t('conflationInstructions.severalRed') }}:</div>
+    <div class="text-p">{{ missions.skip }}.</div>
+    <v-row v-for="(option, optionIndex) in options.skip" :key="optionIndex" align="center" dense>
+      <v-col cols="auto" class="mt-5 mr-4">
+        <option-button :option="option" :only-icon="true" />
+      </v-col>
+      <v-col class="mt-5">{{
+        [option.title, option.description].filter(Boolean).join(': ')
+      }}</v-col>
+    </v-row>
+
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.toggleOpacityTitle') }}</div>
+    <div class="text-p mt-2">
+      <v-row align="center" dense>
+        <v-col cols="auto" class="mr-4">
+          <v-btn color="primary" icon="mdi-eye" size="small" variant="text"> </v-btn>
+        </v-col>
+        <v-col>{{ $t('projectInstructions.toggleOpacityInstruction') }}.</v-col>
+      </v-row>
+    </div>
+
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.resetTitle') }}</div>
+    <div class="text-p mt-2">
+      <v-row align="center" dense>
+        <v-col cols="auto" class="mr-4">
+          <v-btn
+            :title="$t('tileMap.resetView')"
+            color="primary"
+            icon="mdi-fit-to-screen-outline"
+            size="small"
+            variant="text"
+          >
+          </v-btn>
+        </v-col>
+        <v-col>{{ $t('projectInstructions.resetInstruction') }}</v-col>
+      </v-row>
+    </div>
+
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.useButtonsToNavigate') }}</div>
+    <div class="text-p mt-2">
+      <v-row class="align-center" dense>
+        <v-col cols="auto" class="mr-4">
+          <v-btn icon="mdi-chevron-left" color="secondary" class="mr-2" variant="text" />
+          <v-btn icon="mdi-chevron-right" color="secondary" variant="text" />
+        </v-col>
+        <v-col>{{ $t('projectInstructions.move') }}</v-col>
+      </v-row>
+    </div>
+
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.saveYourAnswers') }}</div>
+    <div class="text-p mt-2">
+      <v-row class="align-center" dense>
+        <v-col cols="auto" class="mr-4">
+          <v-btn icon="mdi-content-save" color="primary" variant="text" />
+        </v-col>
+        <v-col>{{ $t('validateProjectInstructions.seenAll') }}</v-col>
+      </v-row>
+    </div>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.dontWorry') }}</div>
+    <div class="text-p">{{ $t('projectInstructions.everyTaskIsViewedBy') }}.</div>
+  </v-card-text>
+</template>
+
+<style scoped></style>
