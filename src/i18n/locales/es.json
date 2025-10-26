@@ -1,0 +1,232 @@
+{
+  "appBanner": {
+    "message": "Por favor revisa tu bandeja de entrada y tu carpeta de spam para encontrar el email que te hemos enviado. Sigue las instrucciones del email. Si no has recibido nada 20 minutos después de crear tu cuenta, recupera la cuenta.",
+    "recover": "recuperar",
+    "title": "Tu cuenta no está verificada."
+  },
+  "appDialog": {
+    "cancel": "Cancelar",
+    "ok": "OK"
+  },
+  "appFooter": {
+    "imprint": "Aviso legal",
+    "privacyPolicy": "Política de privacidad",
+    "servicesDevelopedBy": "Servicios desarrollados por"
+  },
+  "appHeader": {
+    "home": "Inicio",
+    "projects": "Proyectos"
+  },
+  "appToaster": {
+    "close": "Cerrar"
+  },
+  "authView": {
+    "authErrors": {
+      "genericError": "Esta acción no pudo ser completada",
+      "not_verified": "Cuenta no verificada",
+      "auth/user-not-found": "Usuario no encontrado",
+      "auth/invalid-email": "Email no válido",
+      "auth/wrong-password": "Contraseña o email incorrecto",
+      "auth/email-already-in-use": "Email ya usado."
+    },
+    "confirmPassword": "Confirmar contraseña",
+    "consent": "Estoy de acuerdo con {action}.",
+    "consentSubtitle": "* Todos los datos que contribuyes a MapSwipe son abiertos y disponibles para todos. Tu usuario es público, pero tu email y contraseña nunca serán compartidos con nadie.",
+    "displayName": "Usuario",
+    "email": "Email",
+    "followInstructionOnYourEmail": "Por favor, sigue las instrucciones enviadas a tu email. El email puede tardar hasta 20 minutos en llegar.",
+    "forgotPassword": "¿Has olvidado tu contraseña?",
+    "invalidEmail": "Email inválido",
+    "minChar": "Mínimo {number} carácteres",
+    "noAccountYet": "¿Todavía no tienes una cuenta?",
+    "noUppercase": "Tu usuario no puede contener letras mayúsculas.",
+    "noSpace": "Tu usuario no puede contener espacios.",
+    "osmSignInSuccess": "Has iniciado sesión con OpenStreetMap correctamente.",
+    "osmSignInError": "Lo sentimos, no hemos podido iniciar sesión con tu cuenta de OpenStreetMap.",
+    "or": "o",
+    "password": "Contraseña",
+    "passwordMatch": "La contraseña no coincide",
+    "passwordResetEmailSent": "Email de cambio de contraseña enviado",
+    "privacyPolicy": "Política de privacidad",
+    "recoverAccount": "Recuperar cuenta",
+    "required": "Este campo es obligatorio.",
+    "signIn": "Iniciar sesión",
+    "signInOsm": "Iniciar sesión con OpenStreetMap",
+    "signInOsmText": "Puedes iniciar sesión en MapSwipe usando tu cuenta de OpenStreetMap. Si ya tienes una cuenta de MapSwipe, ¡esto no las enlazará! (esta opción llegará más tarde, en una versión futura de la aplicación)",
+    "signUp": "Crear cuenta",
+    "signUpFailed": "El proceso de creación de cuenta falló"
+  },
+  "homeView": {
+    "title": "¡Te damos la bienvenida a la web app de MapSwipe!",
+    "text": "Como parte del proyecto Missing Maps, {mapswipeLink} se creó para contribuir datos geográficos por una red global de voluntarios - con un movimiento cada vez. Individuos, voluntarios de comunidades de todo el mundo, pueden encontrar infraestructura crucial como edificios y carreteras, e identificar cambios en áreas. Además de la {mobileAppLink}, los voluntarios pueden usar ahora la nueva web app de MapSwipe y empezar ya a contribuir desde un navegador web en dispositivos variados.",
+    "acknowledgement": "Esta web app se desarrolló inicialmente por {heigitLink} con la ayuda de {hotLink}. Si encuentras algún error o quieres pedir una mejora, por favor accede {issueLink} en GitHub.",
+    "mobileApp": "app móvil",
+    "openAnIssue": "abrir un issue",
+    "startMapping": "Empezar a mapear"
+  },
+  "languageSwitcher": {
+    "switchLanguage": "Cambiar idioma"
+  },
+  "profileView": {
+    "AreYouSureYouWantToSignOut": "¿Estás seguro de que quieres cerrar sesión?",
+    "signOut": "Cerrar sesión",
+    "signOutFailed": "El cierre de sesión falló",
+    "unnamedUser": "Usuario sin nombre",
+    "userStats": "Estadísticas de usuario",
+    "deleteAccount": "Eliminar cuenta",
+    "AreYouSureYouWantToDelete": "¿Estás seguro de que quieres eliminar tu cuenta? ¡Esta acción no puede revertirse!",
+    "accountDeleted": "Cuenta eliminada",
+    "accountDeletionFailed": "El borrado de cuenta falló",
+    "newUsername": "Nuevo nombre de usuario",
+    "usernameChanged": "El nombre de usuario cambió",
+    "usernameChangeFailed": "El cambio de nombre de usuario falló",
+    "userGroups": "Grupos de usuario",
+    "joinNewGroup": "Unirse a un nuevo grupo",
+    "exploreUserGroups": "Explorar grupos de usuarios",
+    "noGroupsAvailable": "No hay grupos disponibles",
+    "groupStats": "Estadísticas de grupo",
+    "join": "Unirse",
+    "memberships": "Membresías",
+    "leave": "Salir",
+    "joinedGroup": "Te uniste al grupo",
+    "AreYouSureYouWantToJoin": "¿Estás seguro de que quieres unirte al grupo?",
+    "changeUsername": "Cambiar nombre de usuario",
+    "currentUsername": "Nombre de usuario actual",
+    "failedToJoinGroup": "La acción de unirte al grupo falló",
+    "failedToLeaveGroup": "La acción de salir del grupo falló",
+    "leftGroup": "Te has salido del grupo",
+    "AreYouSureYouWantToLeave": "¿Estás seguro de que quieres salirte del grupo?"
+  },
+  "userState": {
+    "signInSignUp": "Iniciar sesión/Crear cuenta"
+  },
+  "projectsView": {
+    "unknown": "Desconocido",
+    "by": "por",
+    "contribute": "Contribuir",
+    "contributor": "contribuidor | contribuidores",
+    "completed": "completado",
+    "byYou": "por ti",
+    "noProjectsAvailable": "No hay proyectos disponibles",
+    "moreInfo": "Más información",
+    "filter": "Filtro",
+    "filterLabels": {
+      "language": "Idioma",
+      "projectRegion": "Región",
+      "projectTopic": "Tema",
+      "requestingOrganisation": "Organización",
+      "status": "Estado"
+    }
+  },
+  "projectView": {
+    "leave": "Abandonar el proyecto",
+    "AreYouSureYouWantToLeave": "¿Estás seguro de que quieres abandonar el proyecto? Se perderán tus contribuciones.",
+    "noResults": "No hay resultados que guardar",
+    "checkConnection": "Verifica tu conexión a internet para asegurarnos de que el contenido puede ser cargado",
+    "saveResults": "Guardar",
+    "saveFailed": "La acción de guardar resultados falló",
+    "resultsSaved": "¡Gracias, {user}! Tu contribución se ha guardado.",
+    "wellDone": "¡Bien hecho, {user}!",
+    "youHaveCompletedAllTheTasks": "¿Quieres continuar mapeando en este proyecto o volver para ver todos los proyectos?",
+    "seeAllProjects": "Ver todos los proyectos",
+    "continueMapping": "Continuar mapeando",
+    "noTasksAvailable": "No hay tareas disponibles",
+    "goBackToProjects": "¡Bien hecho,  {user}!  No hay nada más que hacer por aquí. Por favor, revisa otros proyectos.",
+    "youAreLookingFor": "Estás buscando: {lookFor}"
+  },
+  "findProject": {
+    "selected": "seleccionado",
+    "clearSelection": "Borrar selección",
+    "selectAll": "Seleccionar todo",
+    "toggleOpacity": "Cambiar opacidad",
+    "moveRight": "Mover hacia la derecha una columna | Mover hacia la derecha {n} columnas",
+    "moveLeft": "Move hacia la izquierda una columna | Mover hacia la izquierda {n} columnas",
+    "removedFromSelection": "Una tesela borrada de la selección | {n} teselas borradas de la selección"
+  },
+  "tileMap": {
+    "whereAmI": "¿Dónde estoy?",
+    "youAreHere": "Estás aquí",
+    "resetView": "Volver a cargar la vista",
+    "close": "Cerrar"
+  },
+  "projectInstructions": {
+    "classifyTitle": "Responde",
+    "classifyInstruction": "Usa los botones para responder",
+    "dontWorry": "No te preocupes si no estás seguro",
+    "everyTaskIsViewedBy": "Cada tarea se revisa por varios MapSwipeadores, así que no pasa nada si crees que te has dejado algo",
+    "howToContribute": "¿Cómo contribuir?",
+    "imageCredits": "Créditos de la imagen",
+    "move": "Mover hacia atrás y hacia adelante",
+    "resetInstruction": "Hacer zoom a la figura actual",
+    "resetTitle": "Volver a cargar la vista",
+    "saveYourAnswers": "Guardar tus respuestas",
+    "seenAll": "en cuanto hayas visto y clasificado todas las imágenes",
+    "toggleOpacityTitle": "Cambiar la opacidad de la capa superpuesta",
+    "toggleOpacityInstruction": "Para tener una imagen más clara de la imagen de fondo, cambia la opacidad de la capa superpuesta",
+    "useButtonsToNavigate": "Usa los botones para navegar",
+    "whereIamTitle": "¿Dónde estoy mapeando?",
+    "whereIamInstruction": "Abrir un mapa del lugar donde estás contribuyendo",
+    "tutorial": "Tutorial"
+  },
+  "findProjectInstructions": {
+    "classifyTitle": "Clica o presiona para clasificar",
+    "classifyInstruction": "Clica o presiona en cada tesela de imagen, hasta que la respuesta correcta aparezca",
+    "close": "Cerrar",
+    "moreInfo": "Más información",
+    "moveLeft": "Vuelve a la página anterior",
+    "moveRight": "Ir a la página siguiente",
+    "selectionTitle": "Selecciona varias teselas",
+    "selectTile": "... o utiliza el clic derecho/mantén presionado para añadir una tesela a la selección. Repite el movimiento para borrar la tesela de la selección",
+    "selectAll": "Seleccionar todas las teselas a la vista. Repetir para borrar la selección",
+    "selectionInstruction": "Cualquier clic para clasificar aplica a todas las teselas seleccionadas",
+    "moveColumn": "Mover izquierda/derecha por columna",
+    "movePage": "Mover izquierda/derecha por página",
+    "haveCloserLook": "Mira más de cerca",
+    "magnifyInstruction": "Haz clic en este icono en la esquina superior derecha de una tesela para ampliar la imagen."
+  },
+  "validateProject": {
+    "doesTheShapeOutline": "¿Corresponde la figura con un/a {feature}?",
+    "moveLeft": "Volver al elemento anterior",
+    "moveRight": "Ir al elemento siguiente"
+  },
+  "validateProjectInstructions": {
+    "seenAll": "en cuanto hayas clasificado todos los elementos."
+  },
+  "compareProject": {
+    "before": "Antes",
+    "after": "Después"
+  },
+  "digitizeProject": {
+    "moveLeft": "Volver al elemento anterior",
+    "moveRight": "Ir al elemento siguiente",
+    "draw": "Dibujar {lookFor}",
+    "modify": "Modificar",
+    "delete": "Eliminar"
+  },
+  "mediaProject": {
+    "moveLeft": "Atrás",
+    "moveRight": "Adelante"
+  },
+  "streetProject": {
+    "moveLeft": "Atrás",
+    "moveRight": "Adelante",
+    "couldNotLoadImage": "Lo sentimos, no pudimos cargar esta imagen."
+  },
+  "digitizeProjectInstructions": {
+    "switchMode": "Cambiar modo de edición",
+    "drawNewFeature": "Dibujar nuevos elementos",
+    "modifyFeature": "Modificar elementos",
+    "deleteFeature": "Eliminar elementos"
+  },
+  "projectTutorial": {
+    "showAnswer": "Mostrar respuesta",
+    "nextTask": "Tarea siguiente",
+    "completionTitle": "¡Estás preparado para empezar a MapSwipear!",
+    "completionDescription": "Estás ahora equipado con todo lo que necesitas para contribuir al mapeo humanitario usando la aplicación. Puedes volver en cualquier momento si necesitas refrescar tu memoria.",
+    "startMapping": "Empezar a mapear"
+  },
+  "imageTile": {
+    "failureMessage": "¡La carga de imagen falló!",
+    "notAvailableMessage": "¡La imagen no está disponible!"
+  }
+}
