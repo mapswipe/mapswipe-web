@@ -12,7 +12,7 @@ export default defineComponent({
       required: true,
     },
     options: {
-      type: Array,
+      type: Object,
       required: true,
     },
   },

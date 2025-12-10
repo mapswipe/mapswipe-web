@@ -8,7 +8,7 @@ import ProjectHeader from '@/components/ProjectHeader.vue'
 import ProjectInfo from '@/components/ProjectInfo.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
 import ConflationProjectInstructions from '@/components/ConflationProjectInstructions.vue'
-import ValidateProjectTutorial from '@/components/ValidateProjectTutorial.vue'
+import ConflationProjectTutorial from '@/components/ConflationProjectTutorial.vue'
 import ConflationProjectTask from './ConflationProjectTask.vue'
 import { GeoJSON } from 'ol/format'
 import { boundingExtent, extend, getArea } from 'ol/extent'
@@ -19,7 +19,7 @@ import { fetchFeaturesFromRawData } from '@/utils/fetchFeaturesFromRawData'
 export default defineComponent({
   components: {
     conflationProjectInstructions: ConflationProjectInstructions,
-    validateProjectTutorial: ValidateProjectTutorial,
+    conflationProjectTutorial: ConflationProjectTutorial,
     conflationProjectTask: ConflationProjectTask,
     taskProgress: TaskProgress,
     optionButtons: OptionButtons,
@@ -353,7 +353,7 @@ export default defineComponent({
         <conflation-project-instructions :missions="missions()" :options="options" />
       </template>
       <template #tutorial>
-        <validate-project-tutorial
+        <conflation-project-tutorial
           :tutorial="tutorial"
           :options="options"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
