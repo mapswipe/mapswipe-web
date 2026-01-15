@@ -30,7 +30,7 @@ export async function fetchFeaturesFromRawData(extent, filters) {
       outputType: 'geojson',
       geometryType: ['polygon'],
       centroid: false,
-      useStWithin: true,
+      useStWithin: false,
       includeUserMetadata: false,
       filters: filters,
       includeStatsHtml: false,
