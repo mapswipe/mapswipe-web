@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
-type TabType = number | string
+type TabType = 'instructions' | `page-${number}` | 'tutorial'
 
 export default defineComponent({
   components: {
@@ -33,10 +33,10 @@ export default defineComponent({
     },
   },
   data: (): {
-    activeTab: TabType | null
+    activeTab: TabType
     dialog: boolean
   } => ({
-    activeTab: null,
+    activeTab: 'instructions',
     dialog: false,
   }),
   computed: {
@@ -93,24 +93,34 @@ export default defineComponent({
   <v-dialog v-model="dialog" transition="dialog-bottom-transition" fullscreen persistent>
     <v-card class="pa-2" height="100%">
       <v-tabs v-model="activeTab" style="flex-shrink: 0">
-        <v-tab :text="$t('projectInstructions.howToContribute')" value="instructions" />
         <v-tab
-          v-for="(page, index) in informationPages"
-          :text="page.title"
-          :value="index"
-          :key="page.pageNumber"
+          :text="$t('projectInstructions.howToContribute')"
+          value="instructions"
+          :key="'instructions'"
         />
-        <v-tab v-if="hasTutorialSlot" value="tutorial" :text="$t('projectInstructions.tutorial')" />
+        <v-tab
+          v-for="page in informationPages"
+          :text="page.title"
+          :value="`page-${page.pageNumber}`"
+          :key="`page-${page.pageNumber}`"
+        />
+        <v-tab
+          v-show="hasTutorialSlot"
+          value="tutorial"
+          :key="'tutorial'"
+          :text="$t('projectInstructions.tutorial')"
+        />
       </v-tabs>
       <v-divider />
       <v-tabs-window v-model="activeTab" style="flex-grow: 1; overflow-y: auto">
-        <v-tabs-window-item value="instructions">
+        <v-tabs-window-item value="instructions" :key="'instructions'">
           <slot name="instructions"></slot>
         </v-tabs-window-item>
+
         <v-tabs-window-item
-          v-for="(page, index) in informationPages"
-          :value="index"
-          :key="page.pageNumber"
+          v-for="page in informationPages"
+          :value="`page-${page.pageNumber}`"
+          :key="`page-${page.pageNumber}`"
         >
           <span
             v-for="block in page.blocks?.sort((a, b) => a.blockNumber - b.blockNumber)"
@@ -130,7 +140,8 @@ export default defineComponent({
             />
           </span>
         </v-tabs-window-item>
-        <v-tabs-window-item value="tutorial">
+
+        <v-tabs-window-item value="tutorial" :key="'tutorial'">
           <slot name="tutorial"></slot>
         </v-tabs-window-item>
       </v-tabs-window>

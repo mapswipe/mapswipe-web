@@ -11,7 +11,7 @@ import ConflationProjectInstructions from '@/components/ConflationProjectInstruc
 import ConflationProjectTutorial from '@/components/ConflationProjectTutorial.vue'
 import ConflationProjectTask from './ConflationProjectTask.vue'
 import { GeoJSON } from 'ol/format'
-import { boundingExtent, extend, getArea } from 'ol/extent'
+import { boundingExtent, extend } from 'ol/extent'
 import { transformExtent } from 'ol/proj'
 import { booleanIntersects } from '@turf/boolean-intersects'
 import { fetchFeaturesFromRawData } from '@/utils/fetchFeaturesFromRawData'
@@ -54,6 +54,10 @@ export default defineComponent({
     tutorial: {
       type: Object,
       require: false,
+    },
+    tutorialTasks: {
+      type: Array,
+      required: false,
     },
   },
   data() {
@@ -222,10 +226,7 @@ export default defineComponent({
         }
       })
 
-      console.log(getArea(extent))
       const extentLonLat = transformExtent(extent, 'EPSG:3857', 'EPSG:4326')
-
-      console.log(extentLonLat)
       return extentLonLat
     },
     /* TODO: fetch OSM based on array of individual task extents when overall task group extent is too large?
@@ -356,6 +357,7 @@ export default defineComponent({
         <conflation-project-tutorial
           :tutorial="tutorial"
           :options="options"
+          :tasks="tutorialTasks"
           @tutorialComplete="$refs.projectInfo?.toggleDialog"
         />
       </template>

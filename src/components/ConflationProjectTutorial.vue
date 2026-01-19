@@ -6,15 +6,12 @@ import TaskProgress from '@/components/TaskProgress.vue'
 import ConflationProjectTask, { type Project } from './ConflationProjectTask.vue'
 import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import { isDefined } from '@/utils/common'
-
-interface Option {
-  title: string
-  description: string
-  iconColor: string
-  mdiIcon: string
-  shortKey: number
-  value: number
-}
+import { Collection } from 'ol'
+import { GeoJSON } from 'ol/format'
+import { boundingExtent, extend } from 'ol/extent'
+import { transformExtent } from 'ol/proj'
+import { booleanIntersects } from '@turf/boolean-intersects'
+import { fetchFeaturesFromRawData } from '@/utils/fetchFeaturesFromRawData'
 
 interface Task {
   geojson: object
@@ -61,33 +58,45 @@ export default defineComponent({
   },
   data(): {
     currentOptions: Array
-    currentTaskIndex: number
+    taskIndex: number
     results: Record<string, number>
     userAttempts: number
     answersRevealed: boolean
+    taskFeatures: Array | null
+    osmFeatures: Array
+    mission: string
+    intersectingFeatures: Array
+    ready: boolean
+    taskIsBlue: boolean
   } {
     return {
       currentOptions: [],
-      currentTaskIndex: 0,
+      taskIndex: 0,
       results: {},
       userAttempts: 0,
       answersRevealed: false,
+      taskFeatures: null,
+      osmFeatures: [],
+      mission: '',
+      intersectingFeatures: [],
+      ready: false,
+      taskIsBlue: Math.random() < 0.5,
     }
   },
-  computed: {
-    mission() {
-      const message = isDefined(this.tutorial?.projectInstruction)
-        ? this.tutorial.projectInstruction
-        : this.$t('conflationProject.doesTheShapeOutline', {
-            feature: this.tutorial?.lookFor,
-          })
-      return message
+  watch: {
+    ready() {
+      this.filterOsmFeatures()
     },
+    '$i18n.locale'() {
+      this.updateMissionAndOptions()
+    },
+  },
+  computed: {
     currentScreen() {
-      return this.tutorial?.screens[this.currentTaskIndex]
+      return this.tutorial?.screens[this.taskIndex]
     },
     task() {
-      return this.tasks?.[this.currentTaskIndex]
+      return this.tasks?.[this.taskIndex]
     },
     hasTasks() {
       return this.tasks.length !== 0
@@ -98,7 +107,7 @@ export default defineComponent({
       }
 
       const maxIndex = this.tasks.length
-      return this.currentTaskIndex === maxIndex
+      return this.taskIndex === maxIndex
     },
     answeredCorrectly() {
       if (!this.hasTasks) {
@@ -155,13 +164,25 @@ export default defineComponent({
         icon: icon ? matchIcon(icon) : undefined,
       }
     },
+    defaultOsmFilters() {
+      return {
+        tags: {
+          all_geometry: {
+            join_or: {
+              building: [],
+            },
+          },
+        },
+      }
+    },
   },
   methods: {
     nextTask() {
       if (!this.hasCompletedAllTasks) {
-        this.currentTaskIndex += 1
+        this.taskIndex += 1
         this.userAttempts = 0
         this.answersRevealed = false
+        this.filterOsmFeatures()
       }
     },
     addResult(value: number) {
@@ -174,8 +195,105 @@ export default defineComponent({
       this.answersRevealed = true
       this.results[this.task.taskId] = this.task.properties?.reference
     },
+    computeTaskGroupExtent() {
+      const features = new Collection()
+
+      this.taskFeatures.forEach((feature) => features.push(feature))
+
+      let extent = boundingExtent([])
+      features.forEach((feature) => {
+        const geometry = feature.getGeometry()
+        if (geometry) {
+          extend(extent, geometry.getExtent())
+        }
+      })
+
+      const extentLonLat = transformExtent(extent, 'EPSG:3857', 'EPSG:4326')
+      return extentLonLat
+    },
+    async fetchOSMFeatures() {
+      // TODO: accept custom filters
+      // const filters = this.project.filter || this.defaultOsmFilters
+      const filters = this.defaultOsmFilters
+      const taskGroupExtent = this.computeTaskGroupExtent()
+      try {
+        this.osmFeatures = await fetchFeaturesFromRawData(taskGroupExtent, filters)
+        this.ready = true
+      } catch (error) {
+        console.log(error)
+        this.$emit('error')
+      }
+    },
+    filterOsmFeatures() {
+      const geoJson = new GeoJSON()
+      const options = {
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857',
+      }
+      const turfTaskFeature = geoJson.writeFeatureObject(
+        this.taskFeatures?.[this.taskIndex],
+        options,
+      )
+      const filtered = this.osmFeatures.filter((f) => booleanIntersects(turfTaskFeature, f))
+      this.intersectingFeatures = filtered.map((f) => geoJson.readFeature(f, options))
+      const numberIntersecting = this.intersectingFeatures.length
+      this.updateMissionAndOptions(numberIntersecting)
+    },
+    makeTaskFeature(task) {
+      const geoJson = new GeoJSON()
+
+      const geom = task.geojson
+      const feature = { geometry: geom, type: 'Feature' }
+      const options = {
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857',
+      }
+
+      const newFeature = geoJson.readFeature(feature, options)
+      newFeature.setProperties({ taskId: task.taskId })
+
+      return newFeature
+    },
+    missions() {
+      return {
+        validate: this.$t('conflationProject.doesTheShapeOutline', {
+          feature: this.tutorial?.lookFor,
+        }),
+        conflate: this.$t('conflationProject.whichShape', { feature: this.tutorial?.lookFor }),
+        skip: this.$t('conflationProject.skip'),
+      }
+    },
+    updateMissionAndOptions(numberIntersecting) {
+      this.taskIsBlue = Math.random() < 0.5
+
+      switch (numberIntersecting) {
+        case 0: {
+          this.mission = this.missions().validate
+          this.currentOptions = this.options.validate
+          break
+        }
+        case 1: {
+          this.mission = this.missions().conflate
+          this.currentOptions = this.options.conflate
+          break
+        }
+        default: {
+          this.currentOptions = this.options.skip
+          this.mission = this.missions().skip
+          this.addResult(this.options.skip[0].value)
+        }
+      }
+    },
   },
   emits: ['tutorialComplete'],
+  created() {
+    this.startTime = new Date().toISOString()
+    this.taskId = this.tasks[this.taskIndex].taskId
+    this.taskFeatures = this.tasks.map(this.makeTaskFeature)
+    this.mission = this.missions().conflate
+    this.currentOptions = this.options.conflate
+    this.fetchOSMFeatures()
+  },
 })
 </script>
 
@@ -217,9 +335,11 @@ export default defineComponent({
     <v-row>
       <v-col>
         <conflation-project-task
-          v-if="tasks[currentTaskIndex] && tutorial"
-          :task="tasks[currentTaskIndex]"
+          :taskFeature="taskFeatures?.[taskIndex]"
           :project="tutorial"
+          :intersectingFeatures="intersectingFeatures"
+          :ready="ready"
+          :taskIsBlue="taskIsBlue"
           compact
         />
       </v-col>
@@ -232,6 +352,7 @@ export default defineComponent({
           :result="results[task.taskId]"
           :taskId="task.taskId"
           @addResult="addResult"
+          :disabled="!ready"
         />
       </v-col>
     </v-row>
@@ -242,7 +363,7 @@ export default defineComponent({
     </v-row>
     <v-row v-if="hasTasks && !hasCompletedAllTasks">
       <v-col>
-        <task-progress :progress="currentTaskIndex" :total="tasks?.length ?? 0" />
+        <task-progress :progress="taskIndex" :total="tasks?.length ?? 0" />
       </v-col>
     </v-row>
     <v-row v-if="hasCompletedAllTasks">

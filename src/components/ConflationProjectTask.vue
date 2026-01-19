@@ -74,8 +74,9 @@ export default defineComponent({
       return makeXyzUrl(this.project.tileServer)
     },
     maxZoom() {
-      // return this.project.tileServer.maxZoom ?? 19;
-      return this.project.tileServer.maxZoom ?? 22
+      const maxZoom =
+        this.project.tileServer.maxZoom ?? this.project.tileServer?.name === 'custom' ? 22 : 19
+      return maxZoom
     },
     strokeColors() {
       const alpha = this.transparent ? 0.4 : 0.8
