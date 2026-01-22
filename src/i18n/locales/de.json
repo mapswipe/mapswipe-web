@@ -167,7 +167,8 @@
     "toggleOpacityInstruction": "Schalte die Transparenz der oberen Schicht für eine bessere Sicht auf die Bildkacheln um",
     "useButtonsToNavigate": "Navigationstasten",
     "whereIamTitle": "Wo bin ich?",
-    "whereIamInstruction": "Öffne eine Karte, um zu sehen wo du gerade beiträgst"
+    "whereIamInstruction": "Öffne eine Karte, um zu sehen wo du gerade beiträgst",
+    "tutorial": "Tutorial"
   },
   "findProjectInstructions": {
     "classifyTitle": "Klicke oder tippe, um zu klassifizieren",
@@ -196,7 +197,9 @@
   },
   "compareProject": {
     "before": "Vorher",
-    "after": "Nachher"
+    "after": "Nachher",
+    "moveLeft": "Zurück",
+    "moveRight": "Weiter"
   },
   "digitizeProject": {
     "moveLeft": "Zurück",

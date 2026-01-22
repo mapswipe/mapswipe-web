@@ -235,7 +235,7 @@ export default defineComponent({
   <v-toolbar color="white" density="compact" extension-height="20" extended>
     <v-spacer />
     <v-btn
-      :title="$t('changeProject.moveLeft')"
+      :title="$t('compareProject.moveLeft')"
       icon="mdi-chevron-left"
       color="secondary"
       :disabled="taskIndex <= 0"
@@ -251,7 +251,7 @@ export default defineComponent({
       @click="saveResults(results, startTime)"
     />
     <v-btn
-      :title="$t('changeProject.moveRight')"
+      :title="$t('compareProject.moveRight')"
       icon="mdi-chevron-right"
       color="secondary"
       :disabled="!isAnswered() || taskIndex + 1 === tasks.length"
