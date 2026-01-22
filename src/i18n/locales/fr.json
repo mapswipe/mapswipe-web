@@ -194,7 +194,9 @@
   },
   "compareProject": {
     "before": "Avant",
-    "after": "Après"
+    "after": "Après",
+    "moveLeft": "Retour à l'élément précédent",
+    "moveRight": "Aller à l'élement suivant"
   },
   "digitizeProject": {
     "moveLeft": "Retour à l'élément précédent",
