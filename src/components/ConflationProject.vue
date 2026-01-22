@@ -332,7 +332,7 @@ export default defineComponent({
 <template>
   <project-header :mission="mission" :title="project.projectTopic">
     <v-btn
-      :title="$t('conflationProject.toggleOpacity')"
+      :title="$t('findProject.toggleOpacity')"
       :icon="'mdi-eye'.concat(transparent ? '-off' : '')"
       @click="transparent = !transparent"
       color="primary"
