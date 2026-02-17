@@ -218,10 +218,10 @@ export default defineComponent({
     <v-row justify="center">
       <v-col>
         <street-project-task-panoramax
-          v-if="taskId && tutorial && tutorial.tileServer?.name == 'panoramax'"
+          v-if="taskId && tutorial && tutorial.imageProvider?.name == 'panoramax'"
           :key="taskId"
           :taskId="taskId"
-          :endpoint="tutorial.tileServer?.url"
+          :endpoint="(tutorial.imageProvider?.url || '').replace(/\/$/, '') + '/api'"
           :containerId="'panoramax_tutorial'"
           @dataloading="(e) => (isLoading = e)"
           style="position: relative; height: calc(70vh - 390px)"

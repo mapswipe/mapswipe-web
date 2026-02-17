@@ -173,9 +173,9 @@ export default defineComponent({
     </project-info>
   </project-header>
   <street-project-task-panoramax
-    v-if="project.tileServer?.name == 'panoramax'"
+    v-if="project.imageProvider?.name == 'panoramax'"
     :taskId="taskId"
-    :endpoint="project.tileServer?.url"
+    :endpoint="(project.imageProvider?.url || '').replace(/\/$/, '') + '/api'"
     @dataloading="(e) => (isLoading = e)"
     @imageError="handleImageError()"
     style="position: relative; height: calc(100vh - 390px)"

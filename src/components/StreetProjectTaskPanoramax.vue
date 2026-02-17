@@ -3,6 +3,8 @@ import { defineComponent } from 'vue'
 import '@panoramax/web-viewer/build/index.css'
 import '@panoramax/web-viewer'
 
+const DEFAULT_ENDPOINT = 'https://api.panoramax.xyz/api'
+
 export default defineComponent({
   props: {
     containerId: {
@@ -10,7 +12,7 @@ export default defineComponent({
       default: 'panoramax',
     },
     taskId: { type: String, required: true },
-    endpoint: { type: String, default: 'https://api.panoramax.xyz/api' },
+    endpoint: { type: String, default: DEFAULT_ENDPOINT },
   },
   data() {
     return {
@@ -46,6 +48,11 @@ export default defineComponent({
       if (arrows) arrows.remove()
     },
   },
+  computed: {
+    defaultEndpoint() {
+      return DEFAULT_ENDPOINT
+    },
+  },
   mounted() {
     this.initialiseViewer()
     this.moveViewer(this.taskId)
@@ -57,7 +64,7 @@ export default defineComponent({
   <v-container :id="`${containerId}`" class="ma-0 pa-0">
     <pnx-photo-viewer
       ref="viewer"
-      :endpoint="endpoint"
+      :endpoint="endpoint.includes('mapcomplete') ? defaultEndpoint : endpoint"
       widgets="false"
       url-parameters="false"
       keyboard-shortcuts="false"
