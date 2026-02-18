@@ -147,6 +147,12 @@ export default defineComponent({
         icon: icon ? matchIcon(icon) : undefined,
       }
     },
+    panoramaxEndpoint() {
+      const endpoint = this.tutorial.imageProvider?.url
+        ? this.tutorial.imageProvider.url.replace(/\/$/, '') + '/api'
+        : undefined
+      return endpoint
+    },
   },
   methods: {
     nextTask() {
@@ -221,7 +227,7 @@ export default defineComponent({
           v-if="taskId && tutorial && tutorial.imageProvider?.name == 'panoramax'"
           :key="taskId"
           :taskId="taskId"
-          :endpoint="(tutorial.imageProvider?.url || '').replace(/\/$/, '') + '/api'"
+          :endpoint="panoramaxEndpoint"
           :containerId="'panoramax_tutorial'"
           @dataloading="(e) => (isLoading = e)"
           style="position: relative; height: calc(70vh - 390px)"

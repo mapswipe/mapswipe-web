@@ -103,6 +103,12 @@ export default defineComponent({
         : this.$t('projectView.youAreLookingFor', { lookFor: this.project.lookFor })
       return message
     },
+    panoramaxEndpoint() {
+      const endpoint = this.project.imageProvider?.url
+        ? this.project.imageProvider.url.replace(/\/$/, '') + '/api'
+        : undefined
+      return endpoint
+    },
   },
   methods: {
     addResult(value) {
@@ -175,7 +181,7 @@ export default defineComponent({
   <street-project-task-panoramax
     v-if="project.imageProvider?.name == 'panoramax'"
     :taskId="taskId"
-    :endpoint="(project.imageProvider?.url || '').replace(/\/$/, '') + '/api'"
+    :endpoint="panoramaxEndpoint"
     @dataloading="(e) => (isLoading = e)"
     @imageError="handleImageError()"
     style="position: relative; height: calc(100vh - 390px)"
