@@ -62,20 +62,20 @@ const taskList = computed(() => {
     .filter(({ screen }) => screen === currentTaskIndex.value + 1)
     .map((task) => {
       if (isNotDefined(overlayTileServer)) {
-        return task;
+        return task
       }
 
       // NOTE completeness tutorial needs real tileX and tileY
       // to be able to set the appropriate bounds
-      const splits = task.taskId_real.split('-');
+      const splits = task.taskId_real.split('-')
 
       return {
         ...task,
         taskX: +splits[1],
         taskY: +splits[2],
-      };
-    });
-});
+      }
+    })
+})
 
 const hasTasks = computed(() => isDefined(props.tasks) && props.tasks.length !== 0)
 const hasCompletedAllTasks = computed(() => {

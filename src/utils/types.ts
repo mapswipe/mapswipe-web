@@ -18,15 +18,15 @@ export interface TutorialImageTask {
 }
 
 export interface TileTask {
-  groupId: string;
-  projectId: string;
-  taskX: number;
-  taskY: number;
-  taskZ: number;
-  taskId: string;
-  taskId_real: string;
-  url: string;
-  urlB?: string;
+  groupId: string
+  projectId: string
+  taskX: number
+  taskY: number
+  taskZ: number
+  taskId: string
+  taskId_real: string
+  url: string
+  urlB?: string
 }
 
 export interface TutorialTileTask extends TileTask {
