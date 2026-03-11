@@ -230,5 +230,15 @@
   "imageTile": {
     "failureMessage": "¡La carga de imagen falló!",
     "notAvailableMessage": "¡La imagen no está disponible!"
+  },
+  "conflationProject": {
+    "doesTheShapeOutline": "¿El contorno de la forma representa con precisión un {feature}?",
+    "skip": "Saltar esta tarea",
+    "whichShape": "¿Qué forma representa con precisión el {feature}?"
+  },
+  "conflationInstructions": {
+    "oneRed": "Hay una forma roja",
+    "onlyBlue": "Solo hay una forma azul",
+    "severalRed": "Hay varias formas rojas"
   }
 }
