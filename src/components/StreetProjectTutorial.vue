@@ -224,7 +224,7 @@ export default defineComponent({
     <v-row justify="center">
       <v-col>
         <street-project-task-panoramax
-          v-if="taskId && tutorial && tutorial.imageProvider?.name == 'panoramax'"
+          v-if="taskId && tutorial && tutorial.imageProvider?.name?.startsWith('panoramax')"
           :key="taskId"
           :taskId="taskId"
           :endpoint="panoramaxEndpoint"

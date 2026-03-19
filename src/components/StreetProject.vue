@@ -179,7 +179,7 @@ export default defineComponent({
     </project-info>
   </project-header>
   <street-project-task-panoramax
-    v-if="project.imageProvider?.name == 'panoramax'"
+    v-if="project.imageProvider?.name?.startsWith('panoramax')"
     :taskId="taskId"
     :endpoint="panoramaxEndpoint"
     @dataloading="(e) => (isLoading = e)"

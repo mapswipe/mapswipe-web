@@ -52,6 +52,7 @@ export default defineComponent({
       tutorial: null,
       tutorialTasks: null,
       to: null,
+      unsubscribeGroup: null,
     }
   },
   provide() {
@@ -155,7 +156,7 @@ export default defineComponent({
       })
     },
     bindTaskGroup() {
-      onValue(getGroupsQuery(this.projectId), (snapshot) => {
+      this.unsubscribeGroup = onValue(getGroupsQuery(this.projectId), (snapshot) => {
         const data = snapshot.val() || {}
         const flatGroups = Object.values(data).flat()
         const completed = Object.keys(this.projectContributions)
@@ -213,6 +214,11 @@ export default defineComponent({
     },
     continueMapping() {
       this.nextDialog = false
+      // Disconnect and reconnect to force fresh group data
+      if (this.unsubscribeGroup) {
+        this.unsubscribeGroup()
+      }
+      this.bindTaskGroup()
       this.mode = 'contribute'
     },
     i18nRoute,
