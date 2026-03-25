@@ -24,8 +24,10 @@ import DigitizeProject from '@/components/DigitizeProject.vue'
 import StreetProject from '@/components/StreetProject.vue'
 import CompletenessProject from '@/components/CompletenessProject.vue'
 import ValidateImageProject from '@/components/ValidateImageProject.vue'
+import LocateFeaturesProject from '@/components/LocateFeaturesProject.vue'
 import projectTypes from '@/config/projectTypes'
 import { decompressTasks } from '@/utils/tasks'
+import { compareNumber } from '@togglecorp/fujs'
 
 export default defineComponent({
   components: {
@@ -34,6 +36,7 @@ export default defineComponent({
     findProject: FindProject,
     completenessProject: CompletenessProject,
     validateImageProject: ValidateImageProject,
+    locateFeaturesProject: LocateFeaturesProject,
     mediaProject: MediaProject,
     validateProject: ValidateProject,
     digitizeProject: DigitizeProject,
@@ -115,8 +118,10 @@ export default defineComponent({
   computed: {
     ...mapStores(useCurrentUserStore),
     options() {
-      var options = this.project?.customOptions
-      options ??= this.project?.answerLabels
+      const optionsTemp = this.project?.customOptions ?? this.project?.answerLabels;
+      const options = optionsTemp
+        ? [...optionsTemp].sort((a, b) => compareNumber(a.value, b.value))
+        : undefined;
       const completedOptions = options?.map(this.completeOptions)
       return completedOptions
     },
