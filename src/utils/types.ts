@@ -32,6 +32,7 @@ export interface TileTask {
 export interface TutorialTileTask extends TileTask {
   screen: number
   referenceAnswer: number
+  taskPartitionIndex?: number
 }
 
 interface SubOption {

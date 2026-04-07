@@ -43,6 +43,7 @@ const style = computed(() => ({
   justify-content: center;
   cursor: pointer;
   isolation: isolate;
+  container-type: inline-size;
 
   .persistent-label,
   .label {
@@ -52,6 +53,7 @@ const style = computed(() => ({
     font-weight: bold;
     text-align: center;
     user-select: none;
+    font-size: min(1rem, 20cqi, 2vh, 2vw);
   }
 
   .label {

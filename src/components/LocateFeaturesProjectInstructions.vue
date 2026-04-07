@@ -2,6 +2,7 @@
 import type { CustomOption } from '@/utils/types'
 import TileOverlay from './TileOverlay.vue';
 import ImageTile from './ImageTile.vue';
+import { ref } from 'vue';
 
 interface Props {
   instruction: string;
@@ -10,6 +11,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const selected = ref(false);
+const allSelected = ref(false);
 
 </script>
 
@@ -36,6 +39,40 @@ const props = defineProps<Props>()
         </div>
       </v-col>
     </v-row>
+    <div class="text-h6 mt-5">{{ $t('findProjectInstructions.selectionTitle') }}</div>
+    <v-row class="align-center" dense>
+      <v-col cols="auto" class="mr-4">
+        <v-btn
+          color="neutral"
+          style="opacity: 0.6"
+          @click.stop="selected = !selected"
+          :icon="selected ? 'mdi-checkbox-marked-circle' : 'mdi-checkbox-blank-circle-outline'"
+          size="small"
+          variant="text"
+        />
+      </v-col>
+      <v-col>{{ $t('findProjectInstructions.selectTile') }}.</v-col>
+    </v-row>
+    <v-row class="align-center" dense>
+      <v-col cols="auto" class="mr-4">
+        <v-btn
+          :icon="'mdi-select-'.concat(allSelected ? 'off' : 'all')"
+          @click="allSelected = !allSelected"
+          color="primary"
+          variant="text"
+        />
+      </v-col>
+      <v-col>{{ $t('findProjectInstructions.selectAll') }}.</v-col>
+    </v-row>
+    <div class="text-h6 mt-10">{{ $t('projectInstructions.whereIamTitle') }}</div>
+    <div class="text-p mt-2">
+      <v-row align="center" dense>
+        <v-col cols="auto" class="mr-4">
+          <v-btn color="primary" icon="mdi-earth" size="small" variant="text"> </v-btn>
+        </v-col>
+        <v-col>{{ $t('projectInstructions.whereIamInstruction') }}</v-col>
+      </v-row>
+    </div>
     <div class="text-h6 mt-10">{{ $t('projectInstructions.useButtonsToNavigate') }}</div>
     <div class="text-p mt-2">
       <v-row class="align-center" dense>
@@ -56,8 +93,6 @@ const props = defineProps<Props>()
         <v-col>{{ $t('validateProjectInstructions.seenAll') }}</v-col>
       </v-row>
     </div>
-    <div class="text-h6 mt-10">{{ $t('projectInstructions.dontWorry') }}</div>
-    <div class="text-p">{{ $t('projectInstructions.everyTaskIsViewedBy') }}.</div>
   </v-card-text>
 </template>
 
