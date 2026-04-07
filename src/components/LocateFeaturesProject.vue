@@ -230,8 +230,12 @@ function handleSelectAll() {
       <template #tutorial>
         <LocateFeaturesProjectTutorial
           :tutorial="tutorial"
+          :project="project"
           :tasks="tutorialTasks"
           :options="options"
+          :optionMapping="optionMapping"
+          :nextOptionMapping="nextOptionMapping"
+          :subGridSizeExponent="subGridSizeExponent"
           @tutorialComplete="projectInfoRef?.toggleDialog"
         />
       </template>
