@@ -27,6 +27,10 @@ const projectTypes = {
     name: 'Street',
     component: 'streetProject',
   },
+  '9': {
+    name: 'LocateFeatures',
+    component: 'locateFeaturesProject',
+  },
   '10': {
     name: 'Validate Image',
     component: 'validateImageProject',
