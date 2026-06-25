@@ -21,6 +21,7 @@ export default defineComponent({
     currentProject: null,
     selectedItems: projectFilters.map((f) => f.defaultItems),
     showFilterCard: false,
+    projectTypes: projectTypes,
   }),
   computed: {
     ...mapStores(useCurrentUserStore),
@@ -210,10 +211,15 @@ export default defineComponent({
               width="350"
               tile
             >
+              <div class="project-type-tag">
+                {{ projectTypes[project.projectType].name }}
+              </div>
               <v-img
+                class="cover-image"
                 height="250"
                 :src="project.image"
                 @error="() => (project.image = fallbackImage)"
+                cover
               />
               <v-card-title class="text-wrap">{{ project.projectTopic }}</v-card-title>
               <v-card-text>
@@ -257,3 +263,20 @@ export default defineComponent({
     </v-row>
   </basic-page>
 </template>
+<style scoped>
+.project-type-tag {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  background-color: white;
+  z-index: 1;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, .1);
+}
+
+.cover-image {
+  background-color: #999;
+}
+</style>

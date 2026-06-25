@@ -27,7 +27,6 @@ import ValidateImageProject from '@/components/ValidateImageProject.vue'
 import LocateFeaturesProject from '@/components/LocateFeaturesProject.vue'
 import projectTypes from '@/config/projectTypes'
 import { decompressTasks } from '@/utils/tasks'
-import { compareNumber } from '@togglecorp/fujs'
 
 export default defineComponent({
   components: {
@@ -118,10 +117,7 @@ export default defineComponent({
   computed: {
     ...mapStores(useCurrentUserStore),
     options() {
-      const optionsTemp = this.project?.customOptions ?? this.project?.answerLabels;
-      const options = optionsTemp
-        ? [...optionsTemp].sort((a, b) => compareNumber(a.value, b.value))
-        : undefined;
+      const options = this.project?.customOptions ?? this.project?.answerLabels;
       const completedOptions = options?.map(this.completeOptions)
       return completedOptions
     },

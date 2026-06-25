@@ -11,7 +11,7 @@ import type {
   TileTask,
 } from '@/utils/types'
 import { computed, inject, onMounted, ref, shallowRef, useTemplateRef, watchEffect } from 'vue'
-import { isDefined, isNotDefined, listToMap } from '@togglecorp/fujs'
+import { compareNumber, isDefined, isNotDefined, listToMap } from '@togglecorp/fujs'
 
 import createInformationPages from '@/utils/createInformationPages'
 import { createFallbackInformationPages } from '@/utils/domain'
@@ -41,6 +41,8 @@ const projectInfoRef = useTemplateRef('projectInfo')
 
 const props = defineProps<Props>()
 const taskContainer = shallowRef<VContainer | null>(null)
+
+const options = computed(() => [...props.options ?? []].sort((a, b) => compareNumber(a.value, b.value)))
 
 const logMappingStarted = inject<(projectType: string) => void>('logMappingStarted')
 const saveResults =
@@ -92,7 +94,7 @@ watchEffect(() => {
     processedTasks.value,
     ({ taskId }) => taskId,
     () => Array.from(new Array(numSubGridElements.value).keys()).map(
-      () => props.options[0].value,
+      () => options.value[0].value,
     ),
   )
 
@@ -107,20 +109,20 @@ watchEffect(() => {
 
 const optionMapping = computed(() =>
   listToMap(
-    props.options,
+    options.value,
     ({ value }) => value,
   )
 )
 const nextOptionMapping = computed(() =>
   listToMap(
-    props.options,
+    options.value,
     ({ value }) => value,
     (_, __, index) => {
-      if (index === props.options.length - 1) {
-        return props.options[0].value
+      if (index === options.value.length - 1) {
+        return options.value[0].value
       }
 
-      return props.options[index + 1].value
+      return options.value[index + 1].value
     },
   ),
 )
@@ -223,7 +225,7 @@ function handleSelectAll() {
       <template #instructions>
         <LocateFeaturesProjectInstructions
           :instruction="instruction"
-          :options="props.options"
+          :options="options"
           :exampleTileUrl="processedTasks[0].url"
         />
       </template>

@@ -28,7 +28,7 @@ const projectTypes = {
     component: 'streetProject',
   },
   '9': {
-    name: 'LocateFeatures',
+    name: 'Locate Objects',
     component: 'locateFeaturesProject',
   },
   '10': {
