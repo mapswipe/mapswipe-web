@@ -111,7 +111,7 @@ function handleForward() {
 
 <template>
   <ProjectHeader :mission="instruction">
-    <Project-info
+    <ProjectInfo
       ref="projectInfo"
       :first="first"
       :informationPages="
@@ -132,7 +132,7 @@ function handleForward() {
         />
       </template>
       <!-- FIXME: add tutorial -->
-    </Project-info>
+    </ProjectInfo>
   </ProjectHeader>
   <v-container class="ma-0 pa-0 container">
     <ValidateImageProjectTask :task="currentTask" />

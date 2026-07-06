@@ -73,6 +73,7 @@ const buildTasks = (project: Project, group: TaskGroup) => {
         taskY: y,
         taskZ: Number(project.zoomLevel),
         taskId: `${project.zoomLevel}-${x}-${y}`,
+        taskId_real: `${project.zoomLevel}-${x}-${y}`,
         url: getTileUrlFromCoordsAndTileserver(x, y, project.zoomLevel, project.tileServer),
       }
       if (project.tileServerB) {
