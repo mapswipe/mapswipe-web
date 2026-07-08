@@ -115,7 +115,7 @@ export default defineComponent({
   computed: {
     ...mapStores(useCurrentUserStore),
     options() {
-      const options = this.project?.customOptions ?? this.project?.answerLabels;
+      const options = this.project?.customOptions ?? this.project?.answerLabels
       const completedOptions = options?.map(this.completeOptions)
       return completedOptions
     },
