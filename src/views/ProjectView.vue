@@ -2,8 +2,7 @@
 import { defineComponent } from 'vue'
 import { get, off, onValue, set } from 'firebase/database'
 import {
-  db,
-  getGroupsRef,
+  getGroupsQuery,
   getProjectRef,
   getProjectContributionsRef,
   getResultsRef,
@@ -156,7 +155,7 @@ export default defineComponent({
     },
     async bindTaskGroup() {
       this.tasks = null
-      const snapshot = await get(getGroupsRef(this.projectId))
+      const snapshot = await get(getGroupsQuery(this.projectId))
       const data = snapshot.val() || {}
       const flatGroups = Object.values(data).flat()
       const completed = Object.keys(this.projectContributions)
