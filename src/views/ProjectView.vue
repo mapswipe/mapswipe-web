@@ -1,9 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { goOffline, goOnline, off, onValue, set } from 'firebase/database'
+import { get, off, onValue, set } from 'firebase/database'
 import {
   db,
-  getGroupsQuery,
+  getGroupsRef,
   getProjectRef,
   getProjectContributionsRef,
   getResultsRef,
@@ -54,7 +54,6 @@ export default defineComponent({
       tutorial: null,
       tutorialTasks: null,
       to: null,
-      unsubscribeGroup: null,
     }
   },
   provide() {
@@ -92,7 +91,6 @@ export default defineComponent({
 
         this.completedGroupId = this.group.groupId
 
-        goOnline(db)
         set(getResultsRef(this.project.projectId, this.group.groupId, this.user.uid), entry)
           .then(() => {
             this.showSnackbar(
@@ -156,37 +154,36 @@ export default defineComponent({
         this.projectContributions = data
       })
     },
-    bindTaskGroup() {
-      this.unsubscribeGroup = onValue(getGroupsQuery(this.projectId), (snapshot) => {
-        const data = snapshot.val() || {}
-        const flatGroups = Object.values(data).flat()
-        const completed = Object.keys(this.projectContributions)
-        const available = flatGroups.filter(
-          (g) => g.requiredCount > 0 && !completed.includes(g.groupId),
+    async bindTaskGroup() {
+      this.tasks = null
+      const snapshot = await get(getGroupsRef(this.projectId))
+      const data = snapshot.val() || {}
+      const flatGroups = Object.values(data).flat()
+      const completed = Object.keys(this.projectContributions)
+      const available = flatGroups.filter(
+        (g) => g.requiredCount > 0 && !completed.includes(g.groupId),
+      )
+      if (!available.length) {
+        this.nextDialog = false
+        this.to = this.i18nRoute({ name: 'projects' })
+        this.showDialog(
+          this.$t('projectView.noTasksAvailable'),
+          this.$t('projectView.goBackToProjects', { user: this.user.displayName }),
+          this.leaveProject,
+          true,
+          false,
         )
-        if (!available.length) {
-          this.nextDialog = false
-          this.to = this.i18nRoute({ name: 'projects' })
-          this.showDialog(
-            this.$t('projectView.noTasksAvailable'),
-            this.$t('projectView.goBackToProjects', { user: this.user.displayName }),
-            this.leaveProject,
-            true,
-            false,
-          )
-        } else {
-          this.hideDialog()
-        }
-        const random = available[Math.floor(Math.random() * available.length)]
-        this.group = random
-        this.bindTasks()
-      })
+      } else {
+        this.hideDialog()
+      }
+      const random = available[Math.floor(Math.random() * available.length)]
+      this.group = random
+      await this.bindTasks()
     },
-    bindTasks() {
-      onValue(getTasksRef(this.projectId, this.group?.groupId), (snapshot) => {
-        const data = snapshot.val()
-        this.tasks = decompressTasks(data)
-      })
+    async bindTasks() {
+      const snapshot = await get(getTasksRef(this.projectId, this.group?.groupId))
+      const data = snapshot.val()
+      this.tasks = decompressTasks(data)
     },
     bindTutorial(tutorialId) {
       onValue(getProjectRef(tutorialId), (snapshot) => {
@@ -195,12 +192,11 @@ export default defineComponent({
         this.bindTutorialTasks(tutorialId)
       })
     },
-    bindTutorialTasks(tutorialId) {
-      onValue(getTasksRef(tutorialId, '101'), (snapshot) => {
-        const data = snapshot.val()
-        this.tutorialTasks = decompressTasks(data)
-        this.mode = 'contribute'
-      })
+    async bindTutorialTasks(tutorialId) {
+      const snapshot = await get(getTasksRef(tutorialId, '101'))
+      const data = snapshot.val()
+      this.tutorialTasks = decompressTasks(data)
+      this.mode = 'contribute'
     },
     completeOptions(option, index) {
       option.title ??= option.label
@@ -213,13 +209,9 @@ export default defineComponent({
         this.matchIcon(option.icon) || option.icon || `mdi-numeric-${option.shortkey}-box`
       return option
     },
-    continueMapping() {
+    async continueMapping() {
       this.nextDialog = false
-      // Disconnect and reconnect to force fresh group data
-      if (this.unsubscribeGroup) {
-        this.unsubscribeGroup()
-      }
-      this.bindTaskGroup()
+      await this.bindTaskGroup()
       this.mode = 'contribute'
     },
     i18nRoute,
@@ -233,9 +225,7 @@ export default defineComponent({
       if (!this.completedGroupId) {
         return true
       } else {
-        const updated =
-          this.projectContributions[this.completedGroupId] &&
-          this.completedGroupId !== this.group?.groupId
+        const updated = Boolean(this.projectContributions?.[this.completedGroupId])
         /*
           Firebase rejects results that are produced at a speed of less than 125 ms per task. Therefore, we do not wait for
           updated projectContributions for speedy results.
@@ -243,9 +233,6 @@ export default defineComponent({
         const tooSpeedy = this.mappingSpeed < 125
         return updated || tooSpeedy
       }
-    },
-    handleTaskComponentCreated() {
-      goOffline(db)
     },
   },
   beforeRouteLeave(to, from, next) {
@@ -259,9 +246,7 @@ export default defineComponent({
       )
     } else {
       off(getProjectRef(this.projectId))
-      off(getGroupsQuery(this.projectId))
       off(getProjectContributionsRef(this.user.uid, this.projectId))
-      goOnline(db)
       next()
     }
   },
@@ -286,7 +271,6 @@ export default defineComponent({
       :tasks="tasks"
       :tutorial="tutorial"
       :tutorialTasks="tutorialTasks"
-      @created="handleTaskComponentCreated"
     />
 
     <v-dialog v-model="nextDialog" max-width="600" persistent>
