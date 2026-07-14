@@ -43,6 +43,7 @@ export default defineComponent({
   data() {
     return {
       completedGroupId: null,
+      sessionCompletedGroups: [],
       group: null,
       mode: 'prepare',
       mappingSpeed: 1,
@@ -92,6 +93,9 @@ export default defineComponent({
 
         set(getResultsRef(this.project.projectId, this.group.groupId, this.user.uid), entry)
           .then(() => {
+            // Remember in-session: contributions only updates after the backend syncs, so this
+            // stops us re-serving the group the user just finished.
+            this.sessionCompletedGroups.push(this.completedGroupId)
             this.showSnackbar(
               this.$t('projectView.resultsSaved', { user: this.user.displayName }),
               'success',
@@ -158,9 +162,23 @@ export default defineComponent({
       const snapshot = await get(getGroupsQuery(this.projectId))
       const data = snapshot.val() || {}
       const flatGroups = Object.values(data).flat()
-      const completed = Object.keys(this.projectContributions)
+      // Read fresh: the live contributions listener may not have loaded on the first selection.
+      const contributionsSnapshot = await get(
+        getProjectContributionsRef(this.user.uid, this.projectId),
+      )
+      const contributions = contributionsSnapshot.val() || {}
+      const completed = Object.keys(contributions)
+      // Stop serving once the user hits the project's optional per-user task cap.
+      const maxTasksPerUser = this.project?.maxTasksPerUser || Infinity
+      const withinTaskLimit = (contributions.taskContributionCount || 0) < maxTasksPerUser
+      // Skip groups the user already mapped: `completed` persists across sessions but lags after a
+      // save; `sessionCompletedGroups` covers that window within the session.
       const available = flatGroups.filter(
-        (g) => g.requiredCount > 0 && !completed.includes(g.groupId),
+        (g) =>
+          withinTaskLimit &&
+          g.requiredCount > 0 &&
+          !completed.includes(g.groupId) &&
+          !this.sessionCompletedGroups.includes(g.groupId),
       )
       if (!available.length) {
         this.nextDialog = false
@@ -260,9 +278,11 @@ export default defineComponent({
 
 <template>
   <basic-page page-name="project">
+    <!-- key by group so the component fully resets per group and answers never carry across groups -->
     <component
       :is="taskComponent"
       v-if="project && group && tasks && mode === 'contribute'"
+      :key="group.groupId"
       :first="first"
       :group="group"
       :options="options"
