@@ -270,6 +270,7 @@ export default defineComponent({
       :tasks="tasks"
       :tutorial="tutorial"
       :tutorialTasks="tutorialTasks"
+      :key="group.groupId"
     />
 
     <v-dialog v-model="nextDialog" max-width="600" persistent>
