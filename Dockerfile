@@ -64,6 +64,14 @@ LABEL org.opencontainers.image.authors="dev@togglecorp.com"
 
 ENV APPLY_CONFIG__SOURCE_DIRECTORY=/code/build/
 
+# Default (overridable) for the one non-string schema key. overrideDefineForWebAppServe
+# emits an UNQUOTED marker for Schema.boolean/number keys, so the apply-config
+# quoted-JS rewrite cannot blank it — an unset value would leave a bare
+# `WEB_APP_SERVE_PLACEHOLDER__VITE_ALLOW_UNVERIFIED_USERS` identifier (ReferenceError).
+# Baking a default here means the substitution loop always fills it; deployments
+# can still override it at runtime.
+ENV VITE_ALLOW_UNVERIFIED_USERS=true
+
 COPY ./web-app-serve/web-app-apply-config.sh /code/
 ENV APPLY_CONFIG__APPLY_CONFIG_PATH=/code/web-app-apply-config.sh
 
