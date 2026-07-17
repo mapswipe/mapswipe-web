@@ -6,8 +6,6 @@ on:
     branches:
       - develop
       - project/*
-      # TODO: This was added to test the integration, it can be removed after this is merged to repo's default branch
-      - feat/web-app-serve-helm
 
 permissions:
   contents: read       # checkout
