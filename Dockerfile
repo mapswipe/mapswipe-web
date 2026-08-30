@@ -10,13 +10,18 @@ RUN apt-get update -y \
 
 WORKDIR /code
 
-# Build stage for web app
-FROM dev AS web-app-serve-build
+# -------------------------- Builder ---------------------------------------
+
+FROM dev AS builder
 
 COPY ./package.json ./yarn.lock /code/
 
 RUN yarn install
 COPY . /code/
+
+# -------------------------- web-app-serve- Builder --------------------------------
+
+FROM builder AS web-app-serve-build
 
 ENV VITE_FIREBASE_API_KEY=ExampleF1rebaseAP1k3y
 ENV VITE_FIREBASE_AUTH_DOMAIN=example-key.firebaseapp.com
