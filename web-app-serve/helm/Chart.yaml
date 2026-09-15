@@ -1,0 +1,10 @@
+apiVersion: v2
+name: mapswipe-web-helm
+description: "Wrapper Helm chart for mapswipe-web, depends on web-app-serve-helm"
+type: application
+version: 0.0.1-SET-BY-CICD
+dependencies:
+  - name: web-app-serve-helm
+    version: 0.2.1
+    repository: oci://ghcr.io/toggle-corp
+    alias: app
