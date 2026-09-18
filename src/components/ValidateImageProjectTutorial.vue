@@ -197,5 +197,8 @@ function addResult(value: number) {
 <style scoped>
 .task-container {
   height: calc(100vh - 600px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
