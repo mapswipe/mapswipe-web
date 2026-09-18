@@ -230,6 +230,11 @@
   },
   "imageTile": {
     "failureMessage": "Bild konnte nicht geladen werden!",
-    "notAvailableMessage": "Bild nicht verfügbar!"
+    "notAvailableMessage": "Bild nicht verfügbar!",
+    "zoomControls": "Zoom-Steuerung",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "resetZoom": "Zoom zurücksetzen",
+    "zoomToTask": "Auf Aufgabe zoomen"
   }
 }
