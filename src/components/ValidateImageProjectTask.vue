@@ -24,6 +24,8 @@ const translateY = ref(0)
 const isPanning = ref(false)
 const isTransitioning = ref(false)
 const controlsExpanded = ref(false)
+const imageLoaded = ref(false)
+const imageErrored = ref(false)
 
 let panStart = { x: 0, y: 0, translateX: 0, translateY: 0 }
 let transitionTimeout: ReturnType<typeof window.setTimeout>
@@ -96,6 +98,11 @@ function calculateBbox() {
 watch(
   () => props.task,
   (task, previousTask) => {
+    if (task.url !== previousTask?.url) {
+      imageLoaded.value = false
+      imageErrored.value = false
+    }
+
     calculateBbox()
 
     if (scale.value <= 1) {
@@ -114,6 +121,7 @@ function handleResize() {
 }
 
 function handleImageLoad() {
+  imageLoaded.value = true
   setTimeout(() => {
     calculateBbox()
     if (autoZoomPending && scale.value > 1) {
@@ -121,6 +129,10 @@ function handleImageLoad() {
     }
     autoZoomPending = false
   }, 0)
+}
+
+function handleImageError() {
+  imageErrored.value = true
 }
 
 function handleWindowResize() {
@@ -346,23 +358,30 @@ onUnmounted(() => {
       v-if="props.task.url"
       :src="props.task.url"
       @load="handleImageLoad"
+      @error="handleImageError"
       :onresize="handleResize"
       ref="taskImage"
     >
       <svg v-if="bbox" class="bbox" view-box="0 0 100 100">
         <rect :x="bbox.x" :y="bbox.y" :width="bbox.width" :height="bbox.height" />
       </svg>
-      <template v-slot:placeholder>
-        <v-row class="fill-height ma-0" align="center" justify="center">
-          <v-progress-circular color="primary" indeterminate />
-        </v-row>
-      </template>
-      <template v-slot:error>
-        <v-row class="fill-height ma-0 image-failed" align="center" justify="center">
-          {{ $t('imageTile.failureMessage') }}
-        </v-row>
-      </template>
     </v-img>
+    <v-row
+      v-if="!imageLoaded && !imageErrored"
+      class="image-status-overlay fill-height ma-0"
+      align="center"
+      justify="center"
+    >
+      <v-progress-circular color="primary" indeterminate />
+    </v-row>
+    <v-row
+      v-if="imageErrored"
+      class="image-status-overlay fill-height ma-0 image-failed"
+      align="center"
+      justify="center"
+    >
+      {{ $t('imageTile.failureMessage') }}
+    </v-row>
     <div
       class="zoom-controls-wrapper"
       @wheel.stop
@@ -489,6 +508,11 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   will-change: transform;
+}
+
+.image-status-overlay {
+  position: absolute;
+  inset: 0;
 }
 :deep(.small-tooltip) {
   font-size: 0.6rem;
