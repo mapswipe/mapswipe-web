@@ -29,6 +29,7 @@ let panStart = { x: 0, y: 0, translateX: 0, translateY: 0 }
 let transitionTimeout: ReturnType<typeof window.setTimeout>
 let pinchStartDistance = 0
 let pinchStartScale = 1
+let autoZoomPending = false
 
 // computed styles for image zoom and pan
 const imageZoomTransformStyle = computed(() => ({
@@ -91,14 +92,35 @@ function calculateBbox() {
   }
 }
 
-watch(() => props.task, calculateBbox)
+// watches the zoom on the next task by zooming to its bbox instead of keeping the previous position
+watch(
+  () => props.task,
+  (task, previousTask) => {
+    calculateBbox()
+
+    if (scale.value <= 1) {
+      autoZoomPending = false
+    } else if (task.url === previousTask?.url) {
+      zoomToTaskBbox()
+    } else {
+      autoZoomPending = true
+    }
+  },
+  { flush: 'post' },
+)
 
 function handleResize() {
   calculateBbox()
 }
 
 function handleImageLoad() {
-  setTimeout(calculateBbox, 0)
+  setTimeout(() => {
+    calculateBbox()
+    if (autoZoomPending && scale.value > 1) {
+      zoomToTaskBbox()
+    }
+    autoZoomPending = false
+  }, 0)
 }
 
 function handleWindowResize() {
@@ -200,7 +222,7 @@ function zoomToTaskBbox() {
 
   const scaleX = containerWidth / bboxWidth
   const scaleY = containerHeight / bboxHeight
-  const newScale = Math.max(MIN_SCALE, Math.min(scaleX, scaleY, MAX_SCALE)) / 1.05
+  const newScale = Math.max(MIN_SCALE, Math.min(scaleX, scaleY, MAX_SCALE)) / 1.2
 
   const bboxCenterX = bboxX + bboxWidth / 2
   const bboxCenterY = bboxY + bboxHeight / 2
