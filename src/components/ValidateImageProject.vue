@@ -182,5 +182,8 @@ function handleForward() {
 <style scoped>
 .container {
   height: calc(100vh - 390px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

@@ -229,6 +229,11 @@
   },
   "imageTile": {
     "failureMessage": "¡La carga de imagen falló!",
-    "notAvailableMessage": "¡La imagen no está disponible!"
+    "notAvailableMessage": "¡La imagen no está disponible!",
+    "zoomControls": "Controles de zoom",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "resetZoom": "Restablecer zoom",
+    "zoomToTask": "Zoom a la tarea"
   }
 }

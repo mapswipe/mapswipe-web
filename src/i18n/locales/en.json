@@ -229,6 +229,11 @@
   },
   "imageTile": {
     "failureMessage": "Failed to load image!",
-    "notAvailableMessage": "Image not available!"
+    "notAvailableMessage": "Image not available!",
+    "zoomControls": "Zoom Controls",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "resetZoom": "Reset Zoom",
+    "zoomToTask": "Zoom to Task"
   }
 }

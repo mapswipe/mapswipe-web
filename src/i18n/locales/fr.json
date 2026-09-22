@@ -229,6 +229,11 @@
   },
   "imageTile": {
     "failureMessage": "Échec du chargement de l'image !",
-    "notAvailableMessage": "Image non disponible !"
+    "notAvailableMessage": "Image non disponible !",
+    "zoomControls": "Contrôles de zoom",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
+    "resetZoom": "Réinitialiser le zoom",
+    "zoomToTask": "Zoomer sur la tâche"
   }
 }
