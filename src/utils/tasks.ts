@@ -18,5 +18,9 @@ export function decompressTasks(tasks: unknown) {
   const binaryTasks = new Uint8Array(charTasks)
   const expandedTasks = inflate(binaryTasks, { to: 'string' })
 
-  return JSON.parse(expandedTasks) as unknown[]
+  // NOTE: quote taskId before parsing, some task ids (i.e. Mapillary image
+  // ids) exceed Number.MAX_SAFE_INTEGER and JSON.parse silently rounds them
+  const safeExpandedTasks = expandedTasks.replace(/"taskId":\s*(\d+)/g, '"taskId":"$1"')
+
+  return JSON.parse(safeExpandedTasks) as unknown[]
 }
