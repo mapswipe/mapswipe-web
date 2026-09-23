@@ -8,7 +8,6 @@ import {
   shallowRef,
   useTemplateRef,
   watch,
-  watchEffect,
 } from 'vue'
 import { createGeoJsonFromTasks } from '@/utils/common'
 import buildTasks from '@/utils/buildTasks'
@@ -92,19 +91,23 @@ const processedTasks = computed(() => {
   return sorted
 })
 
-watchEffect(() => {
-  results.value = listToMap(
-    processedTasks.value,
-    ({ taskId }) => taskId,
-    () => props.options[0].value,
-  )
-  selectedTasks.value = listToMap(
-    processedTasks.value,
-    ({ taskId }) => taskId,
-    () => false,
-  )
-  startTime.value = new Date().toISOString()
-})
+watch(
+  () => props.group.groupId,
+  () => {
+    results.value = listToMap(
+      processedTasks.value,
+      ({ taskId }) => taskId,
+      () => props.options[0].value,
+    )
+    selectedTasks.value = listToMap(
+      processedTasks.value,
+      ({ taskId }) => taskId,
+      () => false,
+    )
+    startTime.value = new Date().toISOString()
+  },
+  { immediate: true },
+)
 
 const currentTasks = computed(() => {
   const numTasks = columnsPerPage.value * ROWS_PER_PAGE

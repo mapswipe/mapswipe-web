@@ -10,7 +10,7 @@ import type {
   TutorialTileTask,
   TileTask,
 } from '@/utils/types'
-import { computed, inject, onMounted, ref, shallowRef, useTemplateRef, watchEffect } from 'vue'
+import { computed, inject, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import { compareNumber, isDefined, isNotDefined, listToMap } from '@togglecorp/fujs'
 
 import createInformationPages from '@/utils/createInformationPages'
@@ -89,23 +89,27 @@ const defaultSelectionValue = computed(() => (
   )
 ))
 
-watchEffect(() => {
-  results.value = listToMap(
-    processedTasks.value,
-    ({ taskId }) => taskId,
-    () => Array.from(new Array(numSubGridElements.value).keys()).map(
-      () => options.value[0].value,
-    ),
-  )
+watch(
+  () => props.group.groupId,
+  () => {
+    results.value = listToMap(
+      processedTasks.value,
+      ({ taskId }) => taskId,
+      () => Array.from(new Array(numSubGridElements.value).keys()).map(
+        () => options.value[0].value,
+      ),
+    )
 
-  selectedTaskIndices.value = listToMap(
-    processedTasks.value,
-    ({ taskId }) => taskId,
-    () => defaultSelectionValue.value,
-  )
+    selectedTaskIndices.value = listToMap(
+      processedTasks.value,
+      ({ taskId }) => taskId,
+      () => defaultSelectionValue.value,
+    )
 
-  startTime.value = new Date().toISOString()
-})
+    startTime.value = new Date().toISOString()
+  },
+  { immediate: true },
+)
 
 const optionMapping = computed(() =>
   listToMap(

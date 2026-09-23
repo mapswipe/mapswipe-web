@@ -2,7 +2,7 @@
 import matchIcon from '@/utils/matchIcon';
 import type { CustomOption, Project, Tutorial, TutorialTileTask } from '@/utils/types';
 import { isDefined, isNotDefined, listToGroupList, listToMap, mapToList } from '@togglecorp/fujs';
-import { computed, onMounted, ref, shallowRef, watchEffect } from 'vue';
+import { computed, onMounted, ref, shallowRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { VContainer } from 'vuetify/components';
 import LocateFeaturesProjectTask from './LocateFeaturesProjectTask.vue';
@@ -71,21 +71,25 @@ const processedTasks = computed(() => (
 
 const hasTasks = computed(() => isDefined(processedTasks) && processedTasks.value.length !== 0)
 
-watchEffect(() => {
-  results.value = listToMap(
-    processedTasks.value,
-    ({ taskId }) => taskId,
-    () => Array.from(new Array(numSubGridElements.value).keys()).map(
-      () => props.options[0].value,
-    ),
-  )
+watch(
+  () => props.tutorial?.projectId,
+  () => {
+    results.value = listToMap(
+      processedTasks.value,
+      ({ taskId }) => taskId,
+      () => Array.from(new Array(numSubGridElements.value).keys()).map(
+        () => props.options[0].value,
+      ),
+    )
 
-  selectedTaskIndices.value = listToMap(
-    processedTasks.value,
-    ({ taskId }) => taskId,
-    () => defaultSelectionValue.value,
-  )
-})
+    selectedTaskIndices.value = listToMap(
+      processedTasks.value,
+      ({ taskId }) => taskId,
+      () => defaultSelectionValue.value,
+    )
+  },
+  { immediate: true },
+)
 
 const currentTask = computed(() => processedTasks.value?.[currentTaskIndex.value])
 const currentResult = computed(() => results.value[currentTask.value?.taskId])

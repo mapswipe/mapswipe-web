@@ -66,7 +66,7 @@ export default defineComponent({
       endReached: false,
       maxTileSize: 1,
       page: [],
-      results: {},
+      results: {} as Record<string, number>,
       selectedTaskIds: [],
       startTime: null,
       taskIndex: 0,
@@ -79,9 +79,11 @@ export default defineComponent({
     showSnackbar: 'showSnackbar',
   },
   watch: {
-    processedTasks: {
-      handler(newTasks) {
-        newTasks.forEach((task) => (this.results[task.taskId] = this.options[0].value))
+    'group.groupId': {
+      handler() {
+        this.processedTasks.forEach(
+          (task: any) => (this.results[task.taskId] = this.options[0].value),
+        )
         this.startTime = new Date().toISOString()
       },
       immediate: true,
