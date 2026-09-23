@@ -1,34 +1,27 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
-
+import { computed } from 'vue'
 
 interface Props {
   // FIXME: color should not be undefined
-  color: string | undefined;
-  label: string | undefined;
-  persistentLabel?: boolean;
-  isSelected?: boolean;
+  color: string | undefined
+  label: string | undefined
+  persistentLabel?: boolean
+  isSelected?: boolean
 }
 
 const props = defineProps<Props>()
 
 const style = computed(() => ({
   backgroundColor: props.color,
-  border: props.isSelected
-    ? '10pt solid rgba(255, 255, 255, 1)'
-    : undefined,
+  border: props.isSelected ? '10pt solid rgba(255, 255, 255, 1)' : undefined,
 }))
-
 </script>
 
 <template>
   <div class="tile-overlay">
-    <div
-      class="value-indicator"
-      :style="style"
-    />
+    <div class="value-indicator" :style="style" />
     <div :class="persistentLabel ? 'persistent-label' : 'label'">
-      {{label}}
+      {{ label }}
     </div>
   </div>
 </template>
@@ -37,7 +30,7 @@ const style = computed(() => ({
 .tile-overlay {
   aspect-ratio: 1;
   position: relative;
-  border: 1pt solid rgba(255, 255, 255, .6);
+  border: 1pt solid rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,12 +59,12 @@ const style = computed(() => ({
     top: 0;
     width: 100%;
     height: 100%;
-    opacity: .4;
+    opacity: 0.4;
     filter: brightness(200%);
   }
 
   &:hover {
-    background-color: rgba(255, 255, 255, .1);
+    background-color: rgba(255, 255, 255, 0.1);
 
     .label {
       opacity: 1;

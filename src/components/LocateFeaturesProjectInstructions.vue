@@ -1,19 +1,18 @@
 <script lang="ts" setup>
 import type { CustomOption } from '@/utils/types'
-import TileOverlay from './TileOverlay.vue';
-import ImageTile from './ImageTile.vue';
-import { ref } from 'vue';
+import TileOverlay from './TileOverlay.vue'
+import ImageTile from './ImageTile.vue'
+import { ref } from 'vue'
 
 interface Props {
-  instruction: string;
-  options: CustomOption[];
-  exampleTileUrl?: string;
+  instruction: string
+  options: CustomOption[]
+  exampleTileUrl?: string
 }
 
 const props = defineProps<Props>()
-const selected = ref(false);
-const allSelected = ref(false);
-
+const selected = ref(false)
+const allSelected = ref(false)
 </script>
 
 <template>
@@ -33,9 +32,7 @@ const allSelected = ref(false);
             :color="option.iconColor"
             :label="option.title"
           />
-          <image-tile
-            :url="exampleTileUrl"
-          />
+          <image-tile :url="exampleTileUrl" />
         </div>
       </v-col>
     </v-row>

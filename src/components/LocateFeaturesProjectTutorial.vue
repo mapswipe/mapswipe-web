@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import matchIcon from '@/utils/matchIcon';
-import type { CustomOption, Project, Tutorial, TutorialTileTask } from '@/utils/types';
-import { isDefined, isNotDefined, listToGroupList, listToMap, mapToList } from '@togglecorp/fujs';
-import { computed, onMounted, ref, shallowRef, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { VContainer } from 'vuetify/components';
-import LocateFeaturesProjectTask from './LocateFeaturesProjectTask.vue';
-import TaskProgress from './TaskProgress.vue';
-import TutorialCompletionCard from './TutorialCompletionCard.vue';
+import matchIcon from '@/utils/matchIcon'
+import type { CustomOption, Project, Tutorial, TutorialTileTask } from '@/utils/types'
+import { isDefined, isNotDefined, listToGroupList, listToMap, mapToList } from '@togglecorp/fujs'
+import { computed, onMounted, ref, shallowRef, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import type { VContainer } from 'vuetify/components'
+import LocateFeaturesProjectTask from './LocateFeaturesProjectTask.vue'
+import TaskProgress from './TaskProgress.vue'
+import TutorialCompletionCard from './TutorialCompletionCard.vue'
 
 const { t } = useI18n()
 
@@ -15,10 +15,10 @@ interface Props {
   tutorial: Tutorial
   options: CustomOption[]
   tasks: TutorialTileTask[]
-  project: Project;
-  subGridSizeExponent: number;
-  optionMapping: Record<string, CustomOption>;
-  nextOptionMapping: Record<number, number>;
+  project: Project
+  subGridSizeExponent: number
+  optionMapping: Record<string, CustomOption>
+  nextOptionMapping: Record<number, number>
 }
 
 const props = defineProps<Props>()
@@ -29,7 +29,7 @@ const userAttempts = ref(0)
 const answersRevealed = ref(false)
 const results = ref<Record<string, number[]>>({})
 const selectedTaskIndices = ref<Record<string, boolean[]>>({})
-const tileSize = ref<number>(1);
+const tileSize = ref<number>(1)
 
 const instruction = computed(() =>
   isDefined(props.tutorial.projectInstruction)
@@ -37,15 +37,13 @@ const instruction = computed(() =>
     : t('projectView.youAreLookingFor', { lookFor: props.tutorial.lookFor }),
 )
 
-const numSubGridElements = computed(() => ((2 ** props.subGridSizeExponent) ** 2))
+const numSubGridElements = computed(() => (2 ** props.subGridSizeExponent) ** 2)
 
-const defaultSelectionValue = computed(() => (
-  Array.from(new Array(numSubGridElements.value).keys()).map(
-    () => false,
-  )
-))
+const defaultSelectionValue = computed(() =>
+  Array.from(new Array(numSubGridElements.value).keys()).map(() => false),
+)
 
-const processedTasks = computed(() => (
+const processedTasks = computed(() =>
   mapToList(
     listToGroupList(
       props.tasks,
@@ -56,18 +54,18 @@ const processedTasks = computed(() => (
           group,
           ({ taskPartitionIndex }) => taskPartitionIndex ?? -1,
           ({ referenceAnswer }) => referenceAnswer,
-        );
+        )
 
         return {
           ...group[0],
-          reference: defaultSelectionValue.value.map((_, i) => (
-            referenceAnswer[i] ?? props.options[0].value
-          )),
+          reference: defaultSelectionValue.value.map(
+            (_, i) => referenceAnswer[i] ?? props.options[0].value,
+          ),
         }
-      }
-    )
-  )
-))
+      },
+    ),
+  ),
+)
 
 const hasTasks = computed(() => isDefined(processedTasks) && processedTasks.value.length !== 0)
 
@@ -77,9 +75,8 @@ watch(
     results.value = listToMap(
       processedTasks.value,
       ({ taskId }) => taskId,
-      () => Array.from(new Array(numSubGridElements.value).keys()).map(
-        () => props.options[0].value,
-      ),
+      () =>
+        Array.from(new Array(numSubGridElements.value).keys()).map(() => props.options[0].value),
     )
 
     selectedTaskIndices.value = listToMap(
@@ -118,13 +115,13 @@ const answeredCorrectly = computed(() => {
     currentResult.value,
     (_, i) => i,
     (referenceAnswser) => referenceAnswser,
-  );
-
-  const hasWrongAnswer = currentTask.value.reference.some(
-    (referenceAnswser, i) => currentResultMapping[i] !== referenceAnswser
   )
 
-  return !hasWrongAnswer;
+  const hasWrongAnswer = currentTask.value.reference.some(
+    (referenceAnswser, i) => currentResultMapping[i] !== referenceAnswser,
+  )
+
+  return !hasWrongAnswer
 })
 
 const alertContent = computed(() => {
@@ -188,16 +185,16 @@ function nextTask() {
 function handleTaskContainerResize() {
   // NOTE: we need timeout due to tab animation
   window.setTimeout(() => {
-    const el = taskContainer.value?.$el as HTMLDivElement | null;
-    const bcr = el?.getBoundingClientRect();
+    const el = taskContainer.value?.$el as HTMLDivElement | null
+    const bcr = el?.getBoundingClientRect()
 
     if (isNotDefined(bcr)) {
-      return undefined;
+      return undefined
     }
 
-    const { width, height } = bcr;
-    tileSize.value = Math.min(width, height);
-  }, 200);
+    const { width, height } = bcr
+    tileSize.value = Math.min(width, height)
+  }, 200)
 }
 
 onMounted(() => {
@@ -210,7 +207,6 @@ function handleTaskValueChange(taskId: string, newValue: number[]) {
     results.value[taskId] = newValue
   }
 }
-
 </script>
 
 <template>

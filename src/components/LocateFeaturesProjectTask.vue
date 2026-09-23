@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import type { CustomOption, TileTask } from '@/utils/types'
-import ImageTile from './ImageTile.vue';
-import { computed } from 'vue';
-import TileOverlay from './TileOverlay.vue';
+import ImageTile from './ImageTile.vue'
+import { computed } from 'vue'
+import TileOverlay from './TileOverlay.vue'
 
 interface Props {
   task: TileTask
-  subGridSizeExponent: number;
-  optionMapping: Record<string, CustomOption>;
-  nextOptionMapping: Record<number, number>;
-  value: number[];
-  tileSize: number;
-  selectedIndices: boolean[];
+  subGridSizeExponent: number
+  optionMapping: Record<string, CustomOption>
+  nextOptionMapping: Record<number, number>
+  value: number[]
+  tileSize: number
+  selectedIndices: boolean[]
 }
 
 const props = defineProps<Props>()
@@ -21,8 +21,8 @@ const emit = defineEmits<{
   onSelectionChange: [taskId: TileTask['taskId'], newSelectedIndices: boolean[]]
 }>()
 
-const gridSize = 2 ** props.subGridSizeExponent;
-const overlayGrids = Array.from(new Array(gridSize ** 2).keys());
+const gridSize = 2 ** props.subGridSizeExponent
+const overlayGrids = Array.from(new Array(gridSize ** 2).keys())
 
 const taskContainerStyle = computed(() => ({
   width: `${props.tileSize}px`,
@@ -34,26 +34,26 @@ const overlayGridsStyle = computed(() => ({
 }))
 
 function getNewValue(oldValue: number) {
-  return props.nextOptionMapping[oldValue];
+  return props.nextOptionMapping[oldValue]
 }
 
 function handleClick(gridIndex: number) {
   const newValue = [...props.value]
 
-  const newIndexValue = getNewValue(props.value[gridIndex]);
+  const newIndexValue = getNewValue(props.value[gridIndex])
 
   if (props.selectedIndices.some((isSelected) => isSelected)) {
     if (!props.selectedIndices[gridIndex]) {
-      return;
+      return
     }
 
     props.selectedIndices.forEach((isSelected, index) => {
       if (isSelected) {
-        newValue[index] = newIndexValue;
+        newValue[index] = newIndexValue
       }
     })
   } else {
-    newValue[gridIndex] = newIndexValue;
+    newValue[gridIndex] = newIndexValue
   }
 
   emit('onValueChange', props.task.taskId, newValue)
@@ -65,39 +65,29 @@ function handleContextMenu(gridIndex: number) {
   emit('onSelectionChange', props.task.taskId, newSelectedIndices)
 }
 
-const overlayGridColors = computed(() => (
+const overlayGridColors = computed(() =>
   props.value.map((subGridValue) => {
-    const selectedOption = props.optionMapping[subGridValue];
+    const selectedOption = props.optionMapping[subGridValue]
 
-    return selectedOption.iconColor;
-  })
-))
+    return selectedOption.iconColor
+  }),
+)
 
-const overlayGridLabels = computed(() => (
+const overlayGridLabels = computed(() =>
   props.value.map((subGridValue) => {
-    const selectedOption = props.optionMapping[subGridValue];
+    const selectedOption = props.optionMapping[subGridValue]
 
     return selectedOption.title
-  })
-))
-
+  }),
+)
 </script>
 
 <template>
   <v-container>
     <v-row justify="center">
-      <div
-        class="task-container"
-        :style="taskContainerStyle"
-      >
-        <ImageTile
-          :url="task.url"
-          :spinner="true"
-        />
-        <div
-          class="overlay-grids"
-          :style="overlayGridsStyle"
-        >
+      <div class="task-container" :style="taskContainerStyle">
+        <ImageTile :url="task.url" :spinner="true" />
+        <div class="overlay-grids" :style="overlayGridsStyle">
           <TileOverlay
             v-for="gridIndex in overlayGrids"
             v-bind:key="gridIndex"

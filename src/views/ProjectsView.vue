@@ -273,7 +273,7 @@ export default defineComponent({
   font-size: 0.75rem;
   padding: 0.125rem 0.75rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(0, 0, 0, .1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .cover-image {

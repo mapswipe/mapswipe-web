@@ -42,7 +42,9 @@ const projectInfoRef = useTemplateRef('projectInfo')
 const props = defineProps<Props>()
 const taskContainer = shallowRef<VContainer | null>(null)
 
-const options = computed(() => [...props.options ?? []].sort((a, b) => compareNumber(a.value, b.value)))
+const options = computed(() =>
+  [...(props.options ?? [])].sort((a, b) => compareNumber(a.value, b.value)),
+)
 
 const logMappingStarted = inject<(projectType: string) => void>('logMappingStarted')
 const saveResults =
@@ -58,7 +60,7 @@ const instruction = computed(() =>
 const emit = defineEmits<{ created: [] }>()
 const results = ref<Record<string, number[]>>({})
 const selectedTaskIndices = ref<Record<string, boolean[]>>({})
-const tileSize = ref<number>(1);
+const tileSize = ref<number>(1)
 
 const subGridSizeExponent = computed(() => {
   const subGridSizeToExponentMapping: Record<string, number> = {
@@ -68,10 +70,10 @@ const subGridSizeExponent = computed(() => {
   }
 
   if ('subGridSize' in props.project && typeof props.project.subGridSize === 'string') {
-    return subGridSizeToExponentMapping[props.project.subGridSize] ?? 1;
+    return subGridSizeToExponentMapping[props.project.subGridSize] ?? 1
   }
 
-  return 1;
+  return 1
 })
 
 const processedTasks = computed(() => {
@@ -82,12 +84,10 @@ const processedTasks = computed(() => {
   return sortedTasks
 })
 
-const numSubGridElements = computed(() => ((2 ** subGridSizeExponent.value) ** 2))
-const defaultSelectionValue = computed(() => (
-  Array.from(new Array(numSubGridElements.value).keys()).map(
-    () => false,
-  )
-))
+const numSubGridElements = computed(() => (2 ** subGridSizeExponent.value) ** 2)
+const defaultSelectionValue = computed(() =>
+  Array.from(new Array(numSubGridElements.value).keys()).map(() => false),
+)
 
 watch(
   () => props.group.groupId,
@@ -95,9 +95,8 @@ watch(
     results.value = listToMap(
       processedTasks.value,
       ({ taskId }) => taskId,
-      () => Array.from(new Array(numSubGridElements.value).keys()).map(
-        () => options.value[0].value,
-      ),
+      () =>
+        Array.from(new Array(numSubGridElements.value).keys()).map(() => options.value[0].value),
     )
 
     selectedTaskIndices.value = listToMap(
@@ -111,12 +110,7 @@ watch(
   { immediate: true },
 )
 
-const optionMapping = computed(() =>
-  listToMap(
-    options.value,
-    ({ value }) => value,
-  )
-)
+const optionMapping = computed(() => listToMap(options.value, ({ value }) => value))
 const nextOptionMapping = computed(() =>
   listToMap(
     options.value,
@@ -131,11 +125,12 @@ const nextOptionMapping = computed(() =>
   ),
 )
 
-
 const currentTask = computed(() => processedTasks.value?.[taskOffset.value] ?? {})
 const currentTaskValue = computed(() => results.value[currentTask.value.taskId])
 const currentTaskSelections = computed(() => selectedTaskIndices.value[currentTask.value.taskId])
-const numSelectedTasks = computed(() => currentTaskSelections.value.filter((isSelected) => isSelected).length)
+const numSelectedTasks = computed(
+  () => currentTaskSelections.value.filter((isSelected) => isSelected).length,
+)
 
 onMounted(() => {
   logMappingStarted?.(props.project.projectType)
@@ -147,7 +142,7 @@ const isLastTask = computed(() => processedTasks.value.length - 1 === taskOffset
 function handleBack() {
   if (taskOffset.value > 0) {
     // reset selection
-    selectedTaskIndices.value[currentTask.value.taskId] = defaultSelectionValue.value;
+    selectedTaskIndices.value[currentTask.value.taskId] = defaultSelectionValue.value
 
     taskOffset.value = taskOffset.value - 1
   }
@@ -156,8 +151,7 @@ function handleBack() {
 function handleForward() {
   if (taskOffset.value < processedTasks.value.length - 1) {
     // reset selection
-    selectedTaskIndices.value[currentTask.value.taskId] = defaultSelectionValue.value;
-
+    selectedTaskIndices.value[currentTask.value.taskId] = defaultSelectionValue.value
 
     taskOffset.value = taskOffset.value + 1
   }
@@ -172,19 +166,19 @@ function handleTaskSelectionChange(taskId: string, newValue: boolean[]) {
 }
 
 function handleTaskContainerResize() {
-  const el = taskContainer.value?.$el as HTMLDivElement | null;
-  const bcr = el?.getBoundingClientRect();
+  const el = taskContainer.value?.$el as HTMLDivElement | null
+  const bcr = el?.getBoundingClientRect()
 
   if (isNotDefined(bcr)) {
-    return undefined;
+    return undefined
   }
 
-  const { width, height } = bcr;
-  tileSize.value = Math.min(width, height);
+  const { width, height } = bcr
+  tileSize.value = Math.min(width, height)
 }
 
 function handleClearTaskSelection() {
-  selectedTaskIndices.value[currentTask.value.taskId] = defaultSelectionValue.value;
+  selectedTaskIndices.value[currentTask.value.taskId] = defaultSelectionValue.value
 }
 
 const tileMapPage = computed(() => [currentTask.value])
@@ -195,11 +189,10 @@ function handleSelectAll() {
     handleClearTaskSelection()
   } else {
     selectedTaskIndices.value[currentTask.value.taskId] = Array.from(
-      new Array(numSubGridElements.value).keys()).map(() => true
-    )
+      new Array(numSubGridElements.value).keys(),
+    ).map(() => true)
   }
 }
-
 </script>
 
 <template>
@@ -215,14 +208,13 @@ function handleSelectAll() {
       @click="handleSelectAll"
       color="primary"
     />
-    <TileMap
-      :page="tileMapPage"
-      :zoomLevel="project.zoomLevel"
-    />
+    <TileMap :page="tileMapPage" :zoomLevel="project.zoomLevel" />
     <ProjectInfo
       ref="projectInfo"
       :first="first"
-      :informationPages="createInformationPages(props.tutorial, props.project, createFallbackInformationPages)"
+      :informationPages="
+        createInformationPages(props.tutorial, props.project, createFallbackInformationPages)
+      "
       :manualUrl="project?.manualUrl"
       @toggle-dialog="arrowKeys = !arrowKeys"
     >
@@ -247,11 +239,7 @@ function handleSelectAll() {
       </template>
     </ProjectInfo>
   </ProjectHeader>
-  <v-container
-    class="ma-0 pa-0 container"
-    ref="taskContainer"
-    v-resize="handleTaskContainerResize"
-  >
+  <v-container class="ma-0 pa-0 container" ref="taskContainer" v-resize="handleTaskContainerResize">
     <LocateFeaturesProjectTask
       :v-if="currentTask"
       :task="currentTask"
