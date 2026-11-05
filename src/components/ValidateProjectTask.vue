@@ -3,6 +3,7 @@ import { theme } from '@/plugins/vuetify'
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
 import type { TileServer } from '@/utils/types'
+import { isDefined } from '@togglecorp/fujs'
 import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map'
 import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
 import { Collection } from 'ol'
@@ -89,9 +90,14 @@ export default defineComponent({
         }
       }
 
+      if (this.isStacked) {
+        return { height: 'max(calc(50vh - 195px), 300px)' }
+      }
+
+      // NOTE: Side-by-side maps are shorter so that they fit with the answer buttons on a 1366x768 window
       return {
-        height: this.isStacked
-          ? 'max(calc(50vh - 195px), 300px)'
+        height: this.preEventTileServer
+          ? 'max(calc(100vh - 390px), 240px)'
           : 'max(calc(100vh - 390px), 600px)',
       }
     },
@@ -101,6 +107,12 @@ export default defineComponent({
     },
     maxZoom() {
       return this.postEventTileServer.maxZoom ?? 19
+    },
+    viewMaxZoom() {
+      // NOTE: Zoom as far as the more detailed imagery goes, the other imagery is enlarged past its max zoom
+      const maxZooms = [this.preEventTileServer?.maxZoom, this.postEventTileServer.maxZoom]
+      const definedMaxZooms = maxZooms.filter(isDefined)
+      return definedMaxZooms.length > 0 ? Math.max(...definedMaxZooms) : undefined
     },
     taskFeatures() {
       const features = new Collection()
@@ -166,6 +178,7 @@ export default defineComponent({
           <ol-source-xyz
             :tile-url-function="preEventXyzUrl"
             :attributions="preEventTileServer.credits"
+            :maxZoom="preEventTileServer.maxZoom"
           />
         </ol-tile-layer>
         <ol-vector-layer :zIndex="3" :key="task.taskId">
@@ -188,12 +201,7 @@ export default defineComponent({
         :style="mapStyle"
         @rendercomplete.once="fitView(1200, 300)"
       >
-        <ol-view
-          ref="mapView"
-          :zoom="zoom"
-          :center="center"
-          :maxZoom="postEventTileServer.maxZoom"
-        />
+        <ol-view ref="mapView" :zoom="zoom" :center="center" :maxZoom="viewMaxZoom" />
         <ol-tile-layer
           v-if="postEventTileServer.name != 'bing'"
           id="osmLayer"
@@ -203,7 +211,11 @@ export default defineComponent({
           <ol-source-osm />
         </ol-tile-layer>
         <ol-tile-layer id="basemapLayer" ref="basemapLayer" :zIndex="2">
-          <ol-source-xyz :tile-url-function="xyzUrl" :attributions="postEventTileServer.credits" />
+          <ol-source-xyz
+            :tile-url-function="xyzUrl"
+            :attributions="postEventTileServer.credits"
+            :maxZoom="postEventTileServer.maxZoom"
+          />
         </ol-tile-layer>
         <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3" :key="task.taskId">
           <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />
