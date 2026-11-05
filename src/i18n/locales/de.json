@@ -187,7 +187,9 @@
   "validateProject": {
     "doesTheShapeOutline": "Ist der Umriss ein {feature}?",
     "moveLeft": "Zurück zum vorherigen Umriss",
-    "moveRight": "Weiter zum nächsten Umriss"
+    "moveRight": "Weiter zum nächsten Umriss",
+    "before": "Vorher",
+    "after": "Nachher"
   },
   "validateProjectInstructions": {
     "seenAll": "sobald du alle Umrisse gesehen und klassifiziert hast.",

@@ -187,7 +187,9 @@
   "validateProject": {
     "doesTheShapeOutline": "Est-ce la forme correspond au contour de {feature} ?",
     "moveLeft": "Retour à l'élément précédent",
-    "moveRight": "Aller à l'élement suivant"
+    "moveRight": "Aller à l'élement suivant",
+    "before": "Avant",
+    "after": "Après"
   },
   "validateProjectInstructions": {
     "seenAll": "as soon as you have seen and classified all the features."

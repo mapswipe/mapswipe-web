@@ -187,7 +187,9 @@
   "validateProject": {
     "doesTheShapeOutline": "¿Corresponde la figura con un/a {feature}?",
     "moveLeft": "Volver al elemento anterior",
-    "moveRight": "Ir al elemento siguiente"
+    "moveRight": "Ir al elemento siguiente",
+    "before": "Antes",
+    "after": "Después"
   },
   "validateProjectInstructions": {
     "seenAll": "en cuanto hayas clasificado todos los elementos."

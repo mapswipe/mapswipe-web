@@ -2,6 +2,7 @@
 import { theme } from '@/plugins/vuetify'
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
+import type { TileServer } from '@/utils/types'
 import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map'
 import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
 import { Collection } from 'ol'
@@ -14,14 +15,11 @@ interface Task {
 }
 
 export interface Project {
-  tileServer: {
-    apiKey: string
-    credits: string
-    name: string
-    url: string
-    maxZoom?: number
-    imagerySet?: string
-  }
+  // NOTE: Is a fallback image for older apps when the project has pre-event imagery
+  tileServer: TileServer
+  hasPreImagery?: boolean
+  preEventTileServer?: TileServer
+  postEventTileServer?: TileServer
 }
 
 export default defineComponent({
@@ -56,17 +54,45 @@ export default defineComponent({
       zoom: 3,
     }
   },
+  mounted() {
+    // NOTE: Share the view so that the pre-event map pans and zooms along with the post-event map
+    const preEventMap = this.$refs.preEventMap as InstanceType<typeof OlMap> | undefined
+    const mapView = this.$refs.mapView as InstanceType<typeof OlView>
+    preEventMap?.map.setView(mapView.view)
+  },
   updated() {
     this.fitView()
   },
   computed: {
+    preEventTileServer(): TileServer | undefined {
+      if (!this.project.hasPreImagery) {
+        return undefined
+      }
+      return this.project.preEventTileServer
+    },
+    postEventTileServer(): TileServer {
+      if (!this.project.hasPreImagery) {
+        return this.project.tileServer
+      }
+      return this.project.postEventTileServer ?? this.project.tileServer
+    },
+    isStacked() {
+      // NOTE: Pre-event and post-event maps are stacked on small screens
+      return !!this.preEventTileServer && this.$vuetify.display.smAndDown
+    },
     mapStyle() {
       if (this.compact) {
-        return { height: 'max(calc(70vh - 390px), 300px)' }
+        return {
+          height: this.isStacked
+            ? 'max(calc(35vh - 195px), 150px)'
+            : 'max(calc(70vh - 390px), 300px)',
+        }
       }
 
       return {
-        height: 'max(calc(100vh - 390px), 600px)',
+        height: this.isStacked
+          ? 'max(calc(50vh - 195px), 300px)'
+          : 'max(calc(100vh - 390px), 600px)',
       }
     },
     strokeColor() {
@@ -74,7 +100,7 @@ export default defineComponent({
       return color
     },
     maxZoom() {
-      return this.project.tileServer.maxZoom ?? 19
+      return this.postEventTileServer.maxZoom ?? 19
     },
     taskFeatures() {
       const features = new Collection()
@@ -113,7 +139,11 @@ export default defineComponent({
       }
     },
     xyzUrl(tileCoord: [number, number, number]) {
-      const url = makeXyzUrl(this.project.tileServer, tileCoord)
+      const url = makeXyzUrl(this.postEventTileServer, tileCoord)
+      return url
+    },
+    preEventXyzUrl(tileCoord: [number, number, number]) {
+      const url = makeXyzUrl(this.preEventTileServer, tileCoord)
       return url
     },
   },
@@ -121,32 +151,113 @@ export default defineComponent({
 </script>
 
 <template>
-  <ol-map
-    ref="map"
-    :load-tiles-while-animating="true"
-    :load-tiles-while-interacting="true"
-    :style="mapStyle"
-    @rendercomplete.once="fitView(1200, 300)"
-  >
-    <ol-view ref="mapView" :zoom="zoom" :center="center" :maxZoom="project?.tileServer?.maxZoom" />
-    <ol-tile-layer
-      v-if="project?.tileServer?.name != 'bing'"
-      id="osmLayer"
-      ref="osmLayer"
-      :zIndex="1"
-    >
-      <ol-source-osm />
-    </ol-tile-layer>
-    <ol-tile-layer id="basemapLayer" ref="basemapLayer" :zIndex="2">
-      <ol-source-xyz :tile-url-function="xyzUrl" :attributions="project.tileServer.credits" />
-    </ol-tile-layer>
-    <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3" :key="task.taskId">
-      <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />
-      <ol-style :key="strokeColor">
-        <ol-style-stroke :color="strokeColor" :width="5" />
-        <ol-style-fill color="#0000" />
-      </ol-style>
-    </ol-vector-layer>
-    <ol-scaleline-control />
-  </ol-map>
+  <div class="maps" :class="{ stacked: isStacked, 'with-pre-event': preEventTileServer }">
+    <div v-if="preEventTileServer" class="imagery pre-event">
+      <ol-map
+        ref="preEventMap"
+        :load-tiles-while-animating="true"
+        :load-tiles-while-interacting="true"
+        :style="mapStyle"
+      >
+        <ol-tile-layer v-if="preEventTileServer.name != 'bing'" :zIndex="1">
+          <ol-source-osm />
+        </ol-tile-layer>
+        <ol-tile-layer :zIndex="2">
+          <ol-source-xyz
+            :tile-url-function="preEventXyzUrl"
+            :attributions="preEventTileServer.credits"
+          />
+        </ol-tile-layer>
+        <ol-vector-layer :zIndex="3" :key="task.taskId">
+          <ol-source-vector :features="taskFeatures" />
+          <ol-style :key="strokeColor">
+            <ol-style-stroke :color="strokeColor" :width="5" />
+            <ol-style-fill color="#0000" />
+          </ol-style>
+        </ol-vector-layer>
+      </ol-map>
+      <v-chip class="imagery-label" color="primary" size="small" variant="flat" label>
+        {{ $t('validateProject.before') }}
+      </v-chip>
+    </div>
+    <div class="imagery">
+      <ol-map
+        ref="map"
+        :load-tiles-while-animating="true"
+        :load-tiles-while-interacting="true"
+        :style="mapStyle"
+        @rendercomplete.once="fitView(1200, 300)"
+      >
+        <ol-view
+          ref="mapView"
+          :zoom="zoom"
+          :center="center"
+          :maxZoom="postEventTileServer.maxZoom"
+        />
+        <ol-tile-layer
+          v-if="postEventTileServer.name != 'bing'"
+          id="osmLayer"
+          ref="osmLayer"
+          :zIndex="1"
+        >
+          <ol-source-osm />
+        </ol-tile-layer>
+        <ol-tile-layer id="basemapLayer" ref="basemapLayer" :zIndex="2">
+          <ol-source-xyz :tile-url-function="xyzUrl" :attributions="postEventTileServer.credits" />
+        </ol-tile-layer>
+        <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3" :key="task.taskId">
+          <ol-source-vector :features="taskFeatures" ref="taskSource" ident="taskSource" />
+          <ol-style :key="strokeColor">
+            <ol-style-stroke :color="strokeColor" :width="5" />
+            <ol-style-fill color="#0000" />
+          </ol-style>
+        </ol-vector-layer>
+        <ol-scaleline-control />
+      </ol-map>
+      <v-chip
+        v-if="preEventTileServer"
+        class="imagery-label"
+        color="primary"
+        size="small"
+        variant="flat"
+        label
+      >
+        {{ $t('validateProject.after') }}
+      </v-chip>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.maps {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 8px;
+
+  &.stacked {
+    grid-auto-flow: row;
+  }
+
+  .imagery {
+    position: relative;
+
+    .imagery-label {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      pointer-events: none;
+    }
+  }
+}
+
+/* NOTE: Only the post-event map has zoom controls, placed away from the label */
+.maps .pre-event :deep(.ol-zoom) {
+  display: none;
+}
+
+.maps.with-pre-event :deep(.ol-zoom) {
+  left: auto;
+  right: 0.5em;
+}
+</style>

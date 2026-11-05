@@ -187,7 +187,9 @@
   "validateProject": {
     "doesTheShapeOutline": "Does the shape outline a {feature}?",
     "moveLeft": "Back to previous feature",
-    "moveRight": "Forward to next feature"
+    "moveRight": "Forward to next feature",
+    "before": "Before",
+    "after": "After"
   },
   "validateProjectInstructions": {
     "seenAll": "as soon as you have seen and classified all the features."
