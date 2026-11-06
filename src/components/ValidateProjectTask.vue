@@ -38,23 +38,18 @@ interface Task {
   geojson: object
 }
 
-export interface Project {
-  // NOTE: Is a fallback image for older apps when the project has pre-event imagery
-  tileServer: TileServer
-  hasPreImagery?: boolean
-  preEventTileServer?: TileServer
-  postEventTileServer?: TileServer
-}
-
 export default defineComponent({
   props: {
     task: {
       type: Object as PropType<Task>,
       required: true,
     },
-    project: {
-      type: Object as PropType<Project>,
+    tileServer: {
+      type: Object as PropType<TileServer>,
       required: true,
+    },
+    preEventTileServer: {
+      type: Object as PropType<TileServer>,
     },
     transparent: {
       type: Boolean,
@@ -91,18 +86,6 @@ export default defineComponent({
     this.fitView()
   },
   computed: {
-    preEventTileServer(): TileServer | undefined {
-      if (!this.project.hasPreImagery) {
-        return undefined
-      }
-      return this.project.preEventTileServer
-    },
-    postEventTileServer(): TileServer {
-      if (!this.project.hasPreImagery) {
-        return this.project.tileServer
-      }
-      return this.project.postEventTileServer ?? this.project.tileServer
-    },
     isStacked() {
       // NOTE: Pre-event and post-event maps are stacked on small screens
       return !!this.preEventTileServer && this.$vuetify.display.smAndDown
@@ -175,7 +158,7 @@ export default defineComponent({
       }
     },
     xyzUrl(tileCoord: [number, number, number]) {
-      const url = makeXyzUrl(this.postEventTileServer, tileCoord)
+      const url = makeXyzUrl(this.tileServer, tileCoord)
       return url
     },
     preEventXyzUrl(tileCoord: [number, number, number]) {
@@ -233,20 +216,15 @@ export default defineComponent({
           :minZoom="MAP_MIN_ZOOM_LEVEL"
           :maxZoom="MAP_MAX_ZOOM_LEVEL"
         />
-        <ol-tile-layer
-          v-if="postEventTileServer.name != 'bing'"
-          id="osmLayer"
-          ref="osmLayer"
-          :zIndex="1"
-        >
+        <ol-tile-layer v-if="tileServer.name != 'bing'" id="osmLayer" ref="osmLayer" :zIndex="1">
           <ol-source-osm />
         </ol-tile-layer>
         <ol-tile-layer id="basemapLayer" ref="basemapLayer" :zIndex="2">
           <ol-source-xyz
             :tile-url-function="xyzUrl"
-            :attributions="postEventTileServer.credits"
-            :minZoom="postEventTileServer.minZoom"
-            :maxZoom="postEventTileServer.maxZoom"
+            :attributions="tileServer.credits"
+            :minZoom="tileServer.minZoom"
+            :maxZoom="tileServer.maxZoom"
           />
         </ol-tile-layer>
         <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3" :key="task.taskId">
