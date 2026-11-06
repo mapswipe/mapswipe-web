@@ -6,11 +6,32 @@ import type { TileServer } from '@/utils/types'
 import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map'
 import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
 import { Collection } from 'ol'
+import { type Extent, getCenter } from 'ol/extent'
 import { GeoJSON } from 'ol/format'
+import { toLonLat } from 'ol/proj'
 import { type PropType, defineComponent } from 'vue'
 
 const MAP_MIN_ZOOM_LEVEL = 0
 const MAP_MAX_ZOOM_LEVEL = 24
+
+// NOTE: A point or a very small feature is shown with this much ground around it
+const MIN_FIT_SIZE_IN_METERS = 20
+const FIT_PADDING_RATIO = 0.1
+
+// Grow the extent around its center to at least the given size on the ground
+function expandExtent(extent: Extent, minSizeInMeters: number): Extent {
+  const center = getCenter(extent)
+  const [, centerLat] = toLonLat(center)
+  // NOTE: Web Mercator stretches ground distances by 1 / cos(latitude)
+  const halfSize = minSizeInMeters / 2 / Math.cos((centerLat * Math.PI) / 180)
+
+  return [
+    Math.min(extent[0], center[0] - halfSize),
+    Math.min(extent[1], center[1] - halfSize),
+    Math.max(extent[2], center[0] + halfSize),
+    Math.max(extent[3], center[1] + halfSize),
+  ]
+}
 
 interface Task {
   taskId: string
@@ -137,9 +158,17 @@ export default defineComponent({
 
       if (!extent.some((coordinate) => coordinate == Infinity)) {
         setTimeout(() => {
-          mapView.fit(extent, {
-            size: map.getSize(),
-            padding: this.compact ? [10, 10, 10, 10] : [20, 20, 20, 20],
+          const size = map.getSize()
+          if (!size) {
+            return
+          }
+
+          const [width, height] = size
+          const verticalPadding = height * FIT_PADDING_RATIO
+          const horizontalPadding = width * FIT_PADDING_RATIO
+          mapView.fit(expandExtent(extent, MIN_FIT_SIZE_IN_METERS), {
+            size,
+            padding: [verticalPadding, horizontalPadding, verticalPadding, horizontalPadding],
             duration: duration,
           })
         }, delay)
