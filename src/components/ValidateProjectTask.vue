@@ -108,6 +108,12 @@ export default defineComponent({
       const color = hex2rgb(theme.light.accent, this.transparent ? 0.4 : 1)
       return color
     },
+    preEventXyzUrl() {
+      const tileServer = this.preEventTileServer
+      return (
+        tileServer && ((tileCoord: [number, number, number]) => makeXyzUrl(tileServer, tileCoord))
+      )
+    },
     taskFeatures() {
       const features = new Collection()
       const geoJson = new GeoJSON()
@@ -159,10 +165,6 @@ export default defineComponent({
     },
     xyzUrl(tileCoord: [number, number, number]) {
       const url = makeXyzUrl(this.tileServer, tileCoord)
-      return url
-    },
-    preEventXyzUrl(tileCoord: [number, number, number]) {
-      const url = makeXyzUrl(this.preEventTileServer, tileCoord)
       return url
     },
   },
