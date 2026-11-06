@@ -3,12 +3,14 @@ import { theme } from '@/plugins/vuetify'
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
 import type { TileServer } from '@/utils/types'
-import { isDefined } from '@togglecorp/fujs'
 import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map'
 import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
 import { Collection } from 'ol'
 import { GeoJSON } from 'ol/format'
 import { type PropType, defineComponent } from 'vue'
+
+const MAP_MIN_ZOOM_LEVEL = 0
+const MAP_MAX_ZOOM_LEVEL = 24
 
 interface Task {
   taskId: string
@@ -39,6 +41,9 @@ export default defineComponent({
     compact: {
       type: Boolean,
     },
+  },
+  setup() {
+    return { MAP_MIN_ZOOM_LEVEL, MAP_MAX_ZOOM_LEVEL }
   },
   data(): {
     center: [number, number]
@@ -105,15 +110,6 @@ export default defineComponent({
       const color = hex2rgb(theme.light.accent, this.transparent ? 0.4 : 1)
       return color
     },
-    maxZoom() {
-      return this.postEventTileServer.maxZoom ?? 19
-    },
-    viewMaxZoom() {
-      // NOTE: Zoom as far as the more detailed imagery goes, the other imagery is enlarged past its max zoom
-      const maxZooms = [this.preEventTileServer?.maxZoom, this.postEventTileServer.maxZoom]
-      const definedMaxZooms = maxZooms.filter(isDefined)
-      return definedMaxZooms.length > 0 ? Math.max(...definedMaxZooms) : undefined
-    },
     taskFeatures() {
       const features = new Collection()
       const geoJson = new GeoJSON()
@@ -144,7 +140,6 @@ export default defineComponent({
           mapView.fit(extent, {
             size: map.getSize(),
             padding: this.compact ? [10, 10, 10, 10] : [20, 20, 20, 20],
-            maxZoom: this.maxZoom,
             duration: duration,
           })
         }, delay)
@@ -178,6 +173,7 @@ export default defineComponent({
           <ol-source-xyz
             :tile-url-function="preEventXyzUrl"
             :attributions="preEventTileServer.credits"
+            :minZoom="preEventTileServer.minZoom"
             :maxZoom="preEventTileServer.maxZoom"
           />
         </ol-tile-layer>
@@ -201,7 +197,13 @@ export default defineComponent({
         :style="mapStyle"
         @rendercomplete.once="fitView(1200, 300)"
       >
-        <ol-view ref="mapView" :zoom="zoom" :center="center" :maxZoom="viewMaxZoom" />
+        <ol-view
+          ref="mapView"
+          :zoom="zoom"
+          :center="center"
+          :minZoom="MAP_MIN_ZOOM_LEVEL"
+          :maxZoom="MAP_MAX_ZOOM_LEVEL"
+        />
         <ol-tile-layer
           v-if="postEventTileServer.name != 'bing'"
           id="osmLayer"
@@ -214,6 +216,7 @@ export default defineComponent({
           <ol-source-xyz
             :tile-url-function="xyzUrl"
             :attributions="postEventTileServer.credits"
+            :minZoom="postEventTileServer.minZoom"
             :maxZoom="postEventTileServer.maxZoom"
           />
         </ol-tile-layer>
