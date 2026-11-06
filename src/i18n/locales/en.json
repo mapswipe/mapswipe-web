@@ -187,7 +187,12 @@
   "validateProject": {
     "doesTheShapeOutline": "Does the shape outline a {feature}?",
     "moveLeft": "Back to previous feature",
-    "moveRight": "Forward to next feature"
+    "moveRight": "Forward to next feature",
+    "before": "Before",
+    "after": "After",
+    "imageryIncompleteTitle": "This project cannot be shown",
+    "tutorialImageryIncompleteTitle": "This tutorial cannot be shown",
+    "imageryIncompleteDescription": "Its imagery setup is incomplete. Please contact the project manager."
   },
   "validateProjectInstructions": {
     "seenAll": "as soon as you have seen and classified all the features."

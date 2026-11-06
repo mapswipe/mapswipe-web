@@ -63,6 +63,7 @@ export interface TileServer {
   credits: string
   name: string
   url: string
+  minZoom?: number
   maxZoom?: number
   imagerySet?: string
   wmtsLayerName?: string
