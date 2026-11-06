@@ -76,12 +76,6 @@ export default defineComponent({
       zoom: 3,
     }
   },
-  mounted() {
-    // NOTE: Share the view so that the pre-event map pans and zooms along with the post-event map
-    const preEventMap = this.$refs.preEventMap as InstanceType<typeof OlMap> | undefined
-    const mapView = this.$refs.mapView as InstanceType<typeof OlView>
-    preEventMap?.map.setView(mapView.view)
-  },
   updated() {
     this.fitView()
   },
@@ -132,6 +126,12 @@ export default defineComponent({
     },
   },
   methods: {
+    // NOTE: Share the view so that the pre-event map pans and zooms along with the post-event map
+    sharePreEventView() {
+      const preEventMap = this.$refs.preEventMap as InstanceType<typeof OlMap>
+      const mapView = this.$refs.mapView as InstanceType<typeof OlView>
+      preEventMap.map.setView(mapView.view)
+    },
     fitView(duration = 600, delay = 100) {
       const map = (this.$refs.map as InstanceType<typeof OlMap>).map
       const mapView = this.$refs.mapView as InstanceType<typeof OlView>
@@ -174,6 +174,7 @@ export default defineComponent({
     <div v-if="preEventTileServer" class="imagery pre-event">
       <ol-map
         ref="preEventMap"
+        @vue:mounted="sharePreEventView"
         :load-tiles-while-animating="true"
         :load-tiles-while-interacting="true"
         :style="mapStyle"
