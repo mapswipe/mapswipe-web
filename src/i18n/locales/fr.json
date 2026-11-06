@@ -189,7 +189,10 @@
     "moveLeft": "Retour à l'élément précédent",
     "moveRight": "Aller à l'élement suivant",
     "before": "Avant",
-    "after": "Après"
+    "after": "Après",
+    "imageryIncompleteTitle": "Ce projet ne peut pas être affiché",
+    "tutorialImageryIncompleteTitle": "Ce tutoriel ne peut pas être affiché",
+    "imageryIncompleteDescription": "La configuration de ses images est incomplète. Veuillez contacter la personne responsable du projet."
   },
   "validateProjectInstructions": {
     "seenAll": "as soon as you have seen and classified all the features."

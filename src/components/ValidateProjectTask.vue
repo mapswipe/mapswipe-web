@@ -3,24 +3,39 @@ import { theme } from '@/plugins/vuetify'
 import hex2rgb from '@/utils/hex2rgb'
 import makeXyzUrl from '@/utils/makeXyzUrl'
 import type { TileServer } from '@/utils/types'
-import { isDefined } from '@togglecorp/fujs'
 import type { OlMap, OlView } from 'node_modules/vue3-openlayers/dist/components/map'
 import type { OlSourceVector } from 'node_modules/vue3-openlayers/dist/components/sources'
 import { Collection } from 'ol'
+import { type Extent, getCenter } from 'ol/extent'
 import { GeoJSON } from 'ol/format'
+import { toLonLat } from 'ol/proj'
 import { type PropType, defineComponent } from 'vue'
+
+const MAP_MIN_ZOOM_LEVEL = 0
+const MAP_MAX_ZOOM_LEVEL = 24
+
+// NOTE: A point or a very small feature is shown with this much ground around it
+const MIN_FIT_SIZE_IN_METERS = 20
+const FIT_PADDING_RATIO = 0.1
+
+// Grow the extent around its center to at least the given size on the ground
+function expandExtent(extent: Extent, minSizeInMeters: number): Extent {
+  const center = getCenter(extent)
+  const [, centerLat] = toLonLat(center)
+  // NOTE: Web Mercator stretches ground distances by 1 / cos(latitude)
+  const halfSize = minSizeInMeters / 2 / Math.cos((centerLat * Math.PI) / 180)
+
+  return [
+    Math.min(extent[0], center[0] - halfSize),
+    Math.min(extent[1], center[1] - halfSize),
+    Math.max(extent[2], center[0] + halfSize),
+    Math.max(extent[3], center[1] + halfSize),
+  ]
+}
 
 interface Task {
   taskId: string
   geojson: object
-}
-
-export interface Project {
-  // NOTE: Is a fallback image for older apps when the project has pre-event imagery
-  tileServer: TileServer
-  hasPreImagery?: boolean
-  preEventTileServer?: TileServer
-  postEventTileServer?: TileServer
 }
 
 export default defineComponent({
@@ -29,9 +44,12 @@ export default defineComponent({
       type: Object as PropType<Task>,
       required: true,
     },
-    project: {
-      type: Object as PropType<Project>,
+    tileServer: {
+      type: Object as PropType<TileServer>,
       required: true,
+    },
+    preEventTileServer: {
+      type: Object as PropType<TileServer>,
     },
     transparent: {
       type: Boolean,
@@ -39,6 +57,9 @@ export default defineComponent({
     compact: {
       type: Boolean,
     },
+  },
+  setup() {
+    return { MAP_MIN_ZOOM_LEVEL, MAP_MAX_ZOOM_LEVEL }
   },
   data(): {
     center: [number, number]
@@ -55,28 +76,10 @@ export default defineComponent({
       zoom: 3,
     }
   },
-  mounted() {
-    // NOTE: Share the view so that the pre-event map pans and zooms along with the post-event map
-    const preEventMap = this.$refs.preEventMap as InstanceType<typeof OlMap> | undefined
-    const mapView = this.$refs.mapView as InstanceType<typeof OlView>
-    preEventMap?.map.setView(mapView.view)
-  },
   updated() {
     this.fitView()
   },
   computed: {
-    preEventTileServer(): TileServer | undefined {
-      if (!this.project.hasPreImagery) {
-        return undefined
-      }
-      return this.project.preEventTileServer
-    },
-    postEventTileServer(): TileServer {
-      if (!this.project.hasPreImagery) {
-        return this.project.tileServer
-      }
-      return this.project.postEventTileServer ?? this.project.tileServer
-    },
     isStacked() {
       // NOTE: Pre-event and post-event maps are stacked on small screens
       return !!this.preEventTileServer && this.$vuetify.display.smAndDown
@@ -105,14 +108,11 @@ export default defineComponent({
       const color = hex2rgb(theme.light.accent, this.transparent ? 0.4 : 1)
       return color
     },
-    maxZoom() {
-      return this.postEventTileServer.maxZoom ?? 19
-    },
-    viewMaxZoom() {
-      // NOTE: Zoom as far as the more detailed imagery goes, the other imagery is enlarged past its max zoom
-      const maxZooms = [this.preEventTileServer?.maxZoom, this.postEventTileServer.maxZoom]
-      const definedMaxZooms = maxZooms.filter(isDefined)
-      return definedMaxZooms.length > 0 ? Math.max(...definedMaxZooms) : undefined
+    preEventXyzUrl() {
+      const tileServer = this.preEventTileServer
+      return (
+        tileServer && ((tileCoord: [number, number, number]) => makeXyzUrl(tileServer, tileCoord))
+      )
     },
     taskFeatures() {
       const features = new Collection()
@@ -132,6 +132,12 @@ export default defineComponent({
     },
   },
   methods: {
+    // NOTE: Share the view so that the pre-event map pans and zooms along with the post-event map
+    sharePreEventView() {
+      const preEventMap = this.$refs.preEventMap as InstanceType<typeof OlMap>
+      const mapView = this.$refs.mapView as InstanceType<typeof OlView>
+      preEventMap.map.setView(mapView.view)
+    },
     fitView(duration = 600, delay = 100) {
       const map = (this.$refs.map as InstanceType<typeof OlMap>).map
       const mapView = this.$refs.mapView as InstanceType<typeof OlView>
@@ -141,21 +147,24 @@ export default defineComponent({
 
       if (!extent.some((coordinate) => coordinate == Infinity)) {
         setTimeout(() => {
-          mapView.fit(extent, {
-            size: map.getSize(),
-            padding: this.compact ? [10, 10, 10, 10] : [20, 20, 20, 20],
-            maxZoom: this.maxZoom,
+          const size = map.getSize()
+          if (!size) {
+            return
+          }
+
+          const [width, height] = size
+          const verticalPadding = height * FIT_PADDING_RATIO
+          const horizontalPadding = width * FIT_PADDING_RATIO
+          mapView.fit(expandExtent(extent, MIN_FIT_SIZE_IN_METERS), {
+            size,
+            padding: [verticalPadding, horizontalPadding, verticalPadding, horizontalPadding],
             duration: duration,
           })
         }, delay)
       }
     },
     xyzUrl(tileCoord: [number, number, number]) {
-      const url = makeXyzUrl(this.postEventTileServer, tileCoord)
-      return url
-    },
-    preEventXyzUrl(tileCoord: [number, number, number]) {
-      const url = makeXyzUrl(this.preEventTileServer, tileCoord)
+      const url = makeXyzUrl(this.tileServer, tileCoord)
       return url
     },
   },
@@ -167,6 +176,7 @@ export default defineComponent({
     <div v-if="preEventTileServer" class="imagery pre-event">
       <ol-map
         ref="preEventMap"
+        @vue:mounted="sharePreEventView"
         :load-tiles-while-animating="true"
         :load-tiles-while-interacting="true"
         :style="mapStyle"
@@ -178,6 +188,7 @@ export default defineComponent({
           <ol-source-xyz
             :tile-url-function="preEventXyzUrl"
             :attributions="preEventTileServer.credits"
+            :minZoom="preEventTileServer.minZoom"
             :maxZoom="preEventTileServer.maxZoom"
           />
         </ol-tile-layer>
@@ -201,20 +212,22 @@ export default defineComponent({
         :style="mapStyle"
         @rendercomplete.once="fitView(1200, 300)"
       >
-        <ol-view ref="mapView" :zoom="zoom" :center="center" :maxZoom="viewMaxZoom" />
-        <ol-tile-layer
-          v-if="postEventTileServer.name != 'bing'"
-          id="osmLayer"
-          ref="osmLayer"
-          :zIndex="1"
-        >
+        <ol-view
+          ref="mapView"
+          :zoom="zoom"
+          :center="center"
+          :minZoom="MAP_MIN_ZOOM_LEVEL"
+          :maxZoom="MAP_MAX_ZOOM_LEVEL"
+        />
+        <ol-tile-layer v-if="tileServer.name != 'bing'" id="osmLayer" ref="osmLayer" :zIndex="1">
           <ol-source-osm />
         </ol-tile-layer>
         <ol-tile-layer id="basemapLayer" ref="basemapLayer" :zIndex="2">
           <ol-source-xyz
             :tile-url-function="xyzUrl"
-            :attributions="postEventTileServer.credits"
-            :maxZoom="postEventTileServer.maxZoom"
+            :attributions="tileServer.credits"
+            :minZoom="tileServer.minZoom"
+            :maxZoom="tileServer.maxZoom"
           />
         </ol-tile-layer>
         <ol-vector-layer id="taskLayer" ref="taskLayer" :zIndex="3" :key="task.taskId">

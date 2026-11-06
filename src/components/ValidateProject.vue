@@ -3,6 +3,7 @@ import { defineComponent } from 'vue'
 import { Collection } from 'ol'
 import { isDefined } from '@togglecorp/fujs'
 import createInformationPages from '@/utils/createInformationPages'
+import getValidateTileServers from '@/utils/getValidateTileServers'
 import { theme } from '@/plugins/vuetify'
 import OptionButtons from '@/components/OptionButtons.vue'
 import ProjectHeader from '@/components/ProjectHeader.vue'
@@ -109,6 +110,9 @@ export default defineComponent({
           })
       return message
     },
+    tileServers() {
+      return getValidateTileServers(this.project)
+    },
   },
   methods: {
     addResult(value) {
@@ -213,14 +217,23 @@ export default defineComponent({
   </project-header>
   <v-container class="ma-0 pa-0">
     <validate-project-task
+      v-if="tileServers"
       ref="validate-project-task"
       :task="tasks?.[taskIndex]"
-      :project="project"
+      :tileServer="tileServers.tileServer"
+      :preEventTileServer="tileServers.preEventTileServer"
       :transparent="transparent"
+    />
+    <v-alert
+      v-else
+      type="warning"
+      variant="tonal"
+      :title="$t('validateProject.imageryIncompleteTitle')"
+      :text="$t('validateProject.imageryIncompleteDescription')"
     />
   </v-container>
   <option-buttons
-    v-if="taskId"
+    v-if="taskId && tileServers"
     :options="options"
     :result="results[taskId]"
     :taskId="taskId"
