@@ -62,7 +62,7 @@ ENV VITE_APP_ATTRIBUTION_URL=https://mapswipe.org/privacy/
 
 RUN WEB_APP_SERVE_ENABLED=true yarn build-only --outDir=/code/build
 
-FROM ghcr.io/toggle-corp/web-app-serve:v0.1.2 AS web-app-serve
+FROM ghcr.io/toggle-corp/web-app-serve:v0.2.0 AS web-app-serve
 
 LABEL org.opencontainers.image.source="github.com/mapswipe/mapswipe-web"
 LABEL org.opencontainers.image.authors="dev@togglecorp.com"
