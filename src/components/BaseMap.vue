@@ -60,6 +60,14 @@ function getUpdatedUrl(url: string) {
   return url.replace('quad_key', 'quadkey')
 }
 
+// NOTE: Only defined values are set so that maplibre keeps its defaults otherwise
+function getZoomRange(tileServer: TileServer) {
+  return {
+    ...(isDefined(tileServer.minZoom) ? { minzoom: tileServer.minZoom } : {}),
+    ...(isDefined(tileServer.maxZoom) ? { maxzoom: tileServer.maxZoom } : {}),
+  }
+}
+
 const bounds = computed(() => getBbox(props.geoJson) as [number, number, number, number])
 
 function updateBounds() {
@@ -119,7 +127,7 @@ onMounted(() => {
               tiles: [getUpdatedUrl(props.tileServer.url)],
               tileSize: 256,
               attribution: props.tileServer.credits,
-              // maxzoom: 19,
+              ...getZoomRange(props.tileServer),
             },
           },
           layers: [
@@ -254,6 +262,7 @@ watchEffect((onCleanup) => {
         type: 'raster',
         tiles: [getUpdatedUrl(raster.url)],
         attribution: raster.credits,
+        ...getZoomRange(raster),
       })
 
       map.value.addLayer({
