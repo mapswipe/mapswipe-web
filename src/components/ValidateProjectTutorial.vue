@@ -3,9 +3,10 @@ import { defineComponent, type PropType } from 'vue'
 import matchIcon from '@/utils/matchIcon'
 import OptionButtons from '@/components/OptionButtons.vue'
 import TaskProgress from '@/components/TaskProgress.vue'
-import ValidateProjectTask, { type Project } from './ValidateProjectTask.vue'
+import ValidateProjectTask from './ValidateProjectTask.vue'
 import TutorialCompletionCard from './TutorialCompletionCard.vue'
 import { isDefined } from '@/utils/common'
+import getValidateTileServers, { type ValidateImagery } from '@/utils/getValidateTileServers'
 
 interface Option {
   title: string
@@ -33,7 +34,7 @@ interface Screen {
   description: string
 }
 
-interface Tutorial extends Project {
+interface Tutorial extends ValidateImagery {
   projectId: string
   name: string
   lookFor?: string
@@ -80,6 +81,9 @@ export default defineComponent({
             feature: this.tutorial?.lookFor,
           })
       return message
+    },
+    tileServers() {
+      return this.tutorial ? getValidateTileServers(this.tutorial) : undefined
     },
     currentScreen() {
       return this.tutorial?.screens[this.currentTaskIndex]
@@ -215,14 +219,22 @@ export default defineComponent({
     <v-row>
       <v-col>
         <validate-project-task
-          v-if="tasks[currentTaskIndex] && tutorial"
+          v-if="tasks[currentTaskIndex] && tileServers"
           :task="tasks[currentTaskIndex]"
-          :project="tutorial"
+          :tileServer="tileServers.tileServer"
+          :preEventTileServer="tileServers.preEventTileServer"
           compact
+        />
+        <v-alert
+          v-else-if="tutorial && !tileServers"
+          type="warning"
+          variant="tonal"
+          :title="$t('validateProject.tutorialImageryIncompleteTitle')"
+          :text="$t('validateProject.imageryIncompleteDescription')"
         />
       </v-col>
     </v-row>
-    <v-row v-if="options">
+    <v-row v-if="options && tileServers">
       <v-col>
         <option-buttons
           v-if="task?.taskId"

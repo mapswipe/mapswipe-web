@@ -187,7 +187,12 @@
   "validateProject": {
     "doesTheShapeOutline": "Ist der Umriss ein {feature}?",
     "moveLeft": "Zurück zum vorherigen Umriss",
-    "moveRight": "Weiter zum nächsten Umriss"
+    "moveRight": "Weiter zum nächsten Umriss",
+    "before": "Vorher",
+    "after": "Nachher",
+    "imageryIncompleteTitle": "Dieses Projekt kann nicht angezeigt werden",
+    "tutorialImageryIncompleteTitle": "Dieses Tutorial kann nicht angezeigt werden",
+    "imageryIncompleteDescription": "Die Einrichtung der Bilddaten ist unvollständig. Bitte wende dich an die Projektleitung."
   },
   "validateProjectInstructions": {
     "seenAll": "sobald du alle Umrisse gesehen und klassifiziert hast.",
